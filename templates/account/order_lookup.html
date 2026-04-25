@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Track an order — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container container--narrow" style="padding-top: var(--sp-12); padding-bottom: var(--sp-12);">
+  <h1 class="section-title">Track your order</h1>
+  <p class="muted center" style="margin-bottom: var(--sp-8);">
+    Checked out as a guest? Enter your email and order number to view it.
+  </p>
+
+  {% if error %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error }}</div>{% endif %}
+
+  {% if not order %}
+    <form method="post" action="{{ url_for('orders_guest.lookup') }}" class="card" style="background: var(--surface);">
+      <div class="form-group">
+        <label class="form-label" for="lk-email">Email</label>
+        <input class="form-input" id="lk-email" type="email" name="email" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="lk-no">Order number</label>
+        <input class="form-input" id="lk-no" name="order_number" placeholder="MC-2026-A1B2C3" required/>
+      </div>
+      <button class="btn btn--primary btn--full" type="submit">Find my order</button>
+      <p class="muted" style="font-size: 13px; text-align: center; margin-top: var(--sp-4);">
+        Have an account? <a href="{{ url_for('auth.login') }}" style="color: var(--accent-sage-deep);">Sign in</a> instead.
+      </p>
+    </form>
+  {% else %}
+    <div style="margin-bottom: var(--sp-6);">
+      <span class="status-pill is-{{ order.status }}">{{ order.status }}</span>
+      <span class="muted" style="margin-left: var(--sp-3); font-size: 13px;">Order {{ order.order_number }} · {{ order.created_at.strftime('%d %b %Y') }}</span>
+    </div>
+
+    <div class="order-summary" style="margin-bottom: var(--sp-4);">
+      {% for it in order.items %}
+        <div class="order-summary-line">
+          <img src="{{ url_for('static', filename='img/products/' ~ it.design_snapshot ~ '.jpg') }}" alt=""/>
+          <div style="flex: 1;">
+            <div class="name">{{ it.name_snapshot }}</div>
+            <div class="meta">{{ it.design_snapshot | capitalize }} × {{ it.qty }}</div>
+          </div>
+          <div class="price">{{ it.line_cents | sgd }}</div>
+        </div>
+      {% endfor %}
+      <div class="order-summary-row"><span>Subtotal</span><span>{{ order.subtotal_cents | sgd }}</span></div>
+      <div class="order-summary-row"><span>Shipping</span><span>{% if order.shipping_cents == 0 %}Free{% else %}{{ order.shipping_cents | sgd }}{% endif %}</span></div>
+      <div class="order-summary-row is-total"><span>Total</span><span>{{ order.total_cents | sgd }}</span></div>
+    </div>
+
+    {% if order.shipping_address %}
+    <div class="card" style="margin-bottom: var(--sp-4);">
+      <h4 class="pdp-section-title">Shipping to</h4>
+      <p style="margin: 0;">
+        {{ order.shipping_address.recipient_name }}<br/>
+        {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}, {{ order.shipping_address.line2 }}{% endif %}<br/>
+        Singapore {{ order.shipping_address.postcode }}
+      </p>
+    </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

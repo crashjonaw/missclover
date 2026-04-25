@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Reset password — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Reset password</h1>
+    <p class="auth-sub">Enter your email and we'll send a reset link.</p>
+
+    {% if sent %}
+      <div class="flash flash-success" style="margin-bottom: var(--sp-4);">
+        If an account exists for that email, we've sent a reset link.
+      </div>
+      <a class="btn btn--ghost btn--full" href="{{ url_for('auth.login') }}">Back to sign in</a>
+    {% else %}
+      <form method="post" class="auth-form" action="{{ url_for('auth.forgot') }}">
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email</label>
+          <input class="form-input" id="f-email" type="email" name="email" autocomplete="email" required autofocus/>
+        </div>
+        <button class="btn btn--primary btn--full" type="submit">Send reset link</button>
+      </form>
+      <div class="auth-footer">
+        <a href="{{ url_for('auth.login') }}">Back to sign in</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

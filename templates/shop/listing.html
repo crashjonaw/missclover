@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Handbags — MISS CLOVER{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="breadcrumbs">
+    <a href="{{ url_for('shop.home') }}">Home</a><span class="sep">/</span><span>Handbags</span>
+  </div>
+
+  <div class="page-title-wrapper">
+    <h1 class="page-title">Handbags</h1>
+  </div>
+
+  <div class="layout-2col">
+    <aside>
+      <div class="filter-options-item">
+        <h4 class="filter-options-title">Collection</h4>
+        <ul class="filter-options-list">
+          <li><a href="{{ url_for('shop.collection', key='classic') }}">Classic</a></li>
+          <li><a href="{{ url_for('shop.collection', key='maroon') }}">Maroon</a></li>
+        </ul>
+      </div>
+      <div class="filter-options-item">
+        <h4 class="filter-options-title">Colour</h4>
+        <ul class="filter-options-list">
+          <li><span class="swatch swatch--cream"></span> &nbsp; Cream</li>
+          <li><span class="swatch swatch--maroon"></span> &nbsp; Maroon</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section>
+      <div class="toolbar">
+        <p class="toolbar-amount"><strong>{{ total }}</strong> result{{ '' if total == 1 else 's' }}</p>
+        <div class="toolbar-sorter">
+          <label class="form-label" for="sorter" style="margin: 0;">Sort by</label>
+          <select id="sorter" class="form-select" disabled>
+            <option>Position</option>
+            <option>Price — low to high</option>
+            <option>Price — high to low</option>
+            <option>Just added</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="products-grid">
+        {% for p in products %}{% include "shop/_card.html" %}{% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

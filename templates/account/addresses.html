@@ -1,0 +1,22 @@
+{% extends "account/_layout.html" %}
+{% block title %}Addresses — MISS CLOVER{% endblock %}
+{% block account_title %}Saved addresses{% endblock %}
+
+{% block account_content %}
+{% if not addresses %}
+  <p class="muted">No saved addresses yet. They'll appear here after your first order.</p>
+{% else %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-4);">
+    {% for a in addresses %}
+      <div class="card">
+        <p style="margin: 0;">
+          <strong>{{ a.recipient_name }}</strong><br/>
+          {{ a.line1 }}{% if a.line2 %}, {{ a.line2 }}{% endif %}<br/>
+          Singapore {{ a.postcode }}<br/>
+          <span class="muted">+65 {{ a.phone }}</span>
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

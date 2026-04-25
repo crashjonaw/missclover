@@ -1,0 +1,178 @@
+/* MISS CLOVER — base reset, typography, layout primitives */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+img, picture, svg, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--t);
+}
+a:hover { color: var(--accent-sage-deep); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--ink);
+}
+
+h1 { font-size: clamp(2rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 2.6vw, 2.25rem); }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1rem; font-family: var(--font-body); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+p { margin: 0 0 1em; }
+
+ul, ol {
+  margin: 0; padding: 0; list-style: none;
+}
+
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+input, select, textarea {
+  font: inherit; color: inherit;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: var(--sp-8) 0;
+}
+
+/* ── Layout primitives ─────────────────────────────────────────── */
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-main {
+  flex: 1 0 auto;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--sp-6);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+.section {
+  padding: var(--sp-16) 0;
+}
+
+.section--soft {
+  background: var(--surface-alt);
+}
+
+.section--sage {
+  background: var(--accent-sage-soft);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  text-align: center;
+  margin-bottom: var(--sp-2);
+}
+
+.section-eyebrow {
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-align: center;
+  margin-bottom: var(--sp-4);
+}
+
+.muted { color: var(--ink-muted); }
+.faint { color: var(--ink-faint); }
+.center { text-align: center; }
+
+.stack > * + * { margin-top: var(--sp-4); }
+.stack-lg > * + * { margin-top: var(--sp-8); }
+
+/* Page title block (used on category, search, account pages) */
+.page-title-wrapper {
+  text-align: center;
+  padding: var(--sp-12) 0 var(--sp-6);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: var(--sp-10);
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  letter-spacing: 0.02em;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: var(--sp-4) 0;
+}
+.breadcrumbs a:hover { color: var(--accent-sage); }
+.breadcrumbs .sep { margin: 0 var(--sp-2); color: var(--ink-faint); }
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ink);
+  color: #fff;
+  padding: var(--sp-2) var(--sp-4);
+  z-index: 100;
+}
+.skip-link:focus { left: var(--sp-4); top: var(--sp-4); }
+
+/* Two-column layout used by category + search pages */
+.layout-2col {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--sp-10);
+}
+@media (max-width: 880px) {
+  .layout-2col {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+}

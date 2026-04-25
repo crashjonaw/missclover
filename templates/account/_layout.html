@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="page-title-wrapper">
+    <h1 class="page-title">{% block account_title %}My account{% endblock %}</h1>
+  </div>
+
+  <div class="account-grid">
+    <aside class="account-nav">
+      <a href="{{ url_for('account.dashboard') }}" class="{% if request.endpoint == 'account.dashboard' %}is-active{% endif %}">Overview</a>
+      <a href="{{ url_for('account.orders') }}" class="{% if request.endpoint and request.endpoint.startswith('account.order') %}is-active{% endif %}">Orders</a>
+      <a href="{{ url_for('account.addresses') }}" class="{% if request.endpoint == 'account.addresses' %}is-active{% endif %}">Addresses</a>
+      <a href="{{ url_for('account.profile') }}" class="{% if request.endpoint == 'account.profile' %}is-active{% endif %}">Profile</a>
+      <a href="{{ url_for('auth.logout') }}" class="muted">Sign out</a>
+    </aside>
+
+    <section>
+      {% block account_content %}{% endblock %}
+    </section>
+  </div>
+</div>
+{% endblock %}

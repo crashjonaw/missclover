@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Shipping — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container">
+  {% set step = 2 %}
+  {% include "partials/progress_steps.html" with context %}
+
+  <div class="cart-grid">
+    <div>
+      <h2 style="margin-bottom: var(--sp-6);">Shipping address</h2>
+      {% if guest_email %}
+        <p class="muted" style="margin-bottom: var(--sp-5);">Sending order confirmation to <strong>{{ guest_email }}</strong>.</p>
+      {% endif %}
+
+      {% if error %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error }}</div>{% endif %}
+
+      <form method="post" action="{{ url_for('checkout.shipping') }}">
+        <div class="form-group">
+          <label class="form-label" for="recipient">Recipient name <span class="required-mark">*</span></label>
+          <input class="form-input" id="recipient" name="recipient_name" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="line1">Address line 1 <span class="required-mark">*</span></label>
+          <input class="form-input" id="line1" name="line1" placeholder="Block, street, unit" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="line2">Address line 2</label>
+          <input class="form-input" id="line2" name="line2" placeholder="Building, etc."/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="postcode">Postcode <span class="required-mark">*</span></label>
+            <input class="form-input" id="postcode" name="postcode" pattern="[0-9]{6}" placeholder="6-digit Singapore postcode" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone <span class="required-mark">*</span></label>
+            <div class="phone-input-group">
+              <span class="phone-prefix">+65</span>
+              <input class="form-input phone-input" id="phone" name="phone" pattern="[0-9 ]{8,12}" required/>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: var(--sp-3); margin-top: var(--sp-6);">
+          <a class="btn btn--ghost" href="{{ url_for('cart.view') }}">← Back to bag</a>
+          <button class="btn btn--primary" type="submit" style="margin-left: auto;">Continue to payment →</button>
+        </div>
+      </form>
+    </div>
+
+    {# Mini summary #}
+    <aside class="cart-summary-side">
+      <div class="order-summary">
+        <h3>Order summary</h3>
+        {% set cart = cart_qty and cart_subtotal_cents %}
+        <div class="order-summary-row"><span>Items</span><span>{{ cart_qty }}</span></div>
+        <div class="order-summary-row"><span>Subtotal</span><span>{{ cart_subtotal_cents | sgd }}</span></div>
+        <p class="muted" style="font-size: 12px; margin-top: var(--sp-3);">Shipping calculated at next step.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "account/_layout.html" %}
+{% block title %}My account — MISS CLOVER{% endblock %}
+{% block account_title %}Welcome, {{ current_user.first_name or 'there' }}.{% endblock %}
+
+{% block account_content %}
+<h2 style="margin-bottom: var(--sp-4);">Recent orders</h2>
+{% if not orders %}
+  <p class="muted">No orders yet. <a href="{{ url_for('shop.handbags') }}" style="color: var(--accent-sage-deep);">Start shopping →</a></p>
+{% else %}
+  {% for o in orders %}
+    <div class="order-card">
+      <div class="order-meta">
+        <span class="order-no">{{ o.order_number }}</span>
+        <span class="status-pill is-{{ o.status }}">{{ o.status }}</span>
+      </div>
+      <div class="muted" style="font-size: 13px; margin-bottom: var(--sp-2);">{{ o.created_at.strftime('%d %b %Y') }} · {{ o.total_cents | sgd }}</div>
+      <a href="{{ url_for('account.order_detail', order_no=o.order_number) }}" style="color: var(--accent-sage-deep); font-size: 14px;">View order →</a>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

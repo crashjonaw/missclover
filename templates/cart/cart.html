@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Your bag — MISS CLOVER{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-title-wrapper">
+    <h1 class="page-title">Your bag</h1>
+  </div>
+
+  {% if not items %}
+    <div class="cart-empty">
+      <p>Your bag is empty.</p>
+      <a class="btn btn--primary btn--lg" href="{{ url_for('shop.handbags') }}" style="margin-top: var(--sp-4);">Continue shopping</a>
+    </div>
+  {% else %}
+    <div class="cart-grid">
+      <div>
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Item</th><th>Quantity</th><th style="text-align:right;">Total</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for it in items %}
+            <tr>
+              <td>
+                <div class="cart-row-product">
+                  <img src="{{ url_for('static', filename='img/products/' ~ it.variant.product.design_code ~ '.jpg') }}" alt="{{ it.variant.product.name }}"/>
+                  <div>
+                    <div style="font-weight: 500;">{{ it.variant.product.name }}</div>
+                    <div class="muted" style="font-size: 13px;">{{ it.variant.product.design_code | capitalize }} · {{ it.unit_price_cents_snapshot | sgd }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <form method="post" action="{{ url_for('cart.update', item_id=it.id) }}" style="display: flex; gap: var(--sp-2); align-items: center;">
+                  <input type="number" name="qty" value="{{ it.qty }}" min="0" max="10"
+                         style="width: 70px; padding: 6px 10px; border: 1px solid var(--rule-dark); border-radius: var(--radius);"/>
+                  <button type="submit" class="btn btn--sage-outline btn--sm">Update</button>
+                </form>
+              </td>
+              <td style="text-align:right; font-weight: 600;">{{ it.line_cents | sgd }}</td>
+              <td style="text-align:right;">
+                <form method="post" action="{{ url_for('cart.remove', item_id=it.id) }}">
+                  <button type="submit" class="muted" style="font-size: 12px; text-decoration: underline;">Remove</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <a href="{{ url_for('shop.handbags') }}" class="muted" style="font-size: 14px;">← Continue shopping</a>
+      </div>
+
+      <aside class="cart-summary-side">
+        <div class="order-summary">
+          <h3>Order summary</h3>
+          <div class="order-summary-row">
+            <span>Subtotal</span>
+            <span>{{ cart.subtotal_cents | sgd }}</span>
+          </div>
+          <div class="order-summary-row">
+            <span>Shipping</span>
+            <span>{% if shipping_cents == 0 %}Free{% else %}{{ shipping_cents | sgd }}{% endif %}</span>
+          </div>
+          <div class="order-summary-row is-total">
+            <span>Total</span>
+            <span>{{ total_cents | sgd }}</span>
+          </div>
+          <a class="btn btn--primary btn--full btn--lg" href="{{ url_for('checkout.start') }}" style="margin-top: var(--sp-5);">Continue to checkout</a>
+          <p class="muted" style="font-size: 12px; text-align: center; margin-top: var(--sp-3);">
+            Secure payment via HitPay · cards, PayNow, GrabPay
+          </p>
+        </div>
+      </aside>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

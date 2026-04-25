@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Create account — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MISS CLOVER"/>
+    </div>
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-sub">Save your details for a faster checkout.</p>
+
+    {% if error %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error }}</div>{% endif %}
+
+    <form method="post" class="auth-form" action="{{ url_for('auth.register') }}">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="r-first">First name</label>
+          <input class="form-input" id="r-first" name="first_name" autocomplete="given-name" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="r-last">Last name</label>
+          <input class="form-input" id="r-last" name="last_name" autocomplete="family-name" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="r-email">Email</label>
+        <input class="form-input" id="r-email" type="email" name="email" autocomplete="email" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="r-pwd">Password <span class="muted" style="font-weight: 400; text-transform: none; letter-spacing: 0;">(min 8 characters)</span></label>
+        <input class="form-input" id="r-pwd" type="password" name="password" autocomplete="new-password" required minlength="8"/>
+      </div>
+      <div class="form-check" style="margin-bottom: var(--sp-5);">
+        <input type="checkbox" id="r-news" name="newsletter"/>
+        <label for="r-news">Email me new arrivals and the occasional love letter.</label>
+      </div>
+      <button class="btn btn--primary btn--full" type="submit">Create account</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Sign in →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

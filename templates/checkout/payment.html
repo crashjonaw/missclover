@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Payment — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container">
+  {% set step = 3 %}
+  {% include "partials/progress_steps.html" with context %}
+
+  <div class="cart-grid">
+    <div>
+      <h2 style="margin-bottom: var(--sp-6);">Review &amp; pay</h2>
+
+      <div class="card" style="margin-bottom: var(--sp-6);">
+        <h4 class="pdp-section-title" style="margin-bottom: var(--sp-3);">Shipping to</h4>
+        <p style="margin: 0;">
+          {{ address.recipient_name }}<br/>
+          {{ address.line1 }}{% if address.line2 %}, {{ address.line2 }}{% endif %}<br/>
+          Singapore {{ address.postcode }}<br/>
+          <span class="muted">+65 {{ address.phone }}</span>
+        </p>
+        <p style="margin-top: var(--sp-3);">
+          <a href="{{ url_for('checkout.shipping') }}" class="muted" style="font-size: 13px; text-decoration: underline;">Edit</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h4 class="pdp-section-title" style="margin-bottom: var(--sp-3);">Payment method</h4>
+        <p class="muted" style="margin-bottom: var(--sp-4);">
+          Pay securely with HitPay. You can pay by credit/debit card, PayNow, or GrabPay.
+        </p>
+        <form method="post" action="{{ url_for('checkout.payment') }}">
+          <button type="submit" class="btn btn--primary btn--lg btn--full">
+            Pay {{ total_cents | sgd }} with HitPay →
+          </button>
+        </form>
+        <p class="muted" style="font-size: 12px; text-align: center; margin-top: var(--sp-3);">
+          You'll be redirected to HitPay's secure checkout.
+        </p>
+      </div>
+    </div>
+
+    <aside class="cart-summary-side">
+      <div class="order-summary">
+        <h3>Order summary</h3>
+        {% for it in cart.items %}
+          <div class="order-summary-line">
+            <img src="{{ url_for('static', filename='img/products/' ~ it.variant.product.design_code ~ '.jpg') }}" alt=""/>
+            <div style="flex: 1;">
+              <div class="name">{{ it.variant.product.name }}</div>
+              <div class="meta">{{ it.variant.product.design_code | capitalize }} × {{ it.qty }}</div>
+            </div>
+            <div class="price">{{ it.line_cents | sgd }}</div>
+          </div>
+        {% endfor %}
+        <div class="order-summary-row"><span>Subtotal</span><span>{{ cart.subtotal_cents | sgd }}</span></div>
+        <div class="order-summary-row"><span>Shipping</span><span>{% if shipping_cents == 0 %}Free{% else %}{{ shipping_cents | sgd }}{% endif %}</span></div>
+        <div class="order-summary-row is-total"><span>Total</span><span>{{ total_cents | sgd }}</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{# 3-step indicator for checkout. Pass `step` (1|2|3) and optional labels. #}
+{% set step = step | default(1) %}
+{% set labels = labels | default(["Details", "Shipping", "Payment"]) %}
+<div class="progress-steps">
+  {% for label in labels %}
+    {% set n = loop.index %}
+    {% set state = "is-done" if n < step else ("is-active" if n == step else "") %}
+    <div class="progress-step {{ state }}">
+      <div class="step-circle">{% if n < step %}✓{% else %}{{ n }}{% endif %}</div>
+      <div class="step-label">{{ label }}</div>
+    </div>
+    {% if not loop.last %}<div class="step-line {% if n < step %}is-done{% endif %}"></div>{% endif %}
+  {% endfor %}
+</div>

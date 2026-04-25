@@ -1,0 +1,41 @@
+<header class="site-header">
+  <div class="header-promo">
+    Free shipping in Singapore on orders over S${{ ((config.FREE_SHIPPING_THRESHOLD_CENTS or 20000) / 100) | int }} —
+    <a href="{{ url_for('shop.handbags') }}">Shop new arrivals</a>
+  </div>
+
+  <div class="container">
+    <div class="header-logo-row">
+      <div class="header-utility is-left">
+        <a href="{{ url_for('shop.about') }}">About</a>
+        <a href="#contact" class="label-hide-mobile">Contact</a>
+      </div>
+
+      <a class="site-logo" href="{{ url_for('shop.home') }}" aria-label="MISS CLOVER home">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MISS CLOVER"/>
+      </a>
+
+      <div class="header-utility is-right">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('account.dashboard') }}">Account</a>
+          <a href="{{ url_for('auth.logout') }}" class="label-hide-mobile">Sign out</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Sign in</a>
+        {% endif %}
+        <a href="{{ url_for('cart.view') }}">
+          Bag
+          {% if cart_qty %}<span class="cart-count">{{ cart_qty }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="header-nav" aria-label="Primary">
+    <ul class="header-nav-list container">
+      <li><a href="{{ url_for('shop.handbags') }}">Handbags</a></li>
+      <li><a href="{{ url_for('shop.collection', key='classic') }}">Classic</a></li>
+      <li><a href="{{ url_for('shop.collection', key='maroon') }}">Maroon</a></li>
+      <li><a href="{{ url_for('shop.about') }}">Our story</a></li>
+    </ul>
+  </nav>
+</header>

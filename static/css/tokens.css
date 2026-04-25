@@ -1,0 +1,79 @@
+/* MISS CLOVER — design tokens
+   Sage green primary accent (the "clover" of the brand) with cream + maroon
+   reserved as product colourways. Kate Spade Singapore-inspired structure. */
+
+:root {
+  /* Surfaces */
+  --bg:               #FBFAF7;
+  --surface:          #FFFFFF;
+  --surface-alt:      #F5F1EA;
+
+  /* Text */
+  --ink:              #111111;
+  --ink-muted:        #5C5C5C;
+  --ink-faint:        #9A9A9A;
+
+  /* Brand accent — sage green */
+  --accent-sage:      #7A8B6F;
+  --accent-sage-deep: #5C6B53;
+  --accent-sage-soft: #EFF2EA;
+
+  /* Product colourways (NOT the UI accent) */
+  --maroon:           #6E1A2D;
+  --maroon-soft:      #F4ECEE;
+  --cream:            #F0E6D2;
+  --cream-deep:       #D9CDB3;
+
+  /* Hardware */
+  --gold:             #B89668;
+
+  /* Structure */
+  --rule:             #E8E2D8;
+  --rule-dark:        #C9C2B5;
+
+  /* Status */
+  --success:          #0F7A4D;
+  --error:            #B42E2E;
+  --warning:          #B45309;
+
+  /* Radii */
+  --radius-sm:        2px;
+  --radius:           4px;
+  --radius-pill:      999px;
+
+  /* Shadows */
+  --shadow-card:      0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-hover:     0 2px 4px rgba(0,0,0,.06), 0 16px 40px rgba(0,0,0,.10);
+
+  /* Typography */
+  --font-display:     "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-body:        "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* Layout */
+  --container:        1280px;
+  --container-narrow: 560px;
+
+  /* Spacing scale (multiples of 4px) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+
+  /* Transitions */
+  --t-fast: 120ms ease;
+  --t:      200ms ease;
+  --t-slow: 320ms ease;
+
+  /* Header heights */
+  --header-promo-h: 32px;
+  --header-h:       96px;
+  --header-nav-h:   48px;
+}

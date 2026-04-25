@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="MISS CLOVER — handcrafted handbags from Singapore. Classic and Maroon designs."/>
+  <title>{% block title %}MISS CLOVER — Handbags from Singapore{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"/>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}"/>
+
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png"/>
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page-wrapper">
+    {% include "partials/header.html" %}
+
+    <main id="main" class="page-main">
+      {% include "partials/flash.html" %}
+      {% block content %}{% endblock %}
+    </main>
+
+    {% include "partials/footer.html" %}
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Checkout — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container">
+  {% include "partials/progress_steps.html" with context %}
+
+  <h1 class="section-title" style="margin-bottom: var(--sp-2);">How would you like to check out?</h1>
+  <p class="muted center" style="margin-bottom: var(--sp-10);">Sign in for faster orders, create an account, or keep going as a guest.</p>
+
+  <div class="checkout-start-grid">
+    {# ── Sign in ── #}
+    <div class="checkout-start-card">
+      <h3>Sign in</h3>
+      <p class="sub">Welcome back.</p>
+      {% if error and error[0] == 'signin' %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error[1] }}</div>{% endif %}
+      <form method="post" action="{{ url_for('checkout.start') }}">
+        <input type="hidden" name="action" value="signin"/>
+        <div class="form-group">
+          <label class="form-label" for="si-email">Email</label>
+          <input class="form-input" id="si-email" type="email" name="email" autocomplete="email" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="si-pwd">Password</label>
+          <input class="form-input" id="si-pwd" type="password" name="password" autocomplete="current-password" required/>
+        </div>
+        <div class="filler"></div>
+        <button class="btn btn--ink btn--full" type="submit">Sign in →</button>
+        <p class="muted" style="font-size: 12px; text-align: center; margin-top: var(--sp-3);">
+          <a href="{{ url_for('auth.forgot') }}">Forgot password?</a>
+        </p>
+      </form>
+    </div>
+
+    {# ── Create account ── #}
+    <div class="checkout-start-card">
+      <h3>Create account</h3>
+      <p class="sub">Save your details for next time.</p>
+      {% if error and error[0] == 'register' %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error[1] }}</div>{% endif %}
+      <form method="post" action="{{ url_for('checkout.start') }}">
+        <input type="hidden" name="action" value="register"/>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="r-first">First</label>
+            <input class="form-input" id="r-first" name="first_name" autocomplete="given-name" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="r-last">Last</label>
+            <input class="form-input" id="r-last" name="last_name" autocomplete="family-name" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="r-email">Email</label>
+          <input class="form-input" id="r-email" type="email" name="email" autocomplete="email" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="r-pwd">Password</label>
+          <input class="form-input" id="r-pwd" type="password" name="password" minlength="8" autocomplete="new-password" required/>
+        </div>
+        <div class="filler"></div>
+        <button class="btn btn--ink btn--full" type="submit">Create &amp; continue →</button>
+      </form>
+    </div>
+
+    {# ── Continue as guest ── #}
+    <div class="checkout-start-card is-guest">
+      <h3>Continue as guest</h3>
+      <p class="sub">No account needed. We'll email a tracker link with your order.</p>
+      {% if error and error[0] == 'guest' %}<div class="flash flash-error" style="margin-bottom: var(--sp-4);">{{ error[1] }}</div>{% endif %}
+      <form method="post" action="{{ url_for('checkout.start') }}">
+        <input type="hidden" name="action" value="guest"/>
+        <div class="form-group">
+          <label class="form-label" for="g-email">Email</label>
+          <input class="form-input" id="g-email" type="email" name="email" autocomplete="email" required autofocus/>
+        </div>
+        <p class="muted" style="font-size: 13px; margin-bottom: var(--sp-4);">
+          Your order confirmation and a tracker link will arrive at this email. You can create an account later if you'd like.
+        </p>
+        <div class="filler"></div>
+        <button class="btn btn--primary btn--full" type="submit">Continue as guest →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

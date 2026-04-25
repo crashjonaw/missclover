@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}MISS CLOVER — Singapore handbags{% endblock %}
+
+{% block content %}
+<section class="home-hero">
+  <span class="eyebrow">A new singapore label</span>
+  <h1>Quietly considered<br/>handbags.</h1>
+  <p class="lede">MISS CLOVER is a small Singapore handbag house. Two starting designs in cream and maroon — handfinished, leather-lined, made for the everyday.</p>
+  <a class="btn btn--primary btn--lg" href="{{ url_for('shop.handbags') }}">Shop the collection</a>
+</section>
+
+<section class="home-split">
+  <a class="home-split-tile is-classic" href="{{ url_for('shop.collection', key='classic') }}">
+    <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/products/classic.jpg') }}')"></div>
+    <div style="position: relative; z-index: 1; max-width: 50%;">
+      <h2>The Classic</h2>
+      <p>Cream leather, gold hardware, structured silhouette. The starter piece.</p>
+      <span class="btn btn--ink btn--sm">Discover →</span>
+    </div>
+  </a>
+  <a class="home-split-tile is-maroon" href="{{ url_for('shop.collection', key='maroon') }}">
+    <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/products/maroon.jpg') }}')"></div>
+    <div style="position: relative; z-index: 1; max-width: 50%;">
+      <h2>The Maroon</h2>
+      <p>Deep burgundy, gold hardware, the same structured silhouette in a richer key.</p>
+      <span class="btn btn--ghost btn--sm" style="color: var(--cream); border-color: var(--cream);">Discover →</span>
+    </div>
+  </a>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="section-eyebrow">Now showing</p>
+    <h2 class="section-title">Two designs. One silhouette.</h2>
+    <p class="muted center" style="max-width: 560px; margin: 0 auto var(--sp-12);">8″ × 11″ structured tote, double handles, suede-lined interior with lipstick holder, key fob, and an inner zip pocket.</p>
+
+    <div class="products-grid">
+      {% for p in products %}
+        {% include "shop/_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

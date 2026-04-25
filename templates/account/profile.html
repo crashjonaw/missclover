@@ -1,0 +1,39 @@
+{% extends "account/_layout.html" %}
+{% block title %}Profile — MISS CLOVER{% endblock %}
+{% block account_title %}Profile{% endblock %}
+
+{% block account_content %}
+<form method="post" action="{{ url_for('account.profile') }}" style="max-width: 520px;">
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label" for="p-first">First name</label>
+      <input class="form-input" id="p-first" name="first_name" value="{{ current_user.first_name or '' }}"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="p-last">Last name</label>
+      <input class="form-input" id="p-last" name="last_name" value="{{ current_user.last_name or '' }}"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input class="form-input" type="email" value="{{ current_user.email }}" disabled/>
+    <p class="form-help">Email isn't editable. Contact us to change it.</p>
+  </div>
+  <div class="form-group">
+    <label class="form-label" for="p-phone">Phone</label>
+    <div class="phone-input-group">
+      <span class="phone-prefix">+65</span>
+      <input class="form-input phone-input" id="p-phone" name="phone" value="{{ current_user.phone or '' }}"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label" for="p-pwd">New password <span class="muted" style="font-weight: 400; text-transform: none; letter-spacing: 0;">(leave blank to keep)</span></label>
+    <input class="form-input" id="p-pwd" type="password" name="new_password" minlength="8" autocomplete="new-password"/>
+  </div>
+  <div class="form-check" style="margin-bottom: var(--sp-5);">
+    <input type="checkbox" id="p-news" name="newsletter" {% if current_user.newsletter_opt_in %}checked{% endif %}/>
+    <label for="p-news">Email me new arrivals.</label>
+  </div>
+  <button class="btn btn--primary" type="submit">Save profile</button>
+</form>
+{% endblock %}

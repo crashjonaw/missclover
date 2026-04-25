@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Page not found — MISS CLOVER{% endblock %}
+{% block content %}
+<div class="container error-page">
+  <h1>404</h1>
+  <p class="muted">We couldn't find that page.</p>
+  <a class="btn btn--primary" href="{{ url_for('shop.home') }}">Back to home</a>
+</div>
+{% endblock %}
