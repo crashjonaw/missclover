@@ -1,11 +1,14 @@
-"""Seed catalog from data/products.yaml. Idempotent — re-run safely:
+"""Seed catalog from data/products/*.yaml — one file per product.
+
+Idempotent — re-run safely:
 
   - Products are matched by `slug` (upserted)
   - Variants matched by `sku` (upserted; existing stock_qty preserved)
   - Images are replaced wholesale (delete then insert) so YAML is the source of truth
 
-To add a new design, append to data/products.yaml, drop image(s) into
-static/img/, and run `python seed.py`. No template / CSS / blueprint edits.
+To add a new design, drop a new `data/products/<design_code>.yaml` and the
+matching image(s) into static/img/products/<design_code>/, then run
+`python seed.py`. No template / CSS / blueprint edits.
 """
 from pathlib import Path
 
@@ -16,7 +19,7 @@ from extensions import db
 from models import Product, ProductImage, ProductVariant
 
 
-DATA_FILE = Path(__file__).parent / "data" / "products.yaml"
+DATA_DIR = Path(__file__).parent / "data" / "products"
 
 
 def _upsert_product(spec: dict) -> Product:
@@ -81,20 +84,48 @@ def _replace_images(p: Product, images_spec: list[dict]) -> None:
         print(f"    images: {len(images_spec)}")
 
 
+def _load_product_files() -> list[tuple[Path, dict]]:
+    """Load every `*.yaml` (and `*.yml`) under data/products/, sorted by filename.
+    Returns (path, parsed_spec) tuples so error messages can name the offending file."""
+    if not DATA_DIR.is_dir():
+        raise SystemExit(f"Catalog directory not found: {DATA_DIR}")
+    files = sorted(p for p in DATA_DIR.iterdir() if p.suffix in {".yaml", ".yml"})
+    if not files:
+        raise SystemExit(f"No product YAML files in {DATA_DIR}")
+    out: list[tuple[Path, dict]] = []
+    for f in files:
+        spec = yaml.safe_load(f.read_text())
+        if not spec:
+            print(f"  ! Skipping empty file: {f.name}")
+            continue
+        if not isinstance(spec, dict):
+            raise SystemExit(f"Expected mapping at top of {f}, got {type(spec).__name__}")
+        if not spec.get("slug") or not spec.get("design_code"):
+            raise SystemExit(f"{f.name}: 'slug' and 'design_code' are required")
+        out.append((f, spec))
+    return out
+
+
 def seed_from_yaml():
-    if not DATA_FILE.exists():
-        raise SystemExit(f"Data file not found: {DATA_FILE}")
-    spec = yaml.safe_load(DATA_FILE.read_text())
-    products = spec.get("products") or []
-    if not products:
-        raise SystemExit(f"No products defined in {DATA_FILE}")
+    files = _load_product_files()
+    seen_slugs: set[str] = set()
+    seen_codes: set[str] = set()
+    for f, spec in files:
+        if spec["slug"] in seen_slugs:
+            raise SystemExit(f"Duplicate slug '{spec['slug']}' in {f.name}")
+        if spec["design_code"] in seen_codes:
+            raise SystemExit(f"Duplicate design_code '{spec['design_code']}' in {f.name}")
+        seen_slugs.add(spec["slug"])
+        seen_codes.add(spec["design_code"])
 
     with app.app_context():
-        for ps in products:
-            p = _upsert_product(ps)
-            _upsert_variants(p, ps.get("variants", []))
+        print(f"Loading {len(files)} product file(s) from {DATA_DIR}/")
+        for f, spec in files:
+            print(f"\n[{f.name}]")
+            p = _upsert_product(spec)
+            _upsert_variants(p, spec.get("variants", []))
             db.session.flush()
-            _replace_images(p, ps.get("images", []))
+            _replace_images(p, spec.get("images", []))
         db.session.commit()
         total = Product.query.count()
         active = Product.query.filter_by(is_active=True).count()

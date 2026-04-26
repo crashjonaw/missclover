@@ -1,0 +1,34 @@
+# MISS CLOVER — The Maroon Tote
+# Edit this file then run `python seed.py` to update the catalog.
+# Filename convention: <design_code>.yaml (matches static/img/products/<design_code>/).
+
+slug: maroon-tote
+name: The Maroon Tote
+design_code: maroon
+color_hex: "#6E1A2D"            # the burgundy colourway
+base_price_cents: 35000
+is_featured: true
+display_order: 20
+
+description: >-
+  Same silhouette in deep burgundy. Hand-dyed maroon leather, gold
+  hardware, suede-lined interior with all the clever pockets.
+
+tile_eyebrow: The Maroon
+tile_headline: Burgundy. Quietly bold.
+tile_body: >-
+  Same silhouette, deeper register. Hand-dyed maroon leather, gold
+  hardware, suede-lined.
+
+variants:
+  - name: Maroon
+    sku: MC-MRN-BG
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  # Drop additional views (e.g. interior.jpg, side.jpg, lifestyle.jpg)
+  # into static/img/products/maroon/ and add them here in display order.
+  - path: products/maroon/hero.jpg
+    alt: The Maroon Tote — front view
+    sort_order: 1

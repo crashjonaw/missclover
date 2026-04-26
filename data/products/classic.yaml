@@ -1,0 +1,35 @@
+# MISS CLOVER — The Classic Tote
+# Edit this file then run `python seed.py` to update the catalog.
+# Filename convention: <design_code>.yaml (matches static/img/products/<design_code>/).
+
+slug: classic-tote
+name: The Classic Tote
+design_code: classic
+color_hex: "#F0E6D2"            # the cream colourway
+base_price_cents: 35000
+is_featured: true
+display_order: 10
+
+description: >-
+  The starter MISS CLOVER. Cream leather, gold hardware, structured
+  8″×11″ silhouette with a tan-suede interior — lipstick holder, key
+  fob, inner zip pocket.
+
+tile_eyebrow: The Classic
+tile_headline: Cream leather, gold hardware.
+tile_body: >-
+  The starter MISS CLOVER. A structured 8″×11″ tote in soft cream
+  leather, finished with gold hardware and a tan-suede interior.
+
+variants:
+  - name: Classic
+    sku: MC-CLS-CR
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  # Drop additional views (e.g. interior.jpg, side.jpg, lifestyle.jpg)
+  # into static/img/products/classic/ and add them here in display order.
+  - path: products/classic/hero.jpg
+    alt: The Classic Tote — front view
+    sort_order: 1
