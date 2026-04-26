@@ -396,13 +396,16 @@
 .price.is-sale { color: var(--maroon); }
 .price-old { color: var(--ink-faint); text-decoration: line-through; margin-right: var(--sp-2); }
 
-/* ── Swatches ──────────────────────────────────────────────────── */
+/* ── Swatches ──────────────────────────────────────────────────────
+   Colour comes from inline `style="background-color: <hex>"` on each
+   swatch, driven by Product.color_hex. No per-design CSS classes. */
 
 .swatch-list {
   display: flex; gap: var(--sp-2);
   align-items: center;
 }
 .swatch {
+  display: inline-block;
   width: 22px; height: 22px;
   border-radius: 50%;
   border: 1px solid var(--rule-dark);
@@ -415,8 +418,6 @@
   outline: 2px solid var(--accent-sage);
   outline-offset: 2px;
 }
-.swatch--cream  { background: var(--cream); }
-.swatch--maroon { background: var(--maroon); }
 
 /* ── Mini cart count badge in header ───────────────────────────── */
 

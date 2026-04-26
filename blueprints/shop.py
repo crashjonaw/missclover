@@ -27,10 +27,10 @@ def product(slug: str):
 
 @bp.route("/collections/<key>")
 def collection(key: str):
-    """Editorial single-design landing — `classic` or `maroon`."""
-    if key not in {"classic", "maroon"}:
-        abort(404)
-    product = Product.query.filter_by(design_code=key, is_active=True).first()
+    """Editorial single-design landing — one collection page per active product
+    (looked up by design_code). Drop a new design into data/products.yaml and
+    its collection landing appears automatically."""
+    product = Product.query.filter_by(design_code=key, is_active=True).first_or_404()
     return render_template("shop/collection.html", key=key, product=product)
 
 

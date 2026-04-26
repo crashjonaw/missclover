@@ -10,4 +10,5 @@ python-dotenv==1.0.1
 email-validator==2.2.0
 itsdangerous==2.2.0
 requests==2.32.3
+PyYAML==6.0.2
 gunicorn==23.0.0

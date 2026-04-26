@@ -33,7 +33,7 @@
     <div class="order-summary" style="margin-bottom: var(--sp-4);">
       {% for it in order.items %}
         <div class="order-summary-line">
-          <img src="{{ url_for('static', filename='img/products/' ~ it.design_snapshot ~ '.jpg') }}" alt=""/>
+          <img src="{{ url_for('static', filename='img/' ~ it.image_path) }}" alt=""/>
           <div style="flex: 1;">
             <div class="name">{{ it.name_snapshot }}</div>
             <div class="meta">{{ it.design_snapshot | capitalize }} × {{ it.qty }}</div>

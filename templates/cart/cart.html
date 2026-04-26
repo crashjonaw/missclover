@@ -26,7 +26,7 @@
             <tr>
               <td>
                 <div class="cart-row-product">
-                  <img src="{{ url_for('static', filename='img/products/' ~ it.variant.product.design_code ~ '.jpg') }}" alt="{{ it.variant.product.name }}"/>
+                  <img src="{{ url_for('static', filename='img/' ~ it.variant.product.primary_image_path) }}" alt="{{ it.variant.product.name }}"/>
                   <div>
                     <div style="font-weight: 500;">{{ it.variant.product.name }}</div>
                     <div class="muted" style="font-size: 13px;">{{ it.variant.product.design_code | capitalize }} · {{ it.unit_price_cents_snapshot | sgd }}</div>

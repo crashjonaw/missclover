@@ -5,28 +5,29 @@
 <section class="home-hero">
   <span class="eyebrow">A new singapore label</span>
   <h1>Quietly considered<br/>handbags.</h1>
-  <p class="lede">MISS CLOVER is a small Singapore handbag house. Two starting designs in cream and maroon — handfinished, leather-lined, made for the everyday.</p>
+  <p class="lede">MISS CLOVER is a small Singapore handbag house. Handfinished, leather-lined, made for the everyday.</p>
   <a class="btn btn--primary btn--lg" href="{{ url_for('shop.handbags') }}">Shop the collection</a>
 </section>
 
-<section class="home-split">
-  <a class="home-split-tile is-classic" href="{{ url_for('shop.collection', key='classic') }}">
-    <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/products/classic.jpg') }}')"></div>
-    <div style="position: relative; z-index: 1; max-width: 50%;">
-      <h2>The Classic</h2>
-      <p>Cream leather, gold hardware, structured silhouette. The starter piece.</p>
-      <span class="btn btn--ink btn--sm">Discover →</span>
-    </div>
-  </a>
-  <a class="home-split-tile is-maroon" href="{{ url_for('shop.collection', key='maroon') }}">
-    <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/products/maroon.jpg') }}')"></div>
-    <div style="position: relative; z-index: 1; max-width: 50%;">
-      <h2>The Maroon</h2>
-      <p>Deep burgundy, gold hardware, the same structured silhouette in a richer key.</p>
-      <span class="btn btn--ghost btn--sm" style="color: var(--cream); border-color: var(--cream);">Discover →</span>
-    </div>
-  </a>
+{% if featured_products %}
+<section class="home-split" style="grid-template-columns: repeat({{ featured_products|length }}, 1fr);">
+  {% for p in featured_products %}
+    <a class="home-split-tile"
+       href="{{ url_for('shop.collection', key=p.design_code) }}"
+       style="background: {{ p.color_hex or '#F5F1EA' }}; color: {{ (p.color_hex or '#F5F1EA') | text_on }};">
+      <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}')"></div>
+      <div style="position: relative; z-index: 1; max-width: 50%;">
+        <h2>{{ p.tile_eyebrow or p.name }}</h2>
+        <p>{{ p.tile_body or p.description }}</p>
+        <span class="btn btn--sm"
+              style="background: {{ (p.color_hex or '#F5F1EA') | text_on }}; color: {{ p.color_hex or '#111111' }}; border: 1px solid {{ (p.color_hex or '#F5F1EA') | text_on }};">
+          Discover →
+        </span>
+      </div>
+    </a>
+  {% endfor %}
 </section>
+{% endif %}
 
 <section class="section">
   <div class="container">

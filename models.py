@@ -61,17 +61,42 @@ class Product(db.Model):
     slug = db.Column(db.String(120), unique=True, index=True, nullable=False)
     name = db.Column(db.String(160), nullable=False)
     description = db.Column(db.Text)
-    design_code = db.Column(db.String(40))  # e.g. "classic", "maroon"
+    design_code = db.Column(db.String(40), unique=True, index=True)  # e.g. "classic", "maroon", "forest"
     base_price_cents = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3), default="SGD", nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    # Visual / merchandising fields — drive header nav, home tiles, and collection landing
+    color_hex = db.Column(db.String(7))                   # e.g. "#F0E6D2", "#6E1A2D"
+    tile_eyebrow = db.Column(db.String(120))              # Short label, e.g. "The Classic"
+    tile_headline = db.Column(db.String(255))             # Marketing headline
+    tile_body = db.Column(db.Text)                        # Marketing paragraph
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    display_order = db.Column(db.Integer, default=100, nullable=False)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    variants = db.relationship("ProductVariant", backref="product", lazy=True, cascade="all, delete-orphan")
+    variants = db.relationship("ProductVariant", backref="product", lazy=True,
+                               cascade="all, delete-orphan")
+    images = db.relationship("ProductImage", backref="product", lazy=True,
+                             cascade="all, delete-orphan",
+                             order_by="ProductImage.sort_order")
 
     @property
     def primary_variant(self):
         return self.variants[0] if self.variants else None
+
+    @property
+    def primary_image(self):
+        return self.images[0] if self.images else None
+
+    @property
+    def primary_image_path(self) -> str:
+        """Path under static/img/. Falls back to the legacy
+        `products/<design_code>.jpg` convention if no images are attached."""
+        if self.primary_image:
+            return self.primary_image.path
+        return f"products/{self.design_code}.jpg"
 
     @property
     def price_display(self) -> str:
@@ -88,6 +113,19 @@ class ProductVariant(db.Model):
     sku = db.Column(db.String(80), unique=True, index=True, nullable=False)
     stock_qty = db.Column(db.Integer, default=0, nullable=False)
     price_cents = db.Column(db.Integer, nullable=False)
+
+
+class ProductImage(db.Model):
+    """Multiple images per product (front, interior, side detail, lifestyle, etc.).
+    `path` is relative to static/img/ — e.g. "products/classic/hero.jpg"."""
+    __tablename__ = "product_images"
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False, index=True)
+    path = db.Column(db.String(255), nullable=False)
+    alt = db.Column(db.String(255))
+    sort_order = db.Column(db.Integer, default=0, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 # ─── Cart ────────────────────────────────────────────────────────────────────
@@ -197,6 +235,18 @@ class OrderItem(db.Model):
     @property
     def line_cents(self) -> int:
         return self.unit_price_cents * self.qty
+
+    @property
+    def image_path(self) -> str:
+        """Path to display this line item's image. Looks up the current Product
+        by design_snapshot (so renaming an image still works) and falls back to
+        the legacy `products/<design>.jpg` if the product was deleted."""
+        if self.design_snapshot:
+            p = Product.query.filter_by(design_code=self.design_snapshot).first()
+            if p:
+                return p.primary_image_path
+            return f"products/{self.design_snapshot}.jpg"
+        return "products/placeholder.jpg"
 
 
 # ─── Password reset ──────────────────────────────────────────────────────────

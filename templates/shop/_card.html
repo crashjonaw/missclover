@@ -1,18 +1,17 @@
 {# Product card. Expects `p` (Product). #}
 <article class="product-item">
   <a class="product-item-photo" href="{{ url_for('shop.product', slug=p.slug) }}">
-    <img src="{{ url_for('static', filename='img/products/' ~ p.design_code ~ '.jpg') }}" alt="{{ p.name }}" loading="lazy"/>
-    <div class="product-label-container">
-      {% if p.design_code == 'maroon' %}<span class="badge badge--new">New</span>{% endif %}
-    </div>
+    <img src="{{ url_for('static', filename='img/' ~ p.primary_image_path) }}" alt="{{ p.name }}" loading="lazy"/>
   </a>
   <div class="product-item-details">
     <h3 class="product-item-name">
       <a href="{{ url_for('shop.product', slug=p.slug) }}">{{ p.name }}</a>
     </h3>
     <span class="price">{{ p.price_display }}</span>
-    <ul class="swatch-list" aria-label="Available in">
-      <li class="swatch swatch--{{ p.design_code }}" title="{{ p.design_code | capitalize }}"></li>
-    </ul>
+    {% if p.color_hex %}
+      <ul class="swatch-list" aria-label="Available in">
+        <li class="swatch" style="background-color: {{ p.color_hex }};" title="{{ p.tile_eyebrow or p.name }}"></li>
+      </ul>
+    {% endif %}
   </div>
 </article>

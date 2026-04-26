@@ -10,8 +10,33 @@
   </div>
 
   <div class="pdp-grid">
-    <div class="pdp-gallery">
-      <img src="{{ url_for('static', filename='img/products/' ~ product.design_code ~ '.jpg') }}" alt="{{ product.name }}"/>
+    <div class="pdp-gallery-wrap">
+      {% set imgs = product.images %}
+      <div class="pdp-gallery" data-pdp-gallery>
+        {% if imgs %}
+          <img id="pdp-main-image"
+               src="{{ url_for('static', filename='img/' ~ imgs[0].path) }}"
+               alt="{{ imgs[0].alt or product.name }}"/>
+        {% else %}
+          <img id="pdp-main-image"
+               src="{{ url_for('static', filename='img/' ~ product.primary_image_path) }}"
+               alt="{{ product.name }}"/>
+        {% endif %}
+      </div>
+
+      {% if imgs and imgs|length > 1 %}
+        <div class="pdp-thumbs">
+          {% for img in imgs %}
+            <button type="button"
+                    class="pdp-thumb {% if loop.first %}is-active{% endif %}"
+                    data-src="{{ url_for('static', filename='img/' ~ img.path) }}"
+                    data-alt="{{ img.alt or product.name }}"
+                    aria-label="View {{ img.alt or 'image ' ~ loop.index }}">
+              <img src="{{ url_for('static', filename='img/' ~ img.path) }}" alt=""/>
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
 
     <div class="pdp-info">
@@ -24,12 +49,14 @@
         </div>
       {% endif %}
 
+      {% if product.color_hex %}
       <div class="pdp-section">
         <p class="pdp-section-title">Colourway</p>
         <ul class="swatch-list">
-          <li class="swatch swatch--{{ product.design_code }} is-selected" title="{{ product.design_code | capitalize }}"></li>
+          <li class="swatch is-selected" style="background-color: {{ product.color_hex }};" title="{{ product.tile_eyebrow or product.name }}"></li>
         </ul>
       </div>
+      {% endif %}
 
       <form method="post" action="{{ url_for('cart.add') }}">
         <input type="hidden" name="variant_id" value="{{ product.primary_variant.id if product.primary_variant else '' }}"/>
@@ -72,11 +99,23 @@
 
 {% block scripts %}
 <script>
-  // Tiny qty stepper
+  // Qty stepper
   document.querySelectorAll('.pdp-qty').forEach(function(g){
     var inp = g.querySelector('input');
     g.querySelector('[data-qty="inc"]').addEventListener('click', function(){ inp.value = Math.min(10, (parseInt(inp.value) || 1) + 1); });
     g.querySelector('[data-qty="dec"]').addEventListener('click', function(){ inp.value = Math.max(1, (parseInt(inp.value) || 1) - 1); });
+  });
+
+  // Gallery thumbnail swap
+  var main = document.getElementById('pdp-main-image');
+  document.querySelectorAll('.pdp-thumb').forEach(function(t){
+    t.addEventListener('click', function(){
+      if (!main) return;
+      main.src = t.dataset.src;
+      main.alt = t.dataset.alt || '';
+      document.querySelectorAll('.pdp-thumb').forEach(function(o){ o.classList.remove('is-active'); });
+      t.classList.add('is-active');
+    });
   });
 </script>
 {% endblock %}

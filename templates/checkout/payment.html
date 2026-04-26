@@ -43,7 +43,7 @@
         <h3>Order summary</h3>
         {% for it in cart.items %}
           <div class="order-summary-line">
-            <img src="{{ url_for('static', filename='img/products/' ~ it.variant.product.design_code ~ '.jpg') }}" alt=""/>
+            <img src="{{ url_for('static', filename='img/' ~ it.variant.product.primary_image_path) }}" alt=""/>
             <div style="flex: 1;">
               <div class="name">{{ it.variant.product.name }}</div>
               <div class="meta">{{ it.variant.product.design_code | capitalize }} × {{ it.qty }}</div>

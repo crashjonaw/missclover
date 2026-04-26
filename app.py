@@ -38,17 +38,23 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(account_bp, url_prefix="/account")
     app.register_blueprint(guest_bp)
 
-    # Make cart count + currency available everywhere
+    # Make cart count, currency, and featured products available everywhere
     @app.context_processor
     def inject_globals():
         from datetime import datetime
         from blueprints.cart import get_cart
+        from models import Product
         cart = get_cart(create=False)
+        featured = (Product.query
+                    .filter_by(is_active=True, is_featured=True)
+                    .order_by(Product.display_order)
+                    .all())
         return dict(
             cart_qty=cart.total_qty if cart else 0,
             cart_subtotal_cents=cart.subtotal_cents if cart else 0,
             currency="SGD",
             now_year=datetime.utcnow().year,
+            featured_products=featured,
         )
 
     @app.template_filter("sgd")
@@ -56,6 +62,22 @@ def create_app(config_class=Config) -> Flask:
         if cents is None:
             return "—"
         return f"S${int(cents) / 100:,.2f}"
+
+    @app.template_filter("text_on")
+    def text_on_filter(bg_hex: str) -> str:
+        """Pick legible foreground colour for a background hex.
+
+        Uses standard relative luminance — light backgrounds get ink, dark
+        backgrounds get cream. Lets templates render coloured tiles without
+        per-design CSS classes."""
+        if not bg_hex:
+            return "#111111"
+        h = bg_hex.lstrip("#")
+        if len(h) != 6:
+            return "#111111"
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+        return "#111111" if luminance > 0.55 else "#FBFAF7"
 
     @app.errorhandler(404)
     def not_found(_):

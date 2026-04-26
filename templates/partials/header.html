@@ -33,8 +33,9 @@
   <nav class="header-nav" aria-label="Primary">
     <ul class="header-nav-list container">
       <li><a href="{{ url_for('shop.handbags') }}">Handbags</a></li>
-      <li><a href="{{ url_for('shop.collection', key='classic') }}">Classic</a></li>
-      <li><a href="{{ url_for('shop.collection', key='maroon') }}">Maroon</a></li>
+      {% for p in featured_products %}
+        <li><a href="{{ url_for('shop.collection', key=p.design_code) }}">{{ p.tile_eyebrow or p.name }}</a></li>
+      {% endfor %}
       <li><a href="{{ url_for('shop.about') }}">Our story</a></li>
     </ul>
   </nav>

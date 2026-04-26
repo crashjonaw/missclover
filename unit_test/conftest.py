@@ -66,13 +66,13 @@ def db_(app):
 
 @pytest.fixture()
 def products(db_):
-    """Seed Classic + Maroon and return them as a dict by design_code."""
-    from models import Product, ProductVariant
+    """Seed Classic + Maroon (featured + with images) and return as dict by design_code."""
+    from models import Product, ProductImage, ProductVariant
 
     out = {}
-    for code, name, sku in [
-        ("classic", "The Classic Tote", "MC-CLS-CR"),
-        ("maroon", "The Maroon Tote", "MC-MRN-BG"),
+    for code, name, sku, color, order in [
+        ("classic", "The Classic Tote", "MC-CLS-CR", "#F0E6D2", 10),
+        ("maroon",  "The Maroon Tote",  "MC-MRN-BG", "#6E1A2D", 20),
     ]:
         p = Product(
             slug=f"{code}-tote",
@@ -80,17 +80,21 @@ def products(db_):
             description=f"Test {code}",
             design_code=code,
             base_price_cents=35000,
+            color_hex=color,
+            tile_eyebrow=f"The {code.capitalize()}",
+            tile_headline=f"{code.capitalize()} headline",
+            tile_body=f"Test body for {code}",
+            is_featured=True,
+            display_order=order,
+            is_active=True,
         )
-        db_.session.add(p)
-        db_.session.flush()
-        v = ProductVariant(
-            product_id=p.id,
-            name=code.capitalize(),
-            sku=sku,
-            stock_qty=20,
-            price_cents=35000,
-        )
-        db_.session.add(v)
+        db_.session.add(p); db_.session.flush()
+        db_.session.add(ProductVariant(
+            product_id=p.id, name=code.capitalize(), sku=sku, stock_qty=20, price_cents=35000,
+        ))
+        db_.session.add(ProductImage(
+            product_id=p.id, path=f"products/{code}.jpg", alt=f"{name} — front", sort_order=1,
+        ))
         out[code] = p
     db_.session.commit()
     return out

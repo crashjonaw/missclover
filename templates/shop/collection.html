@@ -1,38 +1,36 @@
 {% extends "base.html" %}
-{% block title %}The {{ key | capitalize }} — MISS CLOVER{% endblock %}
+{% block title %}{{ product.tile_eyebrow or product.name }} — MISS CLOVER{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="breadcrumbs">
     <a href="{{ url_for('shop.home') }}">Home</a><span class="sep">/</span>
     <a href="{{ url_for('shop.handbags') }}">Handbags</a><span class="sep">/</span>
-    <span>The {{ key | capitalize }}</span>
+    <span>{{ product.tile_eyebrow or product.name }}</span>
   </div>
 </div>
 
-<section class="home-split-tile is-{{ key }}" style="aspect-ratio: 16 / 9; padding: var(--sp-20);">
-  <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/products/' ~ key ~ '.jpg') }}'); width: 50%;"></div>
+<section class="home-split-tile"
+         style="aspect-ratio: 16 / 9; padding: var(--sp-20);
+                background: {{ product.color_hex or '#F5F1EA' }};
+                color: {{ (product.color_hex or '#F5F1EA') | text_on }};">
+  <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/' ~ product.primary_image_path) }}'); width: 50%;"></div>
   <div style="position: relative; z-index: 1; max-width: 45%;">
-    <p class="section-eyebrow" style="text-align: left; color: inherit; opacity: 0.7;">The {{ key | capitalize }}</p>
+    <p class="section-eyebrow" style="text-align: left; color: inherit; opacity: 0.7;">{{ product.tile_eyebrow or product.name }}</p>
     <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); color: inherit; margin-bottom: var(--sp-4);">
-      {% if key == 'classic' %}Cream leather, gold hardware.{% else %}Burgundy. Quietly bold.{% endif %}
+      {{ product.tile_headline or product.name }}
     </h1>
     <p style="margin-bottom: var(--sp-6); max-width: 480px; opacity: 0.85;">
-      {% if key == 'classic' %}
-        The starter MISS CLOVER. A structured 8″×11″ tote in soft cream leather, finished with gold hardware and a tan-suede interior.
-      {% else %}
-        Same silhouette, deeper register. Hand-dyed maroon leather, gold hardware, suede-lined.
-      {% endif %}
+      {{ product.tile_body or product.description }}
     </p>
-    {% if product %}
-      <a class="btn btn--ink btn--lg" href="{{ url_for('shop.product', slug=product.slug) }}">
-        Shop the {{ key }} — {{ product.price_display }}
-      </a>
-    {% endif %}
+    <a class="btn btn--lg"
+       href="{{ url_for('shop.product', slug=product.slug) }}"
+       style="background: {{ (product.color_hex or '#F5F1EA') | text_on }}; color: {{ product.color_hex or '#111111' }}; border-color: {{ (product.color_hex or '#F5F1EA') | text_on }};">
+      Shop the {{ product.tile_eyebrow or product.name }} — {{ product.price_display }}
+    </a>
   </div>
 </section>
 
-{% if product %}
 <section class="section">
   <div class="container">
     <div class="products-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 320px)); justify-content: center;">
@@ -40,5 +38,4 @@
     </div>
   </div>
 </section>
-{% endif %}
 {% endblock %}

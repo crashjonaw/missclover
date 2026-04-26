@@ -13,20 +13,29 @@
 
   <div class="layout-2col">
     <aside>
+      {% if featured_products %}
       <div class="filter-options-item">
         <h4 class="filter-options-title">Collection</h4>
         <ul class="filter-options-list">
-          <li><a href="{{ url_for('shop.collection', key='classic') }}">Classic</a></li>
-          <li><a href="{{ url_for('shop.collection', key='maroon') }}">Maroon</a></li>
+          {% for fp in featured_products %}
+            <li><a href="{{ url_for('shop.collection', key=fp.design_code) }}">{{ fp.tile_eyebrow or fp.name }}</a></li>
+          {% endfor %}
         </ul>
       </div>
       <div class="filter-options-item">
         <h4 class="filter-options-title">Colour</h4>
         <ul class="filter-options-list">
-          <li><span class="swatch swatch--cream"></span> &nbsp; Cream</li>
-          <li><span class="swatch swatch--maroon"></span> &nbsp; Maroon</li>
+          {% for fp in featured_products %}
+            {% if fp.color_hex %}
+              <li>
+                <span class="swatch" style="background-color: {{ fp.color_hex }}; vertical-align: middle;"></span>
+                &nbsp; {{ fp.tile_eyebrow or fp.name }}
+              </li>
+            {% endif %}
+          {% endfor %}
         </ul>
       </div>
+      {% endif %}
     </aside>
 
     <section>
