@@ -5,6 +5,7 @@
 slug: classic-tote
 name: The Classic Tote
 design_code: classic
+bag_type: tote                  # tote | crossbody | shoulder | satchel | backpack
 color_hex: "#F0E6D2"            # the cream colourway
 base_price_cents: 35000
 is_featured: true

@@ -41,15 +41,17 @@
     <section>
       <div class="toolbar">
         <p class="toolbar-amount"><strong>{{ total }}</strong> result{{ '' if total == 1 else 's' }}</p>
-        <div class="toolbar-sorter">
+        <form class="toolbar-sorter" method="get" action="{{ url_for('shop.handbags') }}">
           <label class="form-label" for="sorter" style="margin: 0;">Sort by</label>
-          <select id="sorter" class="form-select" disabled>
-            <option>Position</option>
-            <option>Price — low to high</option>
-            <option>Price — high to low</option>
-            <option>Just added</option>
+          <select id="sorter" name="sort" class="form-select" onchange="this.form.submit()">
+            {% for key, label in sort_options %}
+              <option value="{{ key }}" {% if key == sort_key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
           </select>
-        </div>
+          <noscript>
+            <button type="submit" class="btn btn--sage-outline btn--sm">Apply</button>
+          </noscript>
+        </form>
       </div>
 
       <div class="products-grid">

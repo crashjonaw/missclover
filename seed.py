@@ -28,6 +28,7 @@ def _upsert_product(spec: dict) -> Product:
         name=spec["name"],
         description=spec.get("description"),
         design_code=spec["design_code"],
+        bag_type=(spec.get("bag_type") or "tote").lower(),
         base_price_cents=spec["base_price_cents"],
         color_hex=spec.get("color_hex"),
         tile_eyebrow=spec.get("tile_eyebrow"),

@@ -21,6 +21,7 @@ on `/collections/<your-design>`, and as its own PDP. Zero template, CSS, or blue
 | `slug` | ✓ | URL-safe identifier, used in `/handbags/<slug>` |
 | `name` | ✓ | Full display name, e.g. *"The Forest Tote"* |
 | `design_code` | ✓ | Short key, e.g. `forest`. Drives `/collections/<key>` and the image-folder name |
+| `bag_type` | optional (default `tote`) | One of `tote`, `crossbody`, `shoulder`, `satchel`, `backpack`. Used by the "Sort by bag type" option |
 | `color_hex` | ✓ | The bag's actual colour. Used for swatch chips and the tile background |
 | `base_price_cents` | ✓ | SGD cents. `35000` = S$350.00 |
 | `variants[]` | ✓ | At least one. Each: `name`, `sku` (unique), `stock_qty`, `price_cents` |

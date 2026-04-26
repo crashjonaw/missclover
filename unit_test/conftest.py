@@ -79,6 +79,7 @@ def products(db_):
             name=name,
             description=f"Test {code}",
             design_code=code,
+            bag_type="tote",
             base_price_cents=35000,
             color_hex=color,
             tile_eyebrow=f"The {code.capitalize()}",

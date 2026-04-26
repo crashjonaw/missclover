@@ -5,6 +5,7 @@
 slug: maroon-tote
 name: The Maroon Tote
 design_code: maroon
+bag_type: tote                  # tote | crossbody | shoulder | satchel | backpack
 color_hex: "#6E1A2D"            # the burgundy colourway
 base_price_cents: 35000
 is_featured: true

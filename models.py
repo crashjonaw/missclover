@@ -62,6 +62,7 @@ class Product(db.Model):
     name = db.Column(db.String(160), nullable=False)
     description = db.Column(db.Text)
     design_code = db.Column(db.String(40), unique=True, index=True)  # e.g. "classic", "maroon", "forest"
+    bag_type = db.Column(db.String(40), index=True, default="tote", nullable=False)  # tote, crossbody, shoulder, satchel, backpack...
     base_price_cents = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3), default="SGD", nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
