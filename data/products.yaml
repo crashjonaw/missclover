@@ -32,7 +32,9 @@ products:
         stock_qty: 20
         price_cents: 35000
     images:
-      - path: products/classic.jpg
+      # Drop additional views (e.g. interior.jpg, side.jpg, lifestyle.jpg)
+      # into static/img/products/classic/ and add them here in display order.
+      - path: products/classic/hero.jpg
         alt: The Classic Tote — front view
         sort_order: 1
 
@@ -57,6 +59,8 @@ products:
         stock_qty: 20
         price_cents: 35000
     images:
-      - path: products/maroon.jpg
+      # Drop additional views (e.g. interior.jpg, side.jpg, lifestyle.jpg)
+      # into static/img/products/maroon/ and add them here in display order.
+      - path: products/maroon/hero.jpg
         alt: The Maroon Tote — front view
         sort_order: 1
