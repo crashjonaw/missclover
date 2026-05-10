@@ -1,0 +1,36 @@
+# MISS CLOVER — The Emerald Cloud Bag (tote_design_2 silhouette, emerald colourway)
+# Edit this file then run `python seed.py` to update the catalog.
+
+slug: emerald-cloud-bag
+name: The Emerald Cloud Bag
+design_code: emerald                # auto-prefixed → tote_design_2/emerald
+bag_type: shoulder                  # single padded strap, hobo silhouette
+color_hex: "#A0B19E"                # muted sage / soft emerald
+base_price_cents: 24000             # S$240.00 — placeholder, edit to your real price
+is_featured: true
+display_order: 40
+
+description: >-
+  Soft, padded shoulder bag in muted emerald. Signature wavy quilting,
+  adjustable padded strap, gold-tone clover hardware. Same easy silhouette
+  as the Classic Cloud, in a deeper register.
+
+tile_eyebrow: The Emerald Cloud
+tile_headline: A quieter green.
+tile_body: >-
+  Padded body in soft emerald, finished with our signature wave-quilting
+  and a gold-tone clover plaque. Sits just as easily on the shoulder; just
+  asks for slightly more attention.
+
+variants:
+  - name: Emerald
+    sku: MC-T2-EMR
+    stock_qty: 20
+    price_cents: 24000
+
+images:
+  # Drop additional views (interior.jpg, side.jpg, lifestyle.jpg) into
+  # static/img/products/tote_design_2/emerald/ and add them here in display order.
+  - path: products/tote_design_2/emerald/hero.jpg
+    alt: The Emerald Cloud Bag — front view
+    sort_order: 1

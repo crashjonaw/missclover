@@ -1,0 +1,40 @@
+# MISS CLOVER — The Classic Cloud Bag (tote_design_2 silhouette, classic cream colourway)
+# Edit this file then run `python seed.py` to update the catalog.
+#
+# Note: design_code is just `classic` here. seed.py auto-prefixes it with the
+# silhouette folder name, so this product's stored design_code becomes
+# `tote_design_2/classic` — no collision with tote_design_1/classic.
+
+slug: classic-cloud-bag
+name: The Classic Cloud Bag
+design_code: classic                # auto-prefixed → tote_design_2/classic
+bag_type: shoulder                  # single padded strap, hobo silhouette
+color_hex: "#E5DCC5"                # warm oatmeal / cream
+base_price_cents: 24000             # S$240.00 — placeholder, edit to your real price
+is_featured: true
+display_order: 30
+
+description: >-
+  Soft, padded shoulder bag with a signature wavy quilt pattern. Lightweight
+  cushioned construction, adjustable padded strap, gold-tone clover hardware.
+  An everyday carry that's quiet, not loud.
+
+tile_eyebrow: The Classic Cloud
+tile_headline: A soft, quilted everyday.
+tile_body: >-
+  Padded cream body with our signature wave-quilted texture. Adjustable
+  cushioned strap, gold-tone clover plaque. Made to slouch into the
+  everyday.
+
+variants:
+  - name: Classic
+    sku: MC-T2-CLS
+    stock_qty: 20
+    price_cents: 24000
+
+images:
+  # Drop additional views (interior.jpg, side.jpg, lifestyle.jpg) into
+  # static/img/products/tote_design_2/classic/ and add them here in display order.
+  - path: products/tote_design_2/classic/hero.jpg
+    alt: The Classic Cloud Bag — front view
+    sort_order: 1

@@ -87,11 +87,12 @@ def product(slug: str):
     return render_template("shop/product.html", product=product, related=related)
 
 
-@bp.route("/collections/<key>")
+@bp.route("/collections/<path:key>")
 def collection(key: str):
-    """Editorial single-design landing — one collection page per active product
-    (looked up by design_code). Drop a new design into data/products.yaml and
-    its collection landing appears automatically."""
+    """Editorial single-design landing. The `key` is the full design_code
+    (e.g. `tote_design_1/classic`), letting two silhouettes both have a
+    "classic" colourway without colliding. Drop a new YAML into
+    data/products/<silhouette>/ and its collection landing appears."""
     product = Product.query.filter_by(design_code=key, is_active=True).first_or_404()
     return render_template("shop/collection.html", key=key, product=product)
 

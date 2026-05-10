@@ -17,6 +17,16 @@ the same folder.
 `seed.py` recursively globs `data/products/**/*.yaml`, so subfolders are
 purely organisational; no template / blueprint changes needed when adding one.
 
+## design_code uniqueness
+
+`design_code` only needs to be unique **within its silhouette folder** — `seed.py`
+auto-prefixes it with the parent folder name when storing it in the database. So
+both `tote_design_1/classic.yaml` and `tote_design_2/classic.yaml` can use
+`design_code: classic` and live happily side-by-side.
+
+The stored full design_code (e.g. `tote_design_1/classic`) is what drives the
+collection-landing URL: `/collections/tote_design_1/classic`.
+
 ## To add a new colourway to an existing silhouette
 
 1. Copy an existing yaml into the same silhouette folder, e.g.

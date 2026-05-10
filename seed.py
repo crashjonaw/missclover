@@ -22,12 +22,24 @@ from models import Product, ProductImage, ProductVariant
 DATA_DIR = Path(__file__).parent / "data" / "products"
 
 
-def _upsert_product(spec: dict) -> Product:
+def _full_design_code(file_path: Path, raw_code: str) -> str:
+    """If the YAML lives in a silhouette subfolder (e.g. data/products/tote_design_1/),
+    auto-prefix the design_code with the folder name so two silhouettes can both
+    have a 'classic' colourway. Files placed directly under data/products/ keep
+    their bare design_code (legacy / single-silhouette catalogs)."""
+    silhouette = file_path.parent.name
+    if file_path.parent == DATA_DIR:
+        return raw_code
+    return f"{silhouette}/{raw_code}"
+
+
+def _upsert_product(spec: dict, file_path: Path) -> Product:
     p = Product.query.filter_by(slug=spec["slug"]).first()
+    full_code = _full_design_code(file_path, spec["design_code"])
     fields = dict(
         name=spec["name"],
         description=spec.get("description"),
-        design_code=spec["design_code"],
+        design_code=full_code,
         bag_type=(spec.get("bag_type") or "tote").lower(),
         base_price_cents=spec["base_price_cents"],
         color_hex=spec.get("color_hex"),
@@ -117,18 +129,19 @@ def seed_from_yaml():
     seen_slugs: set[str] = set()
     seen_codes: set[str] = set()
     for f, spec in files:
+        full_code = _full_design_code(f, spec["design_code"])
         if spec["slug"] in seen_slugs:
-            raise SystemExit(f"Duplicate slug '{spec['slug']}' in {f.name}")
-        if spec["design_code"] in seen_codes:
-            raise SystemExit(f"Duplicate design_code '{spec['design_code']}' in {f.name}")
+            raise SystemExit(f"Duplicate slug '{spec['slug']}' in {f.relative_to(DATA_DIR)}")
+        if full_code in seen_codes:
+            raise SystemExit(f"Duplicate design_code '{full_code}' in {f.relative_to(DATA_DIR)}")
         seen_slugs.add(spec["slug"])
-        seen_codes.add(spec["design_code"])
+        seen_codes.add(full_code)
 
     with app.app_context():
         print(f"Loading {len(files)} product file(s) from {DATA_DIR}/")
         for f, spec in files:
             print(f"\n[{f.relative_to(DATA_DIR)}]")
-            p = _upsert_product(spec)
+            p = _upsert_product(spec, f)
             _upsert_variants(p, spec.get("variants", []))
             db.session.flush()
             _replace_images(p, spec.get("images", []))
