@@ -1,0 +1,4 @@
+This folder will hold YAML files for tote_design_2 colourways.
+See data/products/README.md for format. Copy any tote_design_1/*.yaml
+as a starting point and edit slug / name / design_code / color_hex /
+SKU / image paths.

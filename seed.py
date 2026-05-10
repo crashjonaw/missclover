@@ -86,23 +86,28 @@ def _replace_images(p: Product, images_spec: list[dict]) -> None:
 
 
 def _load_product_files() -> list[tuple[Path, dict]]:
-    """Load every `*.yaml` (and `*.yml`) under data/products/, sorted by filename.
-    Returns (path, parsed_spec) tuples so error messages can name the offending file."""
+    """Load every `*.yaml` (and `*.yml`) under data/products/ recursively.
+    Subdirectories group products by silhouette family (e.g. tote_design_1/,
+    tote_design_2/), but the seed treats them all as a flat list of products.
+    Returns (path, parsed_spec) tuples so error messages can name the file."""
     if not DATA_DIR.is_dir():
         raise SystemExit(f"Catalog directory not found: {DATA_DIR}")
-    files = sorted(p for p in DATA_DIR.iterdir() if p.suffix in {".yaml", ".yml"})
+    files = sorted(
+        p for p in DATA_DIR.rglob("*")
+        if p.is_file() and p.suffix in {".yaml", ".yml"}
+    )
     if not files:
         raise SystemExit(f"No product YAML files in {DATA_DIR}")
     out: list[tuple[Path, dict]] = []
     for f in files:
         spec = yaml.safe_load(f.read_text())
         if not spec:
-            print(f"  ! Skipping empty file: {f.name}")
+            print(f"  ! Skipping empty file: {f.relative_to(DATA_DIR)}")
             continue
         if not isinstance(spec, dict):
             raise SystemExit(f"Expected mapping at top of {f}, got {type(spec).__name__}")
         if not spec.get("slug") or not spec.get("design_code"):
-            raise SystemExit(f"{f.name}: 'slug' and 'design_code' are required")
+            raise SystemExit(f"{f.relative_to(DATA_DIR)}: 'slug' and 'design_code' are required")
         out.append((f, spec))
     return out
 
@@ -122,7 +127,7 @@ def seed_from_yaml():
     with app.app_context():
         print(f"Loading {len(files)} product file(s) from {DATA_DIR}/")
         for f, spec in files:
-            print(f"\n[{f.name}]")
+            print(f"\n[{f.relative_to(DATA_DIR)}]")
             p = _upsert_product(spec)
             _upsert_variants(p, spec.get("variants", []))
             db.session.flush()

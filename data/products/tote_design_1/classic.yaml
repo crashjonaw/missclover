@@ -29,8 +29,8 @@ variants:
     price_cents: 35000
 
 images:
-  # Drop additional views (e.g. interior.jpg, side.jpg, lifestyle.jpg)
-  # into static/img/products/classic/ and add them here in display order.
-  - path: products/classic/hero.jpg
+  # Drop additional views (interior.jpg, side.jpg, lifestyle.jpg) into
+  # static/img/products/tote_design_1/classic/ and add them here in display order.
+  - path: products/tote_design_1/classic/hero.jpg
     alt: The Classic Tote — front view
     sort_order: 1
