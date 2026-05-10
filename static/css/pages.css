@@ -244,6 +244,62 @@
   .home-split-tile .tile-img { position: relative; width: 100%; height: 220px; margin-bottom: var(--sp-4); }
 }
 
+/* ── Editorial banners (homepage cover_2, About cover_1) ─────────
+   The source images are two-page brochure spreads with content on the
+   left half and a fold artefact down the middle. background-position:
+   left center + cover crops the empty right half off-screen. */
+
+.editorial-banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--sp-10) var(--sp-6);
+}
+@media (max-width: 720px) {
+  .editorial-banner { aspect-ratio: 4 / 3; }
+}
+
+.editorial-banner--cover-2 {
+  margin-top: var(--sp-12);
+}
+.editorial-banner-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.editorial-banner--cover-1 {
+  margin-bottom: var(--sp-8);
+}
+
+/* ── About page wordmark feature ─────────────────────────────────
+   logo.jpg has a white background; mix-blend-mode: multiply lets
+   the cream page colour show through (white ⇒ transparent against
+   the cream bg, black wordmark stays black). */
+.about-wordmark {
+  text-align: center;
+  padding: var(--sp-20) var(--sp-6) var(--sp-12);
+}
+.about-wordmark-img {
+  display: block;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto var(--sp-4);
+  mix-blend-mode: multiply;
+}
+.about-wordmark-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0;
+}
+
 /* ── PDP ───────────────────────────────────────────────────────── */
 
 .pdp-grid {

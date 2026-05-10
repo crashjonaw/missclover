@@ -2,13 +2,28 @@
 {% block title %}Our story — MISS CLOVER{% endblock %}
 
 {% block content %}
+{# ── Wordmark feature ─────────────────────────────────────────── #}
+<section class="about-wordmark">
+  <img src="{{ url_for('static', filename='img/brand/logo.jpg') }}"
+       alt="MISS · CLOVER"
+       class="about-wordmark-img"/>
+  <p class="about-wordmark-eyebrow">Singapore · est. 2026</p>
+</section>
+
+{# ── Mood image (cover_1) ─────────────────────────────────────── #}
+<section class="editorial-banner editorial-banner--cover-1"
+         aria-label="Your daily dose of affection"
+         role="img"
+         style="background-image: url('{{ url_for('static', filename='img/brand/cover_1.jpg') }}');"></section>
+
+{# ── Story copy ───────────────────────────────────────────────── #}
 <div class="container container--narrow" style="padding-top: var(--sp-16); padding-bottom: var(--sp-16);">
   <p class="section-eyebrow">Our story</p>
   <h1 class="section-title">A small Singapore label.</h1>
 
   <div class="stack-lg" style="margin-top: var(--sp-10); font-size: 17px; color: var(--ink-muted); line-height: 1.7;">
-    <p>MISS CLOVER started with one question: what would the everyday tote look like if it were quietly considered?</p>
-    <p>We're a small studio in Singapore, working with a single silhouette — a structured 8″×11″ leather tote with a suede-lined interior. Two designs to begin: <strong>Classic</strong> in cream leather, and <strong>Maroon</strong> in deep burgundy. Both finished by hand, with gold hardware and the same thoughtful interior — lipstick holder, key fob, inner zip.</p>
+    <p>MISS CLOVER started with one question: what would the everyday bag look like if it were quietly considered?</p>
+    <p>We're a small studio in Singapore. Two starting silhouettes — a structured 8″×11″ leather tote with a suede-lined interior, and a soft, wave-quilted padded shoulder bag. Each comes in a handful of colourways, all hand-finished, all detailed with gold-tone clover hardware.</p>
     <p>The clover in our mark is for luck and for the small things that make a day. We hope our bags become one of those for you.</p>
   </div>
 </div>
