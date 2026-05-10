@@ -236,19 +236,40 @@
   height: 100%;                              /* fill grid cell to row height */
   overflow: hidden;
   text-decoration: none;
+  position: relative;                        /* establish stacking ctx for hover lift */
+  transition: transform var(--t), box-shadow var(--t), opacity var(--t);
 }
 
+/* Bloomburrow-style spotlight hover: lift the focused tile + dim siblings.
+   `:has()` is now broadly supported in modern browsers. */
+.home-split-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  z-index: 1;
+}
+.home-split:has(.home-split-tile:hover) .home-split-tile:not(:hover) {
+  opacity: 0.55;
+  transform: scale(0.985);
+}
+
+/* Image is wrapped so the hover scale is clipped at the image's own bottom
+   edge — it can't bleed into the content panel below. */
+.home-split-tile-img-wrap {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background-color: var(--surface-alt);
+}
 .home-split-tile-img {
   width: 100%;
-  aspect-ratio: 3 / 2;                       /* compact horizontal frame */
+  height: 100%;
   background-size: contain;                  /* show full bag; no cropping */
   background-repeat: no-repeat;
   background-position: center;
-  background-color: var(--surface-alt);      /* cream pillarboxes */
   transition: transform var(--t-slow);
 }
 .home-split-tile:hover .home-split-tile-img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
 .home-split-tile-content {
@@ -283,7 +304,7 @@
 }
 
 @media (max-width: 600px) {
-  .home-split-tile-img { aspect-ratio: 4 / 3; }
+  .home-split-tile-img-wrap { aspect-ratio: 4 / 3; }
   .home-split-tile-content { padding: var(--sp-6); }
 }
 
