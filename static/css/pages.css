@@ -89,6 +89,36 @@
   .header-nav-list { gap: var(--sp-4); flex-wrap: wrap; padding: var(--sp-3) var(--sp-2); font-size: 12px; }
 }
 
+/* ── Cart link with icon + corner count badge ────────────────────── */
+.cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1;
+}
+.cart-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.cart-icon { display: block; flex-shrink: 0; }
+.cart-link:hover .cart-icon { color: var(--accent-sage-deep); }
+
+/* When the count pill is inside the cart icon, float it at the icon's
+   top-right corner (the classic ecommerce badge). The base .cart-count
+   rule still applies for sizing/colour. */
+.cart-icon-wrap .cart-count {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  border: 2px solid var(--surface);
+  pointer-events: none;
+}
+
+@media (max-width: 540px) {
+  .cart-link-label { display: none; }   /* keep just icon + badge on phones */
+}
+
 /* ── Footer ────────────────────────────────────────────────────── */
 
 .site-footer {
