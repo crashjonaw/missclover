@@ -16,6 +16,8 @@
     {% set tile_fg = tile_bg | text_on %}
     <a class="home-split-tile"
        href="{{ url_for('shop.collection', key=p.design_code) }}">
+      <div class="home-split-tile-img"
+           style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}')"></div>
       <div class="home-split-tile-content"
            style="background: {{ tile_bg }}; color: {{ tile_fg }};">
         <h2 class="home-split-tile-headline">{{ p.tile_eyebrow or p.name }}</h2>
@@ -25,21 +27,10 @@
           Discover →
         </span>
       </div>
-      <div class="home-split-tile-img"
-           style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}')"></div>
     </a>
   {% endfor %}
 </section>
 {% endif %}
-
-<section class="editorial-banner editorial-banner--cover-2"
-         aria-label="A little clover luck for your day"
-         role="img"
-         style="background-image: url('{{ url_for('static', filename='img/brand/cover_2.jpg') }}');">
-  <div class="editorial-banner-actions">
-    <a class="btn btn--ink btn--lg" href="{{ url_for('shop.handbags') }}">Shop the collection</a>
-  </div>
-</section>
 
 <section class="section">
   <div class="container">

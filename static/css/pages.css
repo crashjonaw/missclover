@@ -209,26 +209,35 @@
   font-size: 17px;
 }
 
-/* ── Home-split: editorial tile pairs ─────────────────────────────
+/* ── Home-split: editorial tile cards ─────────────────────────────
    Locked to 2 tiles per row on desktop; wraps to a new row for the
-   3rd, 4th, 5th, … design. Each tile is a clean 50/50 split: copy
-   on a coloured panel left, bag photo right. No overlap. */
+   3rd, 4th, 5th, … design. Each tile is a vertical card — bag photo
+   on top, coloured copy panel below — so the image always renders
+   reliably (its own aspect-ratio) and the copy gets generous padding. */
 .home-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
   margin-top: var(--sp-16);
+  align-items: stretch;     /* tiles in the same row match heights */
 }
-@media (max-width: 880px) {
-  .home-split { grid-template-columns: 1fr; }   /* stack tiles vertically */
+@media (max-width: 720px) {
+  .home-split { grid-template-columns: 1fr; }
 }
 
 .home-split-tile {
   display: flex;
-  align-items: stretch;
-  aspect-ratio: 16 / 10;
+  flex-direction: column;
   overflow: hidden;
   text-decoration: none;
+}
+
+.home-split-tile-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-alt);
   transition: transform var(--t-slow);
 }
 .home-split-tile:hover .home-split-tile-img {
@@ -236,91 +245,38 @@
 }
 
 .home-split-tile-content {
-  flex: 0 0 50%;
-  padding: clamp(var(--sp-6), 4vw, var(--sp-12));
+  flex: 1;                  /* panels in the same row match heights */
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-width: 0;            /* prevents flex children from forcing overflow */
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-10) var(--sp-10) var(--sp-12);
 }
 .home-split-tile-headline {
-  font-size: clamp(1.5rem, 2vw, 2.25rem);
+  font-size: clamp(1.5rem, 2vw, 2rem);
   line-height: 1.15;
-  margin: 0 0 var(--sp-3);
+  margin: 0;
   color: inherit;
 }
 .home-split-tile-body {
   font-size: 14px;
-  line-height: 1.55;
-  margin: 0 0 var(--sp-5);
+  line-height: 1.6;
+  margin: 0;
   opacity: 0.85;
-  /* Cap to 4 lines — keeps tile heights consistent across rows even
-     if one product has a long description. */
+  /* Cap to 3 lines — keeps tile heights consistent across rows even
+     if one product has a longer description. */
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .home-split-tile-cta {
-  align-self: flex-start;
-}
-
-.home-split-tile-img {
-  flex: 1 1 50%;
-  background-size: cover;
-  background-position: center;
-  background-color: var(--surface-alt);
-  transition: transform var(--t-slow);
+  margin-top: var(--sp-2);
 }
 
 @media (max-width: 600px) {
-  /* Stack image-on-top, content-below at narrow widths */
-  .home-split-tile {
-    flex-direction: column;
-    aspect-ratio: auto;
-  }
-  .home-split-tile-img {
-    flex: 0 0 240px;
-    order: 0;
-  }
-  .home-split-tile-content {
-    flex: 1 1 auto;
-    padding: var(--sp-8);
-    order: 1;
-  }
-}
-
-/* ── Editorial banners (homepage cover_2, About cover_1) ─────────
-   The source images are two-page brochure spreads with content on the
-   left half and a fold artefact down the middle. background-position:
-   left center + cover crops the empty right half off-screen. */
-
-.editorial-banner {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 7;
-  background-size: cover;
-  background-position: left center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: var(--sp-10) var(--sp-6);
-}
-@media (max-width: 720px) {
-  .editorial-banner { aspect-ratio: 4 / 3; }
-}
-
-.editorial-banner--cover-2 {
-  margin-top: var(--sp-12);
-}
-.editorial-banner-actions {
-  display: flex;
-  justify-content: center;
-}
-
-.editorial-banner--cover-1 {
-  margin-bottom: var(--sp-8);
+  .home-split-tile-img { aspect-ratio: 16 / 10; }   /* shorter on phones */
+  .home-split-tile-content { padding: var(--sp-8); }
 }
 
 /* ── About page wordmark feature ─────────────────────────────────
