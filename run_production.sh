@@ -186,16 +186,14 @@ else
   warn "Gunicorn may still be starting — check the MC-Gunicorn terminal"
 fi
 
-if [ -f "$CF_CONFIG" ]; then
-  info "Starting Cloudflare Tunnel..."
-  osascript -e "
+info "Starting Cloudflare Tunnel..."
+osascript -e "
 tell app \"Terminal\"
     set w to do script \"cloudflared tunnel run --url http://127.0.0.1:5002 missclover\"
     set custom title of window 1 to \"MC-Tunnel\"
 end tell"
-  sleep 3
-  ok "Cloudflare Tunnel launched"
-fi
+sleep 3
+ok "Cloudflare Tunnel launched"
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
