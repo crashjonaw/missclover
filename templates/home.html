@@ -10,20 +10,23 @@
 </section>
 
 {% if featured_products %}
-<section class="home-split" style="grid-template-columns: repeat({{ featured_products|length }}, 1fr);">
+<section class="home-split">
   {% for p in featured_products %}
+    {% set tile_bg = p.color_hex or '#F5F1EA' %}
+    {% set tile_fg = tile_bg | text_on %}
     <a class="home-split-tile"
-       href="{{ url_for('shop.collection', key=p.design_code) }}"
-       style="background: {{ p.color_hex or '#F5F1EA' }}; color: {{ (p.color_hex or '#F5F1EA') | text_on }};">
-      <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}')"></div>
-      <div style="position: relative; z-index: 1; max-width: 50%;">
-        <h2>{{ p.tile_eyebrow or p.name }}</h2>
-        <p>{{ p.tile_body or p.description }}</p>
-        <span class="btn btn--sm"
-              style="background: {{ (p.color_hex or '#F5F1EA') | text_on }}; color: {{ p.color_hex or '#111111' }}; border: 1px solid {{ (p.color_hex or '#F5F1EA') | text_on }};">
+       href="{{ url_for('shop.collection', key=p.design_code) }}">
+      <div class="home-split-tile-content"
+           style="background: {{ tile_bg }}; color: {{ tile_fg }};">
+        <h2 class="home-split-tile-headline">{{ p.tile_eyebrow or p.name }}</h2>
+        <p class="home-split-tile-body">{{ p.tile_body or p.description }}</p>
+        <span class="btn btn--sm home-split-tile-cta"
+              style="background: {{ tile_fg }}; color: {{ tile_bg }}; border-color: {{ tile_fg }};">
           Discover →
         </span>
       </div>
+      <div class="home-split-tile-img"
+           style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}')"></div>
     </a>
   {% endfor %}
 </section>
