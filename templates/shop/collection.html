@@ -1,41 +1,36 @@
 {% extends "base.html" %}
-{% block title %}{{ product.tile_eyebrow or product.name }} — MISS CLOVER{% endblock %}
+{% block title %}{{ collection.name }} — MISS CLOVER{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="breadcrumbs">
     <a href="{{ url_for('shop.home') }}">Home</a><span class="sep">/</span>
-    <a href="{{ url_for('shop.handbags') }}">Handbags</a><span class="sep">/</span>
-    <span>{{ product.tile_eyebrow or product.name }}</span>
+    <a href="{{ url_for('shop.collections_index') }}">Collections</a><span class="sep">/</span>
+    <span>{{ collection.name }}</span>
   </div>
 </div>
 
-<section class="home-split-tile"
-         style="aspect-ratio: 16 / 9; padding: var(--sp-20);
-                background: {{ product.color_hex or '#F5F1EA' }};
-                color: {{ (product.color_hex or '#F5F1EA') | text_on }};">
-  <div class="tile-img" style="background-image: url('{{ url_for('static', filename='img/' ~ product.primary_image_path) }}'); width: 50%;"></div>
-  <div style="position: relative; z-index: 1; max-width: 45%;">
-    <p class="section-eyebrow" style="text-align: left; color: inherit; opacity: 0.7;">{{ product.tile_eyebrow or product.name }}</p>
-    <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); color: inherit; margin-bottom: var(--sp-4);">
-      {{ product.tile_headline or product.name }}
-    </h1>
-    <p style="margin-bottom: var(--sp-6); max-width: 480px; opacity: 0.85;">
-      {{ product.tile_body or product.description }}
-    </p>
-    <a class="btn btn--lg"
-       href="{{ url_for('shop.product', slug=product.slug) }}"
-       style="background: {{ (product.color_hex or '#F5F1EA') | text_on }}; color: {{ product.color_hex or '#111111' }}; border-color: {{ (product.color_hex or '#F5F1EA') | text_on }};">
-      Shop the {{ product.tile_eyebrow or product.name }} — {{ product.price_display }}
-    </a>
-  </div>
+{% set bg = collection.color_hex or '#F5F1EA' %}
+<section class="collection-hero"
+         style="background: {{ bg }}; color: {{ bg | text_on }};">
+  <p class="section-eyebrow" style="color: inherit; opacity: 0.7;">{{ collection.tile_eyebrow or collection.name }}</p>
+  <h1>{{ collection.tile_headline or collection.name }}</h1>
+  {% if collection.tile_body or collection.description %}
+    <p class="collection-hero-body">{{ collection.tile_body or collection.description }}</p>
+  {% endif %}
 </section>
 
 <section class="section">
   <div class="container">
-    <div class="products-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 320px)); justify-content: center;">
-      {% set p = product %}{% include "shop/_card.html" %}
-    </div>
+    {% if collection.active_series %}
+      <div class="series-grid">
+        {% for series in collection.active_series %}
+          {% include "shop/_series_card.html" %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted center">This collection is coming soon.</p>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

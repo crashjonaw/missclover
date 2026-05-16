@@ -46,7 +46,7 @@
             <img src="{{ url_for('static', filename='img/' ~ it.variant.product.primary_image_path) }}" alt=""/>
             <div style="flex: 1;">
               <div class="name">{{ it.variant.product.name }}</div>
-              <div class="meta">{{ it.variant.product.design_code | capitalize }} × {{ it.qty }}</div>
+              <div class="meta">{{ it.variant.name }} × {{ it.qty }}</div>
             </div>
             <div class="price">{{ it.line_cents | sgd }}</div>
           </div>

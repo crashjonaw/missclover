@@ -1,0 +1,20 @@
+# MISS CLOVER — Cosy collection
+# Collection metadata. Edit then run `python seed.py`.
+# Folder name (cosy) must match this slug.
+
+slug: cosy
+name: Cosy
+display_order: 20
+is_featured: true
+is_active: true
+
+color_hex: "#D8C3A5"
+tile_eyebrow: Cosy
+tile_headline: The Cosy collection.
+tile_body: >-
+  Soft, padded, made to slouch into. Quietly comfortable everyday
+  carry.
+
+description: >-
+  The Cosy collection is our padded, wave-quilted edit — lightweight,
+  cushioned, finished with a gold-tone clover plaque.

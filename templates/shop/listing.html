@@ -13,25 +13,41 @@
 
   <div class="layout-2col">
     <aside>
-      {% if featured_products %}
+      {% if active_collection or active_series or active_bag_type %}
+      <div class="filter-options-item">
+        <a href="{{ url_for('shop.handbags', sort=sort_key) }}">← Clear filters</a>
+      </div>
+      {% endif %}
+
+      {% if collections %}
       <div class="filter-options-item">
         <h4 class="filter-options-title">Collection</h4>
         <ul class="filter-options-list">
-          {% for fp in featured_products %}
-            <li><a href="{{ url_for('shop.collection', key=fp.design_code) }}">{{ fp.tile_eyebrow or fp.name }}</a></li>
+          {% for c in collections %}
+            <li>
+              <a href="{{ url_for('shop.handbags', collection=c.slug, sort=sort_key) }}"
+                 class="{% if active_collection == c.slug and not active_series %}is-active{% endif %}">{{ c.name }}</a>
+              {% if c.active_series %}
+                <ul class="filter-options-sublist">
+                  {% for s in c.active_series %}
+                    <li><a href="{{ url_for('shop.handbags', collection=c.slug, series=s.slug, sort=sort_key) }}"
+                           class="{% if active_series == s.slug %}is-active{% endif %}">{{ s.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
           {% endfor %}
         </ul>
       </div>
+      {% endif %}
+
+      {% if bag_types %}
       <div class="filter-options-item">
-        <h4 class="filter-options-title">Colour</h4>
+        <h4 class="filter-options-title">Bag type</h4>
         <ul class="filter-options-list">
-          {% for fp in featured_products %}
-            {% if fp.color_hex %}
-              <li>
-                <span class="swatch" style="background-color: {{ fp.color_hex }}; vertical-align: middle;"></span>
-                &nbsp; {{ fp.tile_eyebrow or fp.name }}
-              </li>
-            {% endif %}
+          {% for bt in bag_types %}
+            <li><a href="{{ url_for('shop.handbags', bag_type=bt, sort=sort_key) }}"
+                   class="{% if active_bag_type == bt %}is-active{% endif %}">{{ bt | bag_type_label }}</a></li>
           {% endfor %}
         </ul>
       </div>

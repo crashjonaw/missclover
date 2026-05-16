@@ -1,81 +1,123 @@
-# Catalog — one YAML per product, grouped by silhouette family
+# Catalog — Collection › Series › Colour
+
+The folder structure **is** the hierarchy. Three levels:
 
 ```
 data/products/
 ├── README.md                          ← this file
-├── tote_design_1/                     ← the 8″×11″ structured tote silhouette
-│   ├── classic.yaml                   ← cream colourway
-│   └── maroon.yaml                    ← burgundy colourway
-└── tote_design_2/                     ← (your next silhouette here)
-    └── …yaml files for each colourway
+├── <collection>/                      ← a Collection (e.g. signature)
+│   ├── _collection.yaml               ← Collection metadata (slug == folder name)
+│   └── <series>/                      ← a Series (e.g. clover)
+│       ├── _series.yaml               ← Series metadata (slug == folder name)
+│       └── <colour>.yaml              ← one Product per file
+└── …
 ```
 
-Each `*.yaml` file defines **one product** (one silhouette × one colourway). The
-subfolder is the silhouette family — group all colourways of the same bag under
-the same folder.
+Current catalog:
 
-`seed.py` recursively globs `data/products/**/*.yaml`, so subfolders are
-purely organisational; no template / blueprint changes needed when adding one.
+```
+signature/                  Signature collection
+  _collection.yaml
+  clover/                   Clover series   (bag_type: tote)
+    _series.yaml
+    classic.yaml            → Classic Clover Tote
+    maroon.yaml             → Maroon Clover Tote
+cosy/                       Cosy collection
+  _collection.yaml
+  pillow/                   Pillow series   (bag_type: shoulderbag)
+    _series.yaml
+    sand.yaml               → Sand Pillow
+    thyme.yaml              → Thyme Pillow
+```
 
-## design_code uniqueness
+`seed.py` recursively globs `data/products/<collection>/<series>/*.yaml`,
+**skipping** any file whose name starts with `_` (those are Collection/Series
+metadata). Every product must sit exactly two folders deep.
 
-`design_code` only needs to be unique **within its silhouette folder** — `seed.py`
-auto-prefixes it with the parent folder name when storing it in the database. So
-both `tote_design_1/classic.yaml` and `tote_design_2/classic.yaml` can use
-`design_code: classic` and live happily side-by-side.
+## Three concepts, do not conflate them
 
-The stored full design_code (e.g. `tote_design_1/classic`) is what drives the
-collection-landing URL: `/collections/tote_design_1/classic`.
+| Concept | Where it lives | Drives |
+|---|---|---|
+| **Collection** | folder + `_collection.yaml` | `/collections`, `/collections/<c>`, header mega-nav top level, home tiles, footer |
+| **Series** | folder + `_series.yaml` | `/collections/<c>/<s>`, mega-nav second level, breadcrumbs |
+| **`design_code`** | product YAML | bare colour key (e.g. `classic`). Unique **globally**. Drives `OrderItem` snapshots, image-path fallback, legacy `/collections/<design_code>` 301-redirects |
+| **`bag_type`** | product YAML | the physical silhouette taxonomy (`tote`, `shoulderbag`, `crossbody`, `satchel`, `backpack`). Visible badge on card + PDP, plus the "Sort by bag type" + sidebar "Bag type" filter |
 
-## To add a new colourway to an existing silhouette
+`bag_type` is **independent** of Series. The Clover series is `bag_type: tote`;
+the Pillow series is `bag_type: shoulderbag` — but a series could mix bag types.
 
-1. Copy an existing yaml into the same silhouette folder, e.g.
-   `cp data/products/tote_design_1/classic.yaml data/products/tote_design_1/sage.yaml`.
-2. Edit `slug`, `name`, `design_code`, `color_hex`, marketing copy, and SKU.
-3. Drop image(s) into `static/img/products/tote_design_1/<design_code>/` and list
-   them under `images:` with paths like `products/tote_design_1/<design_code>/hero.jpg`.
-4. Run `python seed.py`.
+## Images
 
-## To add an entirely new silhouette
+`static/img/products/<collection>/<series>/<colour>/hero.jpg` (any number of
+views per colour). Each product YAML's `images[].path` is relative to
+`static/img/` — e.g. `products/signature/clover/classic/hero.jpg`.
 
-1. Create `data/products/tote_design_2/` (or another descriptive name).
-2. Add one yaml per colourway inside it.
-3. Create the matching `static/img/products/tote_design_2/<design_code>/` folders
-   and drop image files in.
-4. Make sure each yaml's `images.path` field starts with
-   `products/tote_design_2/<design_code>/…`.
-5. Run `python seed.py`.
+## Add a new colour (to an existing series)
 
-After either, the new bag(s) appear in the header nav, on the homepage tile-split,
-on `/handbags`, on `/collections/<design_code>`, and as their own PDPs.
-Zero template, CSS, or blueprint edits.
+1. `cp data/products/signature/clover/classic.yaml data/products/signature/clover/sage.yaml`
+2. Edit `slug`, `name`, `design_code` (globally unique), `color_hex`, copy, SKU.
+3. Drop image(s) into `static/img/products/signature/clover/sage/` and update `images[].path`.
+4. `python seed.py`
 
-## Fields
+## Add a new series (to an existing collection)
+
+1. `mkdir data/products/signature/<series>` and add a `_series.yaml` (slug == folder name).
+2. Add one `<colour>.yaml` per colour inside it + matching image folders.
+3. `python seed.py`
+
+## Add a new collection
+
+1. `mkdir -p data/products/<collection>/<series>`; add `_collection.yaml` and `_series.yaml`.
+2. Add the colour YAMLs + image folders.
+3. `python seed.py`
+
+After any of these the new bag(s)/series/collection appear automatically in the
+header mega-nav, homepage tiles, `/collections`, `/handbags`, the listing
+sidebar filters, and their own landing pages — **zero template / CSS / blueprint
+edits**.
+
+## Metadata fields (`_collection.yaml` / `_series.yaml`)
 
 | Field | Required | Notes |
 |---|---|---|
-| `slug` | ✓ | URL-safe identifier, used in `/handbags/<slug>` |
-| `name` | ✓ | Full display name, e.g. *"The Forest Tote"* |
-| `design_code` | ✓ | Short key, e.g. `forest`. Drives `/collections/<key>` and the image-folder name |
-| `bag_type` | optional (default `tote`) | One of `tote`, `crossbody`, `shoulder`, `satchel`, `backpack`. Used by the "Sort by bag type" option |
-| `color_hex` | ✓ | The bag's actual colour. Used for swatch chips and the tile background |
+| `slug` | ✓ | Must equal the folder name. URL key |
+| `name` | ✓ | Display name, e.g. *Signature*, *Clover* |
+| `description` | optional | Long copy |
+| `color_hex` | optional | Hero background; text colour auto-picked by the `text_on` filter |
+| `tile_eyebrow` / `tile_headline` / `tile_body` | optional | Hero / tile copy |
+| `hero_image_path` | optional | Under `static/img/`. Falls back to the first product's hero |
+| `is_featured` | optional (default false) | If true: shows in header nav, home tiles, footer |
+| `is_active` | optional (default true) | false hides it everywhere (landing 404s) |
+| `display_order` | optional (default 100) | Lower comes first |
+
+## Product fields (`<colour>.yaml`)
+
+| Field | Required | Notes |
+|---|---|---|
+| `slug` | ✓ | URL-safe, globally unique. Used in `/handbags/<slug>` |
+| `name` | ✓ | Full display name, e.g. *Classic Clover Tote* |
+| `design_code` | ✓ | Bare colour key, globally unique. NOT folder-prefixed |
+| `bag_type` | optional (default `tote`) | `tote` \| `shoulderbag` \| `crossbody` \| `satchel` \| `backpack` |
+| `color_hex` | ✓ | Swatch + tile background |
 | `base_price_cents` | ✓ | SGD cents. `35000` = S$350.00 |
-| `variants[]` | ✓ | At least one. Each: `name`, `sku` (unique), `stock_qty`, `price_cents` |
-| `images[]` | recommended | Each: `path` (under `static/img/`), `alt`, `sort_order`. The first is the hero |
-| `description` | optional | Short marketing line shown on PDP |
-| `tile_eyebrow` | optional | Short label, e.g. *"The Classic"* — used in nav and on tile heading |
-| `tile_headline` | optional | The big headline on `/collections/<key>` |
-| `tile_body` | optional | Marketing paragraph on `/collections/<key>` and homepage tile |
-| `is_featured` | optional (default false) | If true: shows in nav, on homepage tile-split, in listing colour filter |
-| `display_order` | optional (default 100) | Lower numbers come first in nav and tile-split |
-| `is_active` | optional (default true) | Set false to hide everywhere without deleting |
+| `variants[]` | ✓ | Each: `name`, `sku` (unique), `stock_qty`, `price_cents` |
+| `images[]` | recommended | Each: `path`, `alt`, `sort_order`. First is the hero |
+| `description` | optional | PDP copy |
+| `tile_eyebrow` / `tile_headline` / `tile_body` | optional | Card/landing copy |
+| `is_featured` | optional (default false) | |
+| `display_order` | optional (default 100) | Colour order within its series |
+| `is_active` | optional (default true) | false hides without deleting |
+
+Collection/Series are derived from the **folder path** — there are no
+`collection`/`series` keys in the product YAML.
 
 ## Re-seed semantics
 
 `python seed.py` is idempotent:
 
-- Products are matched by `slug`. New ones are inserted; existing ones have all
-  fields overwritten from YAML.
-- Variants are matched by `sku`. New ones inserted; existing ones updated
-  (but `stock_qty` is preserved so re-running won't reset stock counts).
-- Images are replaced wholesale — YAML is the source of truth.
+- Collections matched by `slug`; Series by `(collection, slug)`; Products by
+  `slug`. New ones inserted; existing ones overwritten from YAML.
+- Variants matched by `sku`. New inserted; existing updated, but `stock_qty`
+  is **preserved** (re-seeding never resets stock). To rename a SKU, update the
+  variant's stock-bearing row via a migration first, or accept a fresh row.
+- Images replaced wholesale — YAML is the source of truth.

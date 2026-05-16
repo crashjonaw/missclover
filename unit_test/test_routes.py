@@ -41,10 +41,21 @@ def test_pdp_404_for_unknown_slug(client, products):
     assert client.get("/handbags/nope").status_code == 404
 
 
-def test_collections_classic_and_maroon(client, products):
-    assert client.get("/collections/classic").status_code == 200
-    assert client.get("/collections/maroon").status_code == 200
+def test_collections_and_series_landings(client, products):
+    # Real collection / series landing pages
+    assert client.get("/collections").status_code == 200
+    assert client.get("/collections/signature").status_code == 200
+    assert client.get("/collections/signature/clover").status_code == 200
+    # Unknown collection / series → 404
     assert client.get("/collections/foo").status_code == 404
+    assert client.get("/collections/signature/nope").status_code == 404
+
+
+def test_legacy_design_code_collection_redirects(client, products):
+    # Old /collections/<design_code> links 301 to the product PDP
+    r = client.get("/collections/classic")
+    assert r.status_code == 301
+    assert r.headers["Location"].endswith("/handbags/classic-tote")
 
 
 def test_account_routes_require_login(client):

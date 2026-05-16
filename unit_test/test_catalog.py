@@ -4,7 +4,33 @@ PDP — with NO template, CSS, or blueprint edits.
 
 Mirrors what `python seed.py` does after a YAML edit. If a future change
 hardcodes "classic"/"maroon" anywhere, one of these tests will fail."""
-from models import Product, ProductImage, ProductVariant
+from models import Collection, Product, ProductImage, ProductVariant, Series
+
+
+def _add_collection(db_, *, cslug, cname, color, featured=True, order=30):
+    """Drop in a whole Collection→Series→Product branch, as `seed.py` would."""
+    c = Collection(slug=cslug, name=cname, color_hex=color, is_active=True,
+                    is_featured=featured, display_order=order,
+                    tile_eyebrow=cname, tile_body=f"{cname} marketing body.")
+    db_.session.add(c); db_.session.flush()
+    s = Series(collection_id=c.id, slug=f"{cslug}-series", name=f"{cname} Series",
+               color_hex=color, is_active=True, is_featured=featured,
+               display_order=10)
+    db_.session.add(s); db_.session.flush()
+    p = Product(
+        slug=f"{cslug}-bag", name=f"The {cname} Bag", description=f"A {cname} bag.",
+        design_code=cslug, bag_type="tote", series_id=s.id,
+        base_price_cents=35000, color_hex=color, tile_eyebrow=cname,
+        is_featured=featured, display_order=10, is_active=True,
+    )
+    db_.session.add(p); db_.session.flush()
+    db_.session.add(ProductVariant(
+        product_id=p.id, name=cname, sku=f"MC-{cslug[:3].upper()}-XX",
+        stock_qty=10, price_cents=35000))
+    db_.session.add(ProductImage(
+        product_id=p.id, path=f"products/{cslug}.jpg", alt=cname, sort_order=1))
+    db_.session.commit()
+    return c, s, p
 
 
 def _add_design(db_, *, code, name, color, order=30, featured=True,
@@ -53,44 +79,47 @@ def test_new_design_has_pdp(client, products, db_):
     assert b"Forest Tote" in r.data
 
 
-def test_new_design_has_collection_landing_no_whitelist(client, products, db_):
-    """Whitelist removal: any design_code becomes a valid collections URL."""
-    _add_design(db_, code="forest", name="The Forest Tote", color="#2C4031")
+def test_new_collection_has_landing_and_series(client, products, db_):
+    """A dropped-in collection gets its landing + series pages with no code edits."""
+    _add_collection(db_, cslug="forest", cname="Forest", color="#2C4031")
     r = client.get("/collections/forest")
     assert r.status_code == 200
     body = r.get_data(as_text=True)
-    assert "Forest Tote headline" in body or "Forest" in body
-    # Background colour rendered inline from color_hex
-    assert "#2C4031" in body
+    assert "Forest" in body
+    assert "#2C4031" in body                       # color_hex rendered inline
+    r2 = client.get("/collections/forest/forest-series")
+    assert r2.status_code == 200
+    assert "The Forest Bag" in r2.get_data(as_text=True)
 
 
-def test_new_design_appears_in_header_nav(client, products, db_):
-    _add_design(db_, code="forest", name="The Forest Tote", color="#2C4031")
+def test_new_collection_appears_in_header_nav(client, products, db_):
+    _add_collection(db_, cslug="forest", cname="Forest", color="#2C4031")
     body = client.get("/").get_data(as_text=True)
     assert "/collections/forest" in body
-    assert "The Forest" in body  # tile_eyebrow
+    assert "Forest" in body
 
 
-def test_new_design_appears_in_home_tile_split(client, products, db_):
-    _add_design(db_, code="forest", name="The Forest Tote", color="#2C4031")
+def test_new_collection_appears_in_home_tile_split(client, products, db_):
+    _add_collection(db_, cslug="forest", cname="Forest", color="#2C4031")
     body = client.get("/").get_data(as_text=True)
-    # The new tile is rendered with the design's color_hex inline
+    # The collection tile is rendered with the collection's color_hex inline
     assert "background: #2C4031" in body
-    assert "The Forest Tote" in body or "The Forest" in body
+    assert "Forest" in body
 
 
-def test_unfeatured_design_excluded_from_nav_and_home(client, products, db_):
-    """A new design with is_featured=False shouldn't appear in nav or home tiles."""
-    _add_design(db_, code="hidden", name="The Hidden Tote", color="#000000", featured=False)
+def test_unfeatured_collection_excluded_from_nav_and_home(client, products, db_):
+    """is_featured=False → not in nav/home, but landing + PDP still reachable."""
+    _add_collection(db_, cslug="hidden", cname="Hidden", color="#000000",
+                    featured=False)
     body = client.get("/").get_data(as_text=True)
     assert "/collections/hidden" not in body
-    # But the listing and PDP still work
-    assert client.get("/handbags/hidden-tote").status_code == 200
     assert client.get("/collections/hidden").status_code == 200
+    assert client.get("/collections/hidden/hidden-series").status_code == 200
+    assert client.get("/handbags/hidden-bag").status_code == 200
 
 
 def test_unknown_collection_404s(client, products):
-    """Without a matching design_code, the collection page is a real 404."""
+    """No matching collection AND no matching design_code → a real 404."""
     assert client.get("/collections/nonexistent").status_code == 404
 
 

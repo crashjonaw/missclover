@@ -1,0 +1,35 @@
+# MISS CLOVER — Thyme Pillow
+# Cosy collection › Pillow series › Thyme colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: thyme-pillow
+name: Thyme Pillow
+design_code: thyme
+bag_type: shoulderbag
+color_hex: "#7C8A5A"            # muted thyme / herb green
+base_price_cents: 24000
+is_featured: true
+display_order: 20               # colour order within the Pillow series
+
+description: >-
+  Soft, padded shoulder bag in muted thyme green. Signature wavy
+  quilting, adjustable padded strap, gold-tone clover hardware. Same
+  easy silhouette as the Sand, in a deeper register.
+
+tile_eyebrow: Thyme
+tile_headline: A quieter green.
+tile_body: >-
+  Padded body in soft thyme, finished with our signature wave-quilting
+  and a gold-tone clover plaque. Sits just as easily on the shoulder.
+
+variants:
+  - name: Thyme
+    sku: MC-PLW-TH
+    stock_qty: 20
+    price_cents: 24000
+
+images:
+  - path: products/cosy/pillow/thyme/hero.jpg
+    alt: Thyme Pillow — front view
+    sort_order: 1

@@ -1,0 +1,20 @@
+# MISS CLOVER — Clover series (Signature collection)
+# Series metadata. Edit then run `python seed.py`.
+# Folder name (clover) must match this slug.
+
+slug: clover
+name: Clover
+display_order: 10
+is_featured: true
+is_active: true
+
+color_hex: "#F0E6D2"
+tile_eyebrow: The Clover
+tile_headline: One silhouette, two registers.
+tile_body: >-
+  A structured 8″×11″ tote in soft cream or deep burgundy — gold
+  hardware, tan-suede interior, the clever pockets.
+
+description: >-
+  The Clover is the structured tote that started MISS CLOVER: 8″×11″,
+  double handles, gold hardware, suede-lined.

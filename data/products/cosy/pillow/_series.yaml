@@ -1,0 +1,20 @@
+# MISS CLOVER — Pillow series (Cosy collection)
+# Series metadata. Edit then run `python seed.py`.
+# Folder name (pillow) must match this slug.
+
+slug: pillow
+name: Pillow
+display_order: 10
+is_featured: true
+is_active: true
+
+color_hex: "#D8C3A5"
+tile_eyebrow: The Pillow
+tile_headline: A soft, quilted everyday.
+tile_body: >-
+  Padded body with our signature wave-quilted texture, adjustable
+  cushioned strap, gold-tone clover plaque.
+
+description: >-
+  The Pillow is our soft, padded shoulder bag — lightweight cushioned
+  construction with signature wave-quilting.

@@ -65,8 +65,32 @@ def db_(app):
 
 
 @pytest.fixture()
-def products(db_):
-    """Seed Classic + Maroon (featured + with images) and return as dict by design_code."""
+def hierarchy(db_):
+    """Signature→Clover and Cosy→Pillow, featured + active. Returned by slug."""
+    from models import Collection, Series
+
+    sig = Collection(slug="signature", name="Signature", is_active=True,
+                      is_featured=True, display_order=10, color_hex="#F0E6D2",
+                      tile_eyebrow="Signature", tile_body="Signature body")
+    cosy = Collection(slug="cosy", name="Cosy", is_active=True,
+                      is_featured=True, display_order=20, color_hex="#D8C3A5",
+                      tile_eyebrow="Cosy", tile_body="Cosy body")
+    db_.session.add_all([sig, cosy]); db_.session.flush()
+    clover = Series(collection_id=sig.id, slug="clover", name="Clover",
+                    is_active=True, is_featured=True, display_order=10,
+                    color_hex="#F0E6D2")
+    pillow = Series(collection_id=cosy.id, slug="pillow", name="Pillow",
+                    is_active=True, is_featured=True, display_order=10,
+                    color_hex="#D8C3A5")
+    db_.session.add_all([clover, pillow]); db_.session.flush()
+    db_.session.commit()
+    return {"signature": sig, "cosy": cosy, "clover": clover, "pillow": pillow}
+
+
+@pytest.fixture()
+def products(db_, hierarchy):
+    """Classic + Maroon (featured, with images) under Signature→Clover.
+    Returned as a dict keyed by design_code."""
     from models import Product, ProductImage, ProductVariant
 
     out = {}
@@ -80,6 +104,7 @@ def products(db_):
             description=f"Test {code}",
             design_code=code,
             bag_type="tote",
+            series_id=hierarchy["clover"].id,
             base_price_cents=35000,
             color_hex=color,
             tile_eyebrow=f"The {code.capitalize()}",

@@ -5,7 +5,12 @@
 <div class="container">
   <div class="breadcrumbs">
     <a href="{{ url_for('shop.home') }}">Home</a><span class="sep">/</span>
-    <a href="{{ url_for('shop.handbags') }}">Handbags</a><span class="sep">/</span>
+    {% if product.series %}
+      <a href="{{ url_for('shop.collection', collection_slug=product.collection.slug) }}">{{ product.collection.name }}</a><span class="sep">/</span>
+      <a href="{{ url_for('shop.series', collection_slug=product.collection.slug, series_slug=product.series.slug) }}">{{ product.series.name }}</a><span class="sep">/</span>
+    {% else %}
+      <a href="{{ url_for('shop.handbags') }}">Handbags</a><span class="sep">/</span>
+    {% endif %}
     <span>{{ product.name }}</span>
   </div>
 
@@ -40,6 +45,7 @@
     </div>
 
     <div class="pdp-info">
+      {% if product.bag_type %}<span class="bag-type-tag">{{ product.bag_type | bag_type_label }}</span>{% endif %}
       <h1>{{ product.name }}</h1>
       <p class="price-display">{{ product.price_display }}</p>
 

@@ -469,3 +469,36 @@
 }
 .filter-options-list { display: flex; flex-direction: column; gap: var(--sp-2); font-size: 14px; }
 .filter-options-list a:hover { color: var(--accent-sage-deep); }
+
+/* ── Bag-type tag (badge on product card + PDP) ────────────────── */
+
+.bag-type-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-sage-deep);
+  background: var(--accent-sage-soft);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  margin-bottom: var(--sp-2);
+}
+.pdp-info .bag-type-tag { margin-bottom: var(--sp-3); }
+
+/* ── Filter sidebar: nested series sublist + active state ───────── */
+
+.filter-options-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0 var(--sp-3);
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
+  font-size: 13px;
+}
+.filter-options-list a.is-active,
+.filter-options-sublist a.is-active {
+  color: var(--accent-sage-deep);
+  font-weight: 600;
+}

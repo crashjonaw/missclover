@@ -4,6 +4,7 @@
     <img src="{{ url_for('static', filename='img/' ~ p.primary_image_path) }}" alt="{{ p.name }}" loading="lazy"/>
   </a>
   <div class="product-item-details">
+    {% if p.bag_type %}<span class="bag-type-tag">{{ p.bag_type | bag_type_label }}</span>{% endif %}
     <h3 class="product-item-name">
       <a href="{{ url_for('shop.product', slug=p.slug) }}">{{ p.name }}</a>
     </h3>

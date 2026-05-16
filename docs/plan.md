@@ -37,7 +37,7 @@ missclover/
 ├── email_service.py             Flask-Mail templates (lifted from ref/bloomburrow)
 │
 ├── blueprints/
-│   ├── shop.py                  /, /handbags, /handbags/<slug>, /collections/<key>, /about
+│   ├── shop.py                  /, /handbags, /handbags/<slug>, /collections, /collections/<c>, /collections/<c>/<s>, /about
 │   ├── auth.py                  /login, /register, /logout, /forgot, /reset/<token>
 │   ├── cart.py                  /cart, /cart/add, /cart/update, /cart/remove
 │   ├── checkout.py              /checkout/start, /shipping, /payment, /return, /success
@@ -128,10 +128,13 @@ Components (in `components.css`):
 
 | Route | Template | KS pattern reproduced |
 |---|---|---|
-| `/` | `home.html` | `cms-home cms-index-index page-layout-1column` (`html_ref/04-homepage.md`): hero strip → two-tile category split (Classic / Maroon) → trending placeholder grid → lookbook spacer → newsletter |
-| `/handbags` | `shop/listing.html` | `catalog-category-view page-layout-2columns-left` (`html_ref/05`): left filter sidebar (Color, Collection — static for now), toolbar (Sort: Position / Price asc / Price desc / Just Added), product grid |
-| `/handbags/<slug>` | `shop/product.html` | `catalog-product-view page-layout-1column` (`html_ref/06`): gallery + `product-info-main` + variant swatch + qty + add-to-cart + "if you like this" placeholder + breadcrumbs + schema.org Offer microdata |
-| `/collections/classic`, `/collections/maroon` | `shop/collection.html` | Single-product editorial landing |
+| `/` | `home.html` | `cms-home cms-index-index page-layout-1column` (`html_ref/04-homepage.md`): hero strip → one editorial tile per featured **Collection** → product grid → newsletter |
+| `/handbags` | `shop/listing.html` | `catalog-category-view page-layout-2columns-left` (`html_ref/05`): left sidebar = real filters (Collection ▸ Series, Bag type), toolbar (Sort: Featured / Bag type / Price asc / Price desc / Popular), product grid. `?collection=&series=&bag_type=` |
+| `/handbags/<slug>` | `shop/product.html` | `catalog-product-view page-layout-1column` (`html_ref/06`): gallery + `product-info-main` + bag-type badge + variant swatch + qty + add-to-cart + same-series "if you like this" + `Home / Collection / Series / Product` breadcrumb |
+| `/collections` | `shop/collections_index.html` | Grid of active collections |
+| `/collections/<c>` | `shop/collection.html` | Collection hero + its Series cards |
+| `/collections/<c>/<s>` | `shop/series.html` | Series hero + product grid |
+| `/collections/<legacy design_code>` | (server) | 301 → `/handbags/<slug>` (back-compat for old single-/two-segment links) |
 | `/about` | `about.html` | KS `cms-page-view` |
 | `/cart` | `cart/cart.html` | Standard cart table; line items with thumbnail, name, variant, qty stepper, line total, remove |
 | `/checkout/start` | `checkout/start.html` | **Custom — not in either ref.** Three-card trifecta: *Sign in* (email + password), *Create account* (name + email + password), *Continue as guest* (just an email + "Continue" button) |
@@ -159,8 +162,19 @@ User(id, email[unique], password_hash, first_name, last_name, phone,
 Address(id, user_id[nullable for guest], recipient_name,
         line1, line2, postcode, country='SG', phone)
 
-Product(id, slug[unique], name, description, design_code,
-        base_price_cents, currency='SGD')                         # seeded: classic, maroon
+Collection(id, slug[unique], name, description, color_hex, tile_eyebrow,
+           tile_headline, tile_body, hero_image_path,
+           is_active, is_featured, display_order, created_at)      # Signature, Cosy
+
+Series(id, collection_id[FK], slug, name, description, color_hex,
+       tile_eyebrow, tile_headline, tile_body, hero_image_path,
+       is_active, is_featured, display_order, created_at)          # Clover, Pillow
+       # UNIQUE(collection_id, slug)
+
+Product(id, slug[unique], name, description, design_code[unique],
+        bag_type, series_id[FK, nullable],
+        base_price_cents, currency='SGD', color_hex, tile_*,
+        is_featured, display_order)                                # classic, maroon, sand, thyme
 
 ProductVariant(id, product_id, name, sku[unique], stock_qty,
                price_cents)                                        # 1 variant per product to start

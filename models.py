@@ -51,7 +51,75 @@ class Address(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
-# ─── Catalog ─────────────────────────────────────────────────────────────────
+# ─── Catalog hierarchy: Collection → Series → Product(colour) ─────────────────
+
+
+class Collection(db.Model):
+    """Top of the hierarchy, e.g. "Signature", "Cosy". Has its own editorial
+    landing page (hero, copy) and contains one or more Series."""
+    __tablename__ = "collections"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(80), unique=True, index=True, nullable=False)   # "signature"
+    name = db.Column(db.String(120), nullable=False)                           # "Signature"
+    description = db.Column(db.Text)
+
+    color_hex = db.Column(db.String(7))
+    tile_eyebrow = db.Column(db.String(120))
+    tile_headline = db.Column(db.String(255))
+    tile_body = db.Column(db.Text)
+    hero_image_path = db.Column(db.String(255))               # relative to static/img/
+
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    display_order = db.Column(db.Integer, default=100, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    series = db.relationship("Series", backref="collection", lazy=True,
+                             cascade="all, delete-orphan",
+                             order_by="Series.display_order")
+
+    @property
+    def active_series(self):
+        return [s for s in self.series if s.is_active]
+
+
+class Series(db.Model):
+    """Middle of the hierarchy, e.g. "Clover", "Pillow". Belongs to one
+    Collection and groups the colour-variant Products beneath it."""
+    __tablename__ = "series"
+
+    id = db.Column(db.Integer, primary_key=True)
+    collection_id = db.Column(db.Integer, db.ForeignKey("collections.id"),
+                              nullable=False, index=True)
+    slug = db.Column(db.String(80), index=True, nullable=False)   # "clover", "pillow"
+    name = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text)
+
+    color_hex = db.Column(db.String(7))
+    tile_eyebrow = db.Column(db.String(120))
+    tile_headline = db.Column(db.String(255))
+    tile_body = db.Column(db.Text)
+    hero_image_path = db.Column(db.String(255))
+
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    display_order = db.Column(db.Integer, default=100, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        db.UniqueConstraint("collection_id", "slug", name="uq_series_collection_slug"),
+    )
+
+    # NOTE: no delete-orphan cascade — deleting a Series must not delete Products
+    # (orders reference variants → products). Deleting a Collection cascades to
+    # its Series only; affected Products are left with series_id = NULL.
+    products = db.relationship("Product", backref="series", lazy=True,
+                               order_by="Product.display_order")
+
+    @property
+    def active_products(self):
+        return [p for p in self.products if p.is_active]
 
 
 class Product(db.Model):
@@ -61,8 +129,9 @@ class Product(db.Model):
     slug = db.Column(db.String(120), unique=True, index=True, nullable=False)
     name = db.Column(db.String(160), nullable=False)
     description = db.Column(db.Text)
-    design_code = db.Column(db.String(40), unique=True, index=True)  # e.g. "classic", "maroon", "forest"
-    bag_type = db.Column(db.String(40), index=True, default="tote", nullable=False)  # tote, crossbody, shoulder, satchel, backpack...
+    design_code = db.Column(db.String(40), unique=True, index=True)  # bare colour key: "classic", "maroon", "sand", "thyme"
+    bag_type = db.Column(db.String(40), index=True, default="tote", nullable=False)  # tote, shoulderbag, crossbody, satchel... (orthogonal to series)
+    series_id = db.Column(db.Integer, db.ForeignKey("series.id"), nullable=True, index=True)
     base_price_cents = db.Column(db.Integer, nullable=False)
     currency = db.Column(db.String(3), default="SGD", nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
@@ -82,6 +151,11 @@ class Product(db.Model):
     images = db.relationship("ProductImage", backref="product", lazy=True,
                              cascade="all, delete-orphan",
                              order_by="ProductImage.sort_order")
+
+    @property
+    def collection(self):
+        """Convenience hop up the hierarchy. None if the product is unassigned."""
+        return self.series.collection if self.series else None
 
     @property
     def primary_variant(self):

@@ -1,0 +1,34 @@
+# MISS CLOVER — Maroon Clover Tote
+# Signature collection › Clover series › Maroon colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (signature/clover/); see ../../README.md.
+
+slug: maroon-clover-tote
+name: Maroon Clover Tote
+design_code: maroon
+bag_type: tote
+color_hex: "#6E1A2D"            # the burgundy colourway
+base_price_cents: 35000
+is_featured: true
+display_order: 20               # colour order within the Clover series
+
+description: >-
+  Same silhouette in deep burgundy. Hand-dyed maroon leather, gold
+  hardware, suede-lined interior with all the clever pockets.
+
+tile_eyebrow: Maroon
+tile_headline: Burgundy. Quietly bold.
+tile_body: >-
+  Same silhouette, deeper register. Hand-dyed maroon leather, gold
+  hardware, suede-lined.
+
+variants:
+  - name: Maroon
+    sku: MC-CLV-MR
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  - path: products/signature/clover/maroon/hero.jpg
+    alt: Maroon Clover Tote — front view
+    sort_order: 1

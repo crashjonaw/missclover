@@ -43,19 +43,38 @@ def create_app(config_class=Config) -> Flask:
     def inject_globals():
         from datetime import datetime
         from blueprints.cart import get_cart
-        from models import Product
+        from models import Collection, Product
         cart = get_cart(create=False)
         featured = (Product.query
                     .filter_by(is_active=True, is_featured=True)
                     .order_by(Product.display_order)
                     .all())
+        nav_collections = (Collection.query
+                           .filter_by(is_active=True, is_featured=True)
+                           .order_by(Collection.display_order)
+                           .all())
         return dict(
             cart_qty=cart.total_qty if cart else 0,
             cart_subtotal_cents=cart.subtotal_cents if cart else 0,
             currency="SGD",
             now_year=datetime.utcnow().year,
             featured_products=featured,
+            nav_collections=nav_collections,
         )
+
+    _BAG_TYPE_LABELS = {
+        "tote": "Tote",
+        "shoulderbag": "Shoulder Bag",
+        "crossbody": "Crossbody",
+        "satchel": "Satchel",
+        "backpack": "Backpack",
+    }
+
+    @app.template_filter("bag_type_label")
+    def bag_type_label_filter(value: str) -> str:
+        if not value:
+            return ""
+        return _BAG_TYPE_LABELS.get(value, value.replace("_", " ").title())
 
     @app.template_filter("sgd")
     def sgd_filter(cents):

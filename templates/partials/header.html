@@ -12,7 +12,7 @@
       </div>
 
       <a class="site-logo" href="{{ url_for('shop.home') }}" aria-label="MISS CLOVER home">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="MISS CLOVER"/>
+        <span class="site-logo-wordmark">MISS<span class="site-logo-dot" aria-hidden="true">.</span>CLOVER</span>
       </a>
 
       <div class="header-utility is-right">
@@ -66,8 +66,28 @@
   <nav class="header-nav" aria-label="Primary">
     <ul class="header-nav-list container">
       <li><a href="{{ url_for('shop.handbags') }}">Handbags</a></li>
-      {% for p in featured_products %}
-        <li><a href="{{ url_for('shop.collection', key=p.design_code) }}">{{ p.tile_eyebrow or p.name }}</a></li>
+      {% for c in nav_collections %}
+        <li class="header-nav-item{% if c.active_series %} has-megamenu{% endif %}">
+          <a href="{{ url_for('shop.collection', collection_slug=c.slug) }}"
+             {% if c.active_series %}aria-haspopup="true"{% endif %}>{{ c.name }}</a>
+          {% if c.active_series %}
+          <div class="megamenu">
+            <div class="megamenu-inner container">
+              {% for s in c.active_series %}
+                <div class="megamenu-col">
+                  <a class="megamenu-heading"
+                     href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">{{ s.name }}</a>
+                  <ul>
+                    {% for p in s.active_products %}
+                      <li><a href="{{ url_for('shop.product', slug=p.slug) }}">{{ p.name }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </li>
       {% endfor %}
       <li><a href="{{ url_for('shop.about') }}">Our story</a></li>
     </ul>

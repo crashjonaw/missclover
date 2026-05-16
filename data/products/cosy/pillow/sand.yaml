@@ -1,0 +1,36 @@
+# MISS CLOVER — Sand Pillow
+# Cosy collection › Pillow series › Sand colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: sand-pillow
+name: Sand Pillow
+design_code: sand
+bag_type: shoulderbag           # single padded strap, soft hobo silhouette
+color_hex: "#D8C3A5"            # warm sand / oat
+base_price_cents: 24000
+is_featured: true
+display_order: 10               # colour order within the Pillow series
+
+description: >-
+  Soft, padded shoulder bag with a signature wavy quilt pattern.
+  Lightweight cushioned construction, adjustable padded strap,
+  gold-tone clover hardware. An everyday carry that's quiet, not loud.
+
+tile_eyebrow: Sand
+tile_headline: A soft, quilted everyday.
+tile_body: >-
+  Padded sand body with our signature wave-quilted texture. Adjustable
+  cushioned strap, gold-tone clover plaque. Made to slouch into the
+  everyday.
+
+variants:
+  - name: Sand
+    sku: MC-PLW-SD
+    stock_qty: 20
+    price_cents: 24000
+
+images:
+  - path: products/cosy/pillow/sand/hero.jpg
+    alt: Sand Pillow — front view
+    sort_order: 1

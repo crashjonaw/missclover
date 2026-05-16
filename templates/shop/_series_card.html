@@ -1,0 +1,14 @@
+{# Series card. Expects `collection` (Collection) and `series` (Series). #}
+{% set _rep = series.active_products[0] if series.active_products else None %}
+{% set _img = series.hero_image_path or (_rep.primary_image_path if _rep else 'products/placeholder.jpg') %}
+<a class="series-card" href="{{ url_for('shop.series', collection_slug=collection.slug, series_slug=series.slug) }}">
+  <div class="series-card-img"
+       style="background-image: url('{{ url_for('static', filename='img/' ~ _img) }}')"></div>
+  <div class="series-card-body" style="background: {{ series.color_hex or '#F5F1EA' }}; color: {{ (series.color_hex or '#F5F1EA') | text_on }};">
+    <h3 class="series-card-name">{{ series.name }}</h3>
+    {% if series.tile_body or series.description %}
+      <p class="series-card-desc">{{ series.tile_body or series.description }}</p>
+    {% endif %}
+    <span class="series-card-count">{{ series.active_products | length }} colour{{ '' if series.active_products | length == 1 else 's' }} →</span>
+  </div>
+</a>

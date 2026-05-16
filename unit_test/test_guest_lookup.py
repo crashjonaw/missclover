@@ -40,7 +40,9 @@ def test_lookup_form_wrong_email_rejected(client, products, db_):
     assert r.status_code == 200
     body = r.get_data(as_text=True)
     assert "find a guest order" in body
-    assert "Classic Tote" not in body
+    # The order detail must NOT render — its order number only appears when shown.
+    # (Product names now appear in the site-wide nav, so check the order number.)
+    assert o.order_number not in body
 
 
 def test_lookup_form_wrong_order_number_rejected(client, products, db_):

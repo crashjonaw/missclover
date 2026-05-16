@@ -5,8 +5,10 @@
         <h4>Shop</h4>
         <ul>
           <li><a href="{{ url_for('shop.handbags') }}">All handbags</a></li>
-          <li><a href="{{ url_for('shop.collection', key='classic') }}">Classic collection</a></li>
-          <li><a href="{{ url_for('shop.collection', key='maroon') }}">Maroon collection</a></li>
+          {% for c in nav_collections %}
+            <li><a href="{{ url_for('shop.collection', collection_slug=c.slug) }}">{{ c.name }} collection</a></li>
+          {% endfor %}
+          <li><a href="{{ url_for('shop.collections_index') }}">All collections</a></li>
         </ul>
       </div>
       <div class="footer-col">

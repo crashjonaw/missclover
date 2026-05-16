@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Collections — MISS CLOVER{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="breadcrumbs">
+    <a href="{{ url_for('shop.home') }}">Home</a><span class="sep">/</span>
+    <span>Collections</span>
+  </div>
+
+  <div class="page-title-wrapper">
+    <h1 class="page-title">Collections</h1>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    {% if collections %}
+      <div class="series-grid">
+        {% for c in collections %}
+          {% set _s = c.active_series[0] if c.active_series else None %}
+          {% set _rep = _s.active_products[0] if _s and _s.active_products else None %}
+          {% set _img = c.hero_image_path or (_rep.primary_image_path if _rep else 'products/placeholder.jpg') %}
+          <a class="series-card" href="{{ url_for('shop.collection', collection_slug=c.slug) }}">
+            <div class="series-card-img"
+                 style="background-image: url('{{ url_for('static', filename='img/' ~ _img) }}')"></div>
+            <div class="series-card-body"
+                 style="background: {{ c.color_hex or '#F5F1EA' }}; color: {{ (c.color_hex or '#F5F1EA') | text_on }};">
+              <h3 class="series-card-name">{{ c.name }}</h3>
+              {% if c.tile_body or c.description %}
+                <p class="series-card-desc">{{ c.tile_body or c.description }}</p>
+              {% endif %}
+              <span class="series-card-count">Explore →</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted center">Collections are coming soon.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

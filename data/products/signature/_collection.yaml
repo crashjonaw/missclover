@@ -1,0 +1,20 @@
+# MISS CLOVER — Signature collection
+# Collection metadata. Edit then run `python seed.py`.
+# Folder name (signature) must match this slug.
+
+slug: signature
+name: Signature
+display_order: 10
+is_featured: true
+is_active: true
+
+color_hex: "#F0E6D2"
+tile_eyebrow: Signature
+tile_headline: The Signature collection.
+tile_body: >-
+  Structured leather, gold hardware, made for the everyday. The bags
+  MISS CLOVER started with.
+
+description: >-
+  The Signature collection is our structured leather edit — clean lines,
+  gold-tone clover hardware, suede-lined interiors.

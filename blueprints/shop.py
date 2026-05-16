@@ -1,9 +1,10 @@
-"""Shop blueprint — home, listing, product detail, collection landings, about."""
-from flask import Blueprint, abort, render_template, request
+"""Shop blueprint — home, listing, product detail, collection/series landings, about."""
+from flask import (Blueprint, abort, redirect, render_template, request,
+                   url_for)
 from sqlalchemy import case, func
 
 from extensions import db
-from models import Order, OrderItem, Product, ProductVariant
+from models import Collection, Order, OrderItem, Product, ProductVariant, Series
 
 bp = Blueprint("shop", __name__)
 
@@ -20,10 +21,22 @@ SORT_OPTIONS = [
 _SORT_KEYS = {k for k, _ in SORT_OPTIONS}
 
 
-def _sorted_products(sort: str) -> list[Product]:
-    """Return active products in the requested order. Falls back to `featured`
-    for any unknown key (so a tampered query string never errors)."""
+def _sorted_products(sort: str, *, collection_slug: str | None = None,
+                     series_slug: str | None = None,
+                     bag_type: str | None = None) -> list[Product]:
+    """Active products in the requested order, optionally filtered by
+    collection / series / bag_type. Unknown sort keys fall back to `featured`."""
     q = Product.query.filter_by(is_active=True)
+
+    if collection_slug or series_slug:
+        q = q.join(Series, Product.series_id == Series.id)
+        if series_slug:
+            q = q.filter(Series.slug == series_slug)
+        if collection_slug:
+            q = (q.join(Collection, Series.collection_id == Collection.id)
+                  .filter(Collection.slug == collection_slug))
+    if bag_type:
+        q = q.filter(Product.bag_type == bag_type)
 
     if sort == "price_asc":
         return q.order_by(Product.base_price_cents.asc(), Product.name).all()
@@ -70,31 +83,83 @@ def handbags():
     sort = (request.args.get("sort") or "featured").lower()
     if sort not in _SORT_KEYS:
         sort = "featured"
-    products = _sorted_products(sort)
+    collection_slug = request.args.get("collection") or None
+    series_slug = request.args.get("series") or None
+    bag_type = request.args.get("bag_type") or None
+
+    products = _sorted_products(sort, collection_slug=collection_slug,
+                                series_slug=series_slug, bag_type=bag_type)
+
+    collections = (Collection.query.filter_by(is_active=True)
+                   .order_by(Collection.display_order, Collection.name).all())
+    bag_types = [r[0] for r in (db.session.query(Product.bag_type)
+                                .filter_by(is_active=True)
+                                .distinct().order_by(Product.bag_type).all())]
+
     return render_template(
         "shop/listing.html",
         products=products,
         total=len(products),
         sort_key=sort,
         sort_options=SORT_OPTIONS,
+        collections=collections,
+        bag_types=bag_types,
+        active_collection=collection_slug,
+        active_series=series_slug,
+        active_bag_type=bag_type,
     )
 
 
 @bp.route("/handbags/<slug>")
 def product(slug: str):
     product = Product.query.filter_by(slug=slug, is_active=True).first_or_404()
-    related = Product.query.filter(Product.id != product.id, Product.is_active.is_(True)).all()
+    related = []
+    if product.series:
+        related = [p for p in product.series.active_products if p.id != product.id]
+    if not related:
+        related = Product.query.filter(Product.id != product.id,
+                                       Product.is_active.is_(True)).all()
     return render_template("shop/product.html", product=product, related=related)
 
 
-@bp.route("/collections/<path:key>")
-def collection(key: str):
-    """Editorial single-design landing. The `key` is the full design_code
-    (e.g. `tote_design_1/classic`), letting two silhouettes both have a
-    "classic" colourway without colliding. Drop a new YAML into
-    data/products/<silhouette>/ and its collection landing appears."""
-    product = Product.query.filter_by(design_code=key, is_active=True).first_or_404()
-    return render_template("shop/collection.html", key=key, product=product)
+# ─── Collection / Series landings ─────────────────────────────────────────────
+
+
+@bp.route("/collections")
+def collections_index():
+    collections = (Collection.query.filter_by(is_active=True)
+                   .order_by(Collection.display_order, Collection.name).all())
+    return render_template("shop/collections_index.html", collections=collections)
+
+
+@bp.route("/collections/<collection_slug>")
+def collection(collection_slug: str):
+    c = Collection.query.filter_by(slug=collection_slug, is_active=True).first()
+    if c is None:
+        # Legacy /collections/<design_code> (e.g. old `classic`) → 301 to the PDP.
+        p = Product.query.filter_by(design_code=collection_slug, is_active=True).first()
+        if p:
+            return redirect(url_for("shop.product", slug=p.slug), code=301)
+        abort(404)
+    return render_template("shop/collection.html", collection=c)
+
+
+@bp.route("/collections/<collection_slug>/<series_slug>")
+def series(collection_slug: str, series_slug: str):
+    c = Collection.query.filter_by(slug=collection_slug, is_active=True).first()
+    s = None
+    if c is not None:
+        s = Series.query.filter_by(collection_id=c.id, slug=series_slug,
+                                   is_active=True).first()
+    if s is None:
+        # Legacy /collections/<old_silhouette>/<design_code> → 301 to the PDP
+        # using the last path segment as the bare design_code.
+        p = Product.query.filter_by(design_code=series_slug, is_active=True).first()
+        if p:
+            return redirect(url_for("shop.product", slug=p.slug), code=301)
+        abort(404)
+    return render_template("shop/series.html", collection=c, series=s,
+                           products=s.active_products)
 
 
 @bp.route("/about")
