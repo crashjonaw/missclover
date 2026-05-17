@@ -37,6 +37,8 @@
       <button class="btn btn--primary btn--full" type="submit">Create account</button>
     </form>
 
+    {% include "partials/google_button.html" with context %}
+
     <div class="auth-footer">
       Already have an account? <a href="{{ url_for('auth.login') }}">Sign in →</a>
     </div>

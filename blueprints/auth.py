@@ -3,9 +3,11 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import (Blueprint, current_app, flash, redirect, render_template,
+                   request, session, url_for)
 from flask_login import current_user, login_required, login_user, logout_user
 
+import google_oauth
 from extensions import db
 from models import PasswordResetToken, User
 
@@ -114,3 +116,83 @@ def reset(token: str):
             flash("Password updated. Please sign in.", "success")
             return redirect(url_for("auth.login"))
     return render_template("auth/reset.html", error=error, token=token)
+
+
+# ─── Google OAuth ─────────────────────────────────────────────────────────────
+
+
+def _safe_next(target: str | None) -> str | None:
+    """Only allow same-site relative redirects (guards against open redirect)."""
+    if target and target.startswith("/") and not target.startswith(("//", "/\\")):
+        return target
+    return None
+
+
+@bp.route("/google")
+def google_login():
+    if not google_oauth.is_enabled():
+        flash("Google sign-in isn't configured yet.", "info")
+        return redirect(url_for("auth.login"))
+    state = secrets.token_urlsafe(32)
+    session["oauth_state"] = state
+    nxt = _safe_next(request.args.get("next"))
+    if nxt:
+        session["oauth_next"] = nxt
+    else:
+        session.pop("oauth_next", None)
+    return redirect(google_oauth.authorization_url(state))
+
+
+@bp.route("/google/callback")
+def google_callback():
+    if request.args.get("error"):
+        flash("Google sign-in was cancelled.", "info")
+        return redirect(url_for("auth.login"))
+
+    state = request.args.get("state")
+    if not state or state != session.pop("oauth_state", None):
+        flash("Google sign-in failed (invalid state). Please try again.", "error")
+        return redirect(url_for("auth.login"))
+
+    code = request.args.get("code")
+    if not code:
+        flash("Google sign-in failed (no authorization code).", "error")
+        return redirect(url_for("auth.login"))
+
+    try:
+        token = google_oauth.exchange_code(code)
+        access_token = token.get("access_token")
+        if not access_token:
+            raise RuntimeError(token.get("error_description")
+                               or token.get("error") or "no access token")
+        info = google_oauth.fetch_userinfo(access_token)
+    except Exception as e:  # network / Google error — never 500 the user
+        current_app.logger.warning("Google OAuth failed: %s", e)
+        flash("We couldn't complete Google sign-in. Please try again.", "error")
+        return redirect(url_for("auth.login"))
+
+    email = (info.get("email") or "").strip().lower()
+    if not email:
+        flash("Google didn't return an email address.", "error")
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        user = User(
+            email=email,
+            first_name=(info.get("given_name") or "").strip(),
+            last_name=(info.get("family_name") or "").strip(),
+            oauth_provider="google",
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash("Welcome to MISS CLOVER.", "success")
+    else:
+        if not user.oauth_provider:
+            user.oauth_provider = "google"  # link Google to the existing account
+            db.session.commit()
+        flash("Welcome back.", "success")
+
+    login_user(user, remember=True)
+    nxt = _safe_next(session.pop("oauth_next", None))
+    return redirect(nxt or url_for("account.dashboard"))

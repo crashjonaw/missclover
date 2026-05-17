@@ -37,6 +37,16 @@ class TestConfig(Config):
     FREE_SHIPPING_THRESHOLD_CENTS = 20000
 
 
+@pytest.fixture(autouse=True)
+def _google_disabled_by_default(monkeypatch):
+    """Keep tests deterministic: never pick up a developer's real
+    google_api_secret.json / bizfile creds. Point the loader at a path that
+    cannot exist. Tests needing Google use the `google_on` fixture, which
+    replaces `_creds` wholesale and so ignores this path."""
+    monkeypatch.setenv("GOOGLE_OAUTH_SECRET_FILE",
+                       "/nonexistent/google_api_secret.json")
+
+
 @pytest.fixture()
 def app():
     # Import inside the fixture so the module-level prod app

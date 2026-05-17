@@ -502,3 +502,41 @@
   color: var(--accent-sage-deep);
   font-weight: 600;
 }
+
+/* ── Google sign-in ────────────────────────────────────────────── */
+
+.btn--google {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--rule);
+  gap: 10px;
+}
+.btn--google:hover {
+  background: var(--surface-alt);
+  border-color: var(--ink-faint);
+}
+.btn--google .google-g { display: block; flex-shrink: 0; }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-3);
+  margin: var(--sp-5) 0;
+  color: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.checkout-start-google {
+  max-width: 420px;
+  margin: var(--sp-8) auto 0;
+}

@@ -42,6 +42,7 @@ def create_app(config_class=Config) -> Flask:
     @app.context_processor
     def inject_globals():
         from datetime import datetime
+        import google_oauth
         from blueprints.cart import get_cart
         from models import Collection, Product
         cart = get_cart(create=False)
@@ -60,6 +61,7 @@ def create_app(config_class=Config) -> Flask:
             now_year=datetime.utcnow().year,
             featured_products=featured,
             nav_collections=nav_collections,
+            google_enabled=google_oauth.is_enabled(),
         )
 
     _BAG_TYPE_LABELS = {

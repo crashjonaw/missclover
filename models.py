@@ -16,7 +16,9 @@ class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, index=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    # Nullable: Google-OAuth users have no local password.
+    password_hash = db.Column(db.String(255), nullable=True)
+    oauth_provider = db.Column(db.String(20), nullable=True)  # e.g. "google"
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
     phone = db.Column(db.String(40))
@@ -30,6 +32,8 @@ class User(UserMixin, db.Model):
         self.password_hash = generate_password_hash(raw)
 
     def check_password(self, raw: str) -> bool:
+        if not self.password_hash:
+            return False  # OAuth-only account — no local password to match
         return check_password_hash(self.password_hash, raw)
 
     @property

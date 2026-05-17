@@ -80,5 +80,12 @@
       </form>
     </div>
   </div>
+
+  {% if google_enabled %}
+  <div class="checkout-start-google">
+    {% set google_next = url_for('checkout.shipping') %}
+    {% include "partials/google_button.html" with context %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
