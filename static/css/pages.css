@@ -61,8 +61,16 @@
   white-space: nowrap;
 }
 .site-logo-dot {
-  color: var(--accent-sage);
-  margin: 0 0.22em;
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  aspect-ratio: 1 / 1;        /* guarantee a square box → true circle */
+  line-height: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  /* Lift from the baseline to the optical centre of the uppercase wordmark */
+  vertical-align: 0.27em;
+  margin: 0 0.24em;
 }
 
 .header-nav {
@@ -256,16 +264,15 @@
   transition: transform var(--t), box-shadow var(--t), opacity var(--t);
 }
 
-/* Bloomburrow-style spotlight hover: lift the focused tile + dim siblings.
+/* Spotlight hover: dim the other tile(s) only. No translate/scale — the
+   tiles sit flush (gap: 0), so any geometry shift would reveal the page
+   background as a gap between collections.
    `:has()` is now broadly supported in modern browsers. */
 .home-split-tile:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
   z-index: 1;
 }
 .home-split:has(.home-split-tile:hover) .home-split-tile:not(:hover) {
   opacity: 0.55;
-  transform: scale(0.985);
 }
 
 /* Image is wrapped so the hover scale is clipped at the image's own bottom
@@ -301,6 +308,8 @@
   line-height: 1.15;
   margin: 0;
   color: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 .home-split-tile-body {
   font-size: 14px;
@@ -627,7 +636,8 @@
 
 .series-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 360px));
+  justify-content: center;
   gap: var(--sp-6);
 }
 .series-card {
@@ -644,8 +654,10 @@
   transform: translateY(-2px);
 }
 .series-card-img {
-  aspect-ratio: 4 / 3;
-  background-size: cover;
+  aspect-ratio: 3 / 2;
+  background-color: var(--surface-alt);
+  background-size: contain;        /* show the whole bag, scaled down — no zoom/crop */
+  background-repeat: no-repeat;
   background-position: center;
 }
 .series-card-body { padding: var(--sp-6); flex: 1; }
