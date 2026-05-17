@@ -99,13 +99,21 @@
 
 @media (max-width: 720px) {
   .header-logo-row {
-    grid-template-columns: 1fr auto 1fr;   /* keep the boxed logo centred */
+    /* left link · flexible logo · content-width icon group hugging the edge */
+    grid-template-columns: auto 1fr auto;
     gap: var(--sp-2);
     padding: var(--sp-4) 0;
   }
   .site-logo-wordmark { font-size: 19px; letter-spacing: 0.1em; padding: 6px 12px; }
   .header-utility { gap: var(--sp-3); font-size: 11px; }
   .header-utility .label-hide-mobile { display: none; }
+  /* Home / account / bag: compact icon-only group, flush to the right */
+  .header-utility.is-right {
+    justify-self: end;
+    flex-wrap: nowrap;
+    gap: var(--sp-4);
+  }
+  .icon-link-label { display: none; }
   .header-nav-list {
     gap: var(--sp-2) var(--sp-5);
     flex-wrap: wrap;

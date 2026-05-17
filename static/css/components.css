@@ -553,3 +553,37 @@
   margin: var(--sp-4) 0;
 }
 .preorder-note strong { color: var(--accent-sage-deep); }
+
+/* ── Handbags listing — mobile ─────────────────────────────────── */
+@media (max-width: 880px) {
+  /* Each filter group: label stacked over its links, links wrap inline */
+  .filter-options-item {
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .filter-options-title { margin-bottom: 0; }
+  .filter-options-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+  }
+  .filter-options-sublist { display: none; }  /* series refine: desktop only */
+}
+@media (max-width: 600px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-3);
+    text-align: left;
+  }
+  .toolbar-sorter { justify-content: space-between; }
+  .toolbar-sorter .form-select { flex: 1; }
+  /* A proper 2-up product grid on phones (was a single 240px column) */
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-6) var(--sp-3); }
+}
+@media (max-width: 380px) {
+  .products-grid { grid-template-columns: 1fr; }
+}
