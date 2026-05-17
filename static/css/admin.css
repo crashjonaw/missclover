@@ -27,7 +27,6 @@ a:hover { text-decoration: underline; }
   color: #fff;
   border-bottom: 1px solid #343C2C;
 }
-.adm-brand .dot { color: #8FA67E; }
 .adm-nav { display: flex; flex-direction: column; padding: 16px 0; }
 .adm-nav a {
   color: #C7CDBA;
