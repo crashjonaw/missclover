@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block title %}To fulfil — Admin{% endblock %}
+{% block body %}
+<h1 class="adm-h1">Orders to fulfil</h1>
+<p class="adm-sub">{{ queue|length }} paid order(s) awaiting dispatch, oldest
+first. Pre-order lines are guaranteed to ship within {{ eta_days }} days
+of the order.</p>
+
+<div class="card">
+  <table>
+    <tr><th>Order</th><th>Placed</th><th>Ship to</th><th>Items</th><th class="num">Total</th><th>Pre-order ETA</th><th></th></tr>
+    {% for q in queue %}
+      <tr>
+        <td>{{ q.order.order_number }}<br/><span class="muted">{{ q.order.buyer_email }}</span></td>
+        <td class="muted">{{ q.order.created_at.strftime('%d %b %Y') }}</td>
+        <td class="muted">
+          {% set a = q.order.shipping_address %}
+          {% if a %}{{ a.recipient_name }}, {{ a.line1 }}{% if a.line2 %}, {{ a.line2 }}{% endif %}, SG {{ a.postcode }}{% endif %}
+        </td>
+        <td class="muted">
+          {% for it in q.order.items %}{{ it.name_snapshot }} ×{{ it.qty }}{% if it.is_preorder %} <span class="pill pending">pre-order</span>{% endif %}{% if not loop.last %}<br/>{% endif %}{% endfor %}
+        </td>
+        <td class="num">{{ q.order.total_cents | sgd }}</td>
+        <td>{% if q.preorder %}<strong>{{ q.eta.strftime('%d %b %Y') }}</strong>{% else %}<span class="muted">in stock</span>{% endif %}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.mark_fulfilled', order_id=q.order.id) }}">
+            <button class="adm-btn" style="width:auto;padding:6px 12px;font-size:13px;">Mark fulfilled</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7" class="muted">Nothing waiting — all caught up. 🎉</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

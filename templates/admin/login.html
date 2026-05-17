@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin sign in — MISS CLOVER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+</head>
+<body>
+  <div class="adm-login-wrap">
+    <form class="adm-login" method="post" action="{{ url_for('admin.login') }}">
+      <h1>MISS · CLOVER</h1>
+      {% if error %}<div class="adm-err">{{ error }}</div>{% endif %}
+      <label for="u">Username or email</label>
+      <input id="u" name="username" autocomplete="username" required autofocus/>
+      <label for="p">Password</label>
+      <input id="p" name="password" type="password" autocomplete="current-password" required/>
+      <button class="adm-btn" type="submit">Sign in</button>
+    </form>
+  </div>
+</body>
+</html>

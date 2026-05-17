@@ -4,8 +4,9 @@ import secrets
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user
 
+from activity import log_event
 from extensions import db
-from models import Cart, CartItem, ProductVariant
+from models import ActivityEvent, Cart, CartItem, ProductVariant
 
 bp = Blueprint("cart", __name__)
 
@@ -66,6 +67,9 @@ def add():
     if not variant_id:
         abort(400)
     variant = ProductVariant.query.get_or_404(variant_id)
+    if not variant.is_purchasable:
+        flash(f"{variant.product.name} is sold out.", "error")
+        return redirect(url_for("shop.product", slug=variant.product.slug))
 
     cart = get_cart(create=True)
 
@@ -77,6 +81,8 @@ def add():
                         unit_price_cents_snapshot=variant.price_cents)
         db.session.add(item)
     db.session.commit()
+    log_event(ActivityEvent.ADD_TO_CART, product=variant.product,
+              meta={"variant_sku": variant.sku, "qty": qty})
     flash(f"Added to bag: {variant.product.name}", "success")
     return redirect(url_for("cart.view"))
 

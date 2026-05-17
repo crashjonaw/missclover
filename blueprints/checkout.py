@@ -5,8 +5,9 @@ from flask import (Blueprint, abort, current_app, flash, redirect, render_templa
                    request, session, url_for)
 from flask_login import current_user, login_user
 
+from activity import log_event
 from extensions import db
-from models import Address, Order, OrderItem, ProductVariant, User
+from models import ActivityEvent, Address, Order, OrderItem, ProductVariant, User
 from blueprints.cart import get_cart, _shipping_total
 
 bp = Blueprint("checkout", __name__)
@@ -28,6 +29,9 @@ def start():
 
     if current_user.is_authenticated:
         return redirect(url_for("checkout.shipping"))
+
+    if request.method == "GET":
+        log_event(ActivityEvent.CHECKOUT_STARTED)
 
     error = None
     if request.method == "POST":
@@ -56,6 +60,7 @@ def start():
                 u.set_password(password)
                 db.session.add(u)
                 db.session.commit()
+                log_event(ActivityEvent.REGISTER, user=u, meta={"via": "checkout"})
                 login_user(u)
                 return redirect(url_for("checkout.shipping"))
 
@@ -158,12 +163,14 @@ def payment():
                 variant_id=v.id,
                 qty=it.qty,
                 unit_price_cents=it.unit_price_cents_snapshot,
+                is_preorder=v.stock_qty <= 0,
                 name_snapshot=v.product.name,
                 design_snapshot=v.product.design_code,
             ))
 
         db.session.commit()
         session[PENDING_ORDER_KEY] = order.id
+        log_event(ActivityEvent.ORDER_PLACED, order=order)
 
         # Call HitPay
         from hitpay import create_payment_request, HitPayError
@@ -248,8 +255,10 @@ def webhook():
             send_order_confirmation(order)
         except Exception as e:
             current_app.logger.exception("Failed to send confirmation email: %s", e)
+        log_event(ActivityEvent.ORDER_PAID, user=order.user, order=order, commit=False)
     elif status in {"failed", "expired"} and order.status == "pending":
         order.status = "cancelled"
+        log_event(ActivityEvent.ORDER_CANCELLED, user=order.user, order=order, commit=False)
 
     db.session.commit()
     return ("ok", 200)

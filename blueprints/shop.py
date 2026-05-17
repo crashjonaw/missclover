@@ -3,8 +3,10 @@ from flask import (Blueprint, abort, redirect, render_template, request,
                    url_for)
 from sqlalchemy import case, func
 
+from activity import log_event
 from extensions import db
-from models import Collection, Order, OrderItem, Product, ProductVariant, Series
+from models import (ActivityEvent, Collection, Order, OrderItem, Product,
+                    ProductVariant, Series)
 
 bp = Blueprint("shop", __name__)
 
@@ -119,6 +121,7 @@ def product(slug: str):
     if not related:
         related = Product.query.filter(Product.id != product.id,
                                        Product.is_active.is_(True)).all()
+    log_event(ActivityEvent.PRODUCT_VIEW, product=product)
     return render_template("shop/product.html", product=product, related=related)
 
 
@@ -141,6 +144,7 @@ def collection(collection_slug: str):
         if p:
             return redirect(url_for("shop.product", slug=p.slug), code=301)
         abort(404)
+    log_event(ActivityEvent.COLLECTION_VIEW, meta={"collection": c.slug})
     return render_template("shop/collection.html", collection=c)
 
 
@@ -158,6 +162,8 @@ def series(collection_slug: str, series_slug: str):
         if p:
             return redirect(url_for("shop.product", slug=p.slug), code=301)
         abort(404)
+    log_event(ActivityEvent.COLLECTION_VIEW,
+              meta={"collection": collection_slug, "series": series_slug})
     return render_template("shop/series.html", collection=c, series=s,
                            products=s.active_products)
 

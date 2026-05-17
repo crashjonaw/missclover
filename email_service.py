@@ -36,9 +36,12 @@ Thank you for your order from MISS CLOVER.
 Order:    {{ order.order_number }}
 Total:    S${{ "%.2f"|format(order.total_cents / 100) }}
 Items:
-{% for it in order.items %}- {{ it.name_snapshot }} ({{ it.design_snapshot }}) × {{ it.qty }}  S${{ "%.2f"|format(it.line_cents / 100) }}
+{% for it in order.items %}- {{ it.name_snapshot }} ({{ it.design_snapshot }}) × {{ it.qty }}  S${{ "%.2f"|format(it.line_cents / 100) }}{% if it.is_preorder %}  [PRE-ORDER]{% endif %}
 {% endfor %}
-
+{% if order.items | selectattr("is_preorder") | list %}
+Some colours are made to order — we guarantee dispatch within {{ preorder_months }} month(s)
+of your order date, or a full refund.
+{% endif %}
 Shipping to:
   {{ order.shipping_address.recipient_name }}
   {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}, {{ order.shipping_address.line2 }}{% endif %}
@@ -62,11 +65,13 @@ def send_order_confirmation(order) -> None:
             email=order.guest_email,
             token=order.guest_lookup_token,
         )
+    days = current_app.config.get("PREORDER_FULFILMENT_DAYS", 60)
     body = render_template_string(
         _ORDER_TXT,
         order=order,
         name=(order.user.first_name if order.user else ""),
         tracker_url=tracker_url,
+        preorder_months=round(days / 30),
     )
     _send(
         subject=f"Order confirmation — {order.order_number}",

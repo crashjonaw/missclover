@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Customers — Admin{% endblock %}
+{% block body %}
+<h1 class="adm-h1">Customers</h1>
+<p class="adm-sub">{{ rows|length }} shown · sort:
+  <a href="{{ url_for('admin.users', sort='spend') }}">spend</a> ·
+  <a href="{{ url_for('admin.users', sort='orders') }}">orders</a> ·
+  <a href="{{ url_for('admin.users', sort='recent') }}">newest</a>
+</p>
+
+<div class="card">
+  <table>
+    <tr>
+      <th>Customer</th><th>Email</th><th>Joined</th>
+      <th class="num">Orders</th><th class="num">Paid</th>
+      <th class="num">Lifetime spend</th><th>Last order</th>
+    </tr>
+    {% for r in rows %}
+      <tr>
+        <td><a href="{{ url_for('admin.user_detail', uid=r.user.id) }}">{{ r.user.full_name }}</a>
+          {% if r.user.oauth_provider %}<span class="muted">· {{ r.user.oauth_provider }}</span>{% endif %}</td>
+        <td>{{ r.user.email }}</td>
+        <td class="muted">{{ r.user.created_at.strftime('%d %b %Y') }}</td>
+        <td class="num">{{ r.orders }}</td>
+        <td class="num">{{ r.paid_orders }}</td>
+        <td class="num">{{ r.spend_cents | sgd }}</td>
+        <td class="muted">{{ r.last_order.strftime('%d %b %Y') if r.last_order else '—' }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

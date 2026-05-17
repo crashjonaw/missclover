@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block title %}Inventory — Admin{% endblock %}
+{% block body %}
+<h1 class="adm-h1">Inventory</h1>
+<p class="adm-sub">Stock per colour. Low stock (≤ {{ low }}) is flagged. When a
+colour hits 0 it stays buyable as a pre-order unless you switch that off.</p>
+
+<div class="card">
+  <table>
+    <tr>
+      <th>Product</th><th>Colour</th><th>SKU</th>
+      <th class="num">In stock</th><th>Adjust</th><th>Pre-order</th><th></th>
+    </tr>
+    {% for v, p in rows %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ v.name }}</td>
+        <td class="muted">{{ v.sku }}</td>
+        <td class="num">
+          {% if v.stock_qty == 0 %}<span class="pill cancelled">0</span>
+          {% elif v.stock_qty <= low %}<span class="pill pending">{{ v.stock_qty }}</span>
+          {% else %}{{ v.stock_qty }}{% endif %}
+        </td>
+        <td colspan="3">
+          <form method="post" action="{{ url_for('admin.inventory_update', vid=v.id) }}"
+                style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input name="add_stock" type="number" placeholder="+ add" style="width:80px;padding:6px;border:1px solid #D6D9CF;border-radius:5px;"/>
+            <span class="muted">or</span>
+            <input name="set_stock" type="number" min="0" placeholder="set to" style="width:80px;padding:6px;border:1px solid #D6D9CF;border-radius:5px;"/>
+            <label style="font-size:13px;"><input type="checkbox" name="allow_preorder" {{ 'checked' if v.allow_preorder }}/> allow pre-order</label>
+            <button class="adm-btn" style="width:auto;padding:6px 14px;font-size:13px;">Save</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

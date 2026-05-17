@@ -148,6 +148,25 @@ def user(db_):
 
 
 @pytest.fixture()
+def admin(db_):
+    """A staff admin account (username/email login, is_admin)."""
+    from models import User
+    a = User(email="admin@missclover.co", username="admin",
+             first_name="MC", last_name="Admin", is_admin=True)
+    a.set_password("JYVS2026")
+    db_.session.add(a)
+    db_.session.commit()
+    return a
+
+
+@pytest.fixture()
+def admin_client(client, admin):
+    """A test client authenticated into the admin console."""
+    client.post("/admin/login", data={"username": "admin", "password": "JYVS2026"})
+    return client
+
+
+@pytest.fixture()
 def signed_in(client, user):
     """A test client already authenticated as `user`."""
     client.post("/auth/login", data={"email": user.email, "password": "password123"})

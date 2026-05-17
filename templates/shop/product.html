@@ -64,8 +64,16 @@
       </div>
       {% endif %}
 
+      {% set v = product.primary_variant %}
+      {% set variant = v %}
+      {% include "partials/preorder_note.html" %}
+
+      {% if v and not v.is_purchasable %}
+        <button type="button" class="btn btn--lg btn--full" disabled
+                style="opacity:.55;cursor:not-allowed;">Sold out</button>
+      {% else %}
       <form method="post" action="{{ url_for('cart.add') }}">
-        <input type="hidden" name="variant_id" value="{{ product.primary_variant.id if product.primary_variant else '' }}"/>
+        <input type="hidden" name="variant_id" value="{{ v.id if v else '' }}"/>
 
         <div class="pdp-section">
           <p class="pdp-section-title">Quantity</p>
@@ -76,8 +84,11 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn--primary btn--lg btn--full">Add to bag</button>
+        <button type="submit" class="btn btn--primary btn--lg btn--full">
+          {{ 'Pre-order' if v and v.is_preorder else 'Add to bag' }}
+        </button>
       </form>
+      {% endif %}
 
       <div class="pdp-section">
         <p class="pdp-section-title">Details</p>

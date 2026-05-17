@@ -26,6 +26,7 @@ def create_app(config_class=Config) -> Flask:
     from blueprints.checkout import bp as checkout_bp
     from blueprints.account import bp as account_bp
     from blueprints.orders_guest import bp as guest_bp
+    from blueprints.admin import bp as admin_bp
 
     @login_manager.user_loader
     def load_user(user_id: str):
@@ -37,6 +38,20 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(checkout_bp, url_prefix="/checkout")
     app.register_blueprint(account_bp, url_prefix="/account")
     app.register_blueprint(guest_bp)
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+
+    # Auto-capture every login/logout (form, Google, checkout) with no edits
+    # to those routes — Flask-Login fires these signals for us.
+    from flask_login import user_logged_in, user_logged_out
+    from activity import log_event
+    from models import ActivityEvent
+
+    user_logged_in.connect(
+        lambda sender, user, **extra: log_event(ActivityEvent.LOGIN, user=user),
+        app, weak=False)
+    user_logged_out.connect(
+        lambda sender, user, **extra: log_event(ActivityEvent.LOGOUT, user=user),
+        app, weak=False)
 
     # Make cart count, currency, and featured products available everywhere
     @app.context_processor
@@ -62,6 +77,7 @@ def create_app(config_class=Config) -> Flask:
             featured_products=featured,
             nav_collections=nav_collections,
             google_enabled=google_oauth.is_enabled(),
+            preorder_days=app.config["PREORDER_FULFILMENT_DAYS"],
         )
 
     _BAG_TYPE_LABELS = {

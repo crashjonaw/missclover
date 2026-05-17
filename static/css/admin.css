@@ -1,0 +1,120 @@
+/* MISS CLOVER — admin console (standalone, not the storefront theme) */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background: #F4F5F3;
+  color: #1A1A1A;
+  font-size: 14px;
+}
+a { color: #5C6B53; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.adm-shell { display: flex; min-height: 100vh; }
+.adm-side {
+  width: 220px;
+  background: #1F241C;
+  color: #D8DCCF;
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+.adm-brand {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 24px 24px;
+  color: #fff;
+  border-bottom: 1px solid #343C2C;
+}
+.adm-brand .dot { color: #8FA67E; }
+.adm-nav { display: flex; flex-direction: column; padding: 16px 0; }
+.adm-nav a {
+  color: #C7CDBA;
+  padding: 11px 24px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.adm-nav a:hover { background: #2A3122; color: #fff; text-decoration: none; }
+.adm-nav a.active { background: #2A3122; color: #fff; border-left: 3px solid #8FA67E; }
+.adm-main { flex: 1; padding: 32px 40px; max-width: 1180px; }
+.adm-h1 { font-size: 22px; margin: 0 0 4px; }
+.adm-sub { color: #6B7065; margin: 0 0 28px; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.kpi {
+  background: #fff;
+  border: 1px solid #E3E5DF;
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.kpi .label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: #8A8F82; margin-bottom: 8px;
+}
+.kpi .value { font-size: 26px; font-weight: 600; }
+.kpi .hint { font-size: 12px; color: #8A8F82; margin-top: 4px; }
+
+.card {
+  background: #fff; border: 1px solid #E3E5DF; border-radius: 8px;
+  padding: 20px 22px; margin-bottom: 24px;
+}
+.card h2 { font-size: 15px; margin: 0 0 14px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 900px) { .cols { grid-template-columns: 1fr; } .adm-side { width: 64px; } .adm-nav a, .adm-brand { font-size: 0; } }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #ECEEE8; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #8A8F82; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr:hover td { background: #FAFAF7; }
+
+.pill {
+  display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 999px;
+  text-transform: capitalize;
+}
+.pill.paid, .pill.fulfilled { background: #E3F0E6; color: #2C6B43; }
+.pill.pending { background: #FBF0DD; color: #8A6516; }
+.pill.cancelled { background: #F3E2E2; color: #97362F; }
+
+.funnel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.funnel-row .fl { width: 130px; font-size: 13px; color: #5A5F52; }
+.funnel-bar { flex: 1; background: #ECEEE8; border-radius: 4px; height: 22px; position: relative; }
+.funnel-bar > span {
+  position: absolute; left: 0; top: 0; bottom: 0; background: #8FA67E;
+  border-radius: 4px; min-width: 2px;
+}
+.funnel-row .fv { width: 120px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.adm-login-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: #1F241C;
+}
+.adm-login {
+  background: #fff; padding: 36px 34px; border-radius: 10px; width: 340px;
+}
+.adm-login h1 {
+  font-family: "Cormorant Garamond", Georgia, serif; font-size: 24px;
+  letter-spacing: 0.1em; text-transform: uppercase; text-align: center; margin: 0 0 22px;
+}
+.adm-login label { display: block; font-size: 12px; color: #6B7065; margin: 0 0 6px; }
+.adm-login input {
+  width: 100%; padding: 11px 12px; margin-bottom: 16px;
+  border: 1px solid #D6D9CF; border-radius: 6px; font-size: 14px;
+}
+.adm-btn {
+  width: 100%; padding: 12px; background: #2A3122; color: #fff; border: 0;
+  border-radius: 6px; font-size: 14px; cursor: pointer; letter-spacing: 0.05em;
+}
+.adm-btn:hover { background: #3A442E; }
+.adm-err {
+  background: #F3E2E2; color: #97362F; padding: 10px 12px; border-radius: 6px;
+  font-size: 13px; margin-bottom: 16px;
+}
+.muted { color: #8A8F82; }
+.back { font-size: 13px; }

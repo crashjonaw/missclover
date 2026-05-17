@@ -30,6 +30,12 @@
                   <div>
                     <div style="font-weight: 500;">{{ it.variant.product.name }}</div>
                     <div class="muted" style="font-size: 13px;">{{ it.variant.name }} · {{ it.unit_price_cents_snapshot | sgd }}</div>
+                    {% if it.variant.is_preorder %}
+                      {% set months = (preorder_days / 30) | round(0, 'common') | int %}
+                      <div style="font-size: 12px; color: var(--accent-sage-deep); margin-top: 2px;">
+                        Pre-order · ships within {{ months }} month{{ '' if months == 1 else 's' }} (guaranteed)
+                      </div>
+                    {% endif %}
                   </div>
                 </div>
               </td>

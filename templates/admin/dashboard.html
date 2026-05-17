@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard — Admin{% endblock %}
+{% block body %}
+<h1 class="adm-h1">Dashboard</h1>
+<p class="adm-sub">Last {{ kpi.window_days }} days where noted · revenue counts paid &amp; fulfilled orders.</p>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Revenue</div><div class="value">{{ kpi.revenue_cents | sgd }}</div><div class="hint">{{ kpi.paid_orders }} paid orders</div></div>
+  <div class="kpi"><div class="label">Avg order value</div><div class="value">{{ kpi.aov_cents | sgd }}</div></div>
+  <div class="kpi"><div class="label">Customers</div><div class="value">{{ kpi.customers }}</div><div class="hint">+{{ kpi.new_customers }} in {{ kpi.window_days }}d</div></div>
+  <div class="kpi"><div class="label">Paying customers</div><div class="value">{{ kpi.paying_customers }}</div><div class="hint">{{ kpi.conversion_pct }}% conversion</div></div>
+  <div class="kpi"><div class="label">Repeat buyers</div><div class="value">{{ kpi.repeat_customers }}</div><div class="hint">2+ paid orders</div></div>
+  <div class="kpi"><div class="label">Total orders</div><div class="value">{{ kpi.total_orders }}</div></div>
+</div>
+
+<div class="card">
+  <h2>Conversion funnel ({{ kpi.window_days }}d)</h2>
+  {% for s in funnel %}
+    <div class="funnel-row">
+      <div class="fl">{{ s.label }}</div>
+      <div class="funnel-bar"><span style="width: {{ s.pct }}%;"></span></div>
+      <div class="fv">{{ s.count }} <span class="muted">({{ s.pct }}%)</span></div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>Products — view vs. buy</h2>
+  <table>
+    <tr><th>Product</th><th class="num">Views</th><th class="num">Add to cart</th><th class="num">Units sold</th><th class="num">Revenue</th></tr>
+    {% for p in top_products %}
+      <tr><td>{{ p.name }}</td><td class="num">{{ p.views }}</td><td class="num">{{ p.adds }}</td><td class="num">{{ p.units }}</td><td class="num">{{ p.revenue_cents | sgd }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="cols">
+  <div class="card">
+    <h2>Recent orders</h2>
+    <table>
+      <tr><th>Order</th><th>Who</th><th class="num">Total</th><th>Status</th></tr>
+      {% for o in recent_orders %}
+        <tr>
+          <td><a href="{{ url_for('admin.orders') }}">{{ o.order_number }}</a></td>
+          <td>{{ o.buyer_email }}</td>
+          <td class="num">{{ o.total_cents | sgd }}</td>
+          <td><span class="pill {{ o.status }}">{{ o.status }}</span></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="card">
+    <h2>New customers</h2>
+    <table>
+      <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+      {% for u in recent_signups %}
+        <tr>
+          <td><a href="{{ url_for('admin.user_detail', uid=u.id) }}">{{ u.full_name }}</a></td>
+          <td>{{ u.email }}</td>
+          <td class="muted">{{ u.created_at.strftime('%d %b %Y') }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Recent activity</h2>
+  <table>
+    <tr><th>When</th><th>Who</th><th>Event</th><th>Detail</th></tr>
+    {% for a in recent_activity %}
+      <tr>
+        <td class="muted">{{ a.created_at.strftime('%d %b %H:%M') }}</td>
+        <td>{% if a.user %}<a href="{{ url_for('admin.user_detail', uid=a.user.id) }}">{{ a.user.email }}</a>{% else %}<span class="muted">anon</span>{% endif %}</td>
+        <td>{{ a.event_type }}</td>
+        <td class="muted">{% if a.product %}{{ a.product.name }}{% elif a.order %}{{ a.order.order_number }}{% elif a.meta %}{{ a.meta }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

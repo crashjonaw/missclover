@@ -16,9 +16,12 @@ class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, index=True, nullable=False)
+    # Optional login handle — primarily for staff/admin (customers use email).
+    username = db.Column(db.String(80), unique=True, index=True, nullable=True)
     # Nullable: Google-OAuth users have no local password.
     password_hash = db.Column(db.String(255), nullable=True)
     oauth_provider = db.Column(db.String(20), nullable=True)  # e.g. "google"
+    is_admin = db.Column(db.Boolean, default=False, nullable=False, index=True)
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
     phone = db.Column(db.String(40))
@@ -192,6 +195,21 @@ class ProductVariant(db.Model):
     sku = db.Column(db.String(80), unique=True, index=True, nullable=False)
     stock_qty = db.Column(db.Integer, default=0, nullable=False)
     price_cents = db.Column(db.Integer, nullable=False)
+    # When stock runs out, may this colour still be bought as a pre-order?
+    allow_preorder = db.Column(db.Boolean, default=True, nullable=False)
+
+    @property
+    def in_stock(self) -> bool:
+        return self.stock_qty > 0
+
+    @property
+    def is_preorder(self) -> bool:
+        """Buyable but out of stock → this purchase is a pre-order."""
+        return self.stock_qty <= 0 and self.allow_preorder
+
+    @property
+    def is_purchasable(self) -> bool:
+        return self.stock_qty > 0 or self.allow_preorder
 
 
 class ProductImage(db.Model):
@@ -306,6 +324,7 @@ class OrderItem(db.Model):
     variant_id = db.Column(db.Integer, db.ForeignKey("product_variants.id"), nullable=False)
     qty = db.Column(db.Integer, nullable=False)
     unit_price_cents = db.Column(db.Integer, nullable=False)
+    is_preorder = db.Column(db.Boolean, default=False, nullable=False)  # snapshot at order time
     name_snapshot = db.Column(db.String(160), nullable=False)
     design_snapshot = db.Column(db.String(40))
 
@@ -342,3 +361,51 @@ class PasswordResetToken(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     user = db.relationship("User")
+
+
+# ─── Activity / commerce-funnel analytics ────────────────────────────────────
+
+
+class ActivityEvent(db.Model):
+    """One row per meaningful customer action — the growth/insight backbone.
+
+    Deliberately schema-light: `event_type` is an open string and `meta` is
+    JSON, so new funnel steps can be tracked without a migration. Both a
+    signed-in `user_id` and an anonymous `anon_id` (cart session token) are
+    captured so the pre-signup funnel is visible and can be stitched to the
+    account on sign-up. `product_id` lets us compare what shoppers *view*
+    vs. *buy*; `order_id` ties revenue events back to the sale.
+
+    Indexed on every column the admin analytics group/filter by so the
+    aggregates stay fast as volume grows.
+    """
+    __tablename__ = "activity_events"
+
+    # Canonical funnel event types (free-form, but use these for consistency).
+    REGISTER = "register"
+    LOGIN = "login"
+    LOGOUT = "logout"
+    PRODUCT_VIEW = "product_view"
+    COLLECTION_VIEW = "collection_view"
+    ADD_TO_CART = "add_to_cart"
+    CHECKOUT_STARTED = "checkout_started"
+    ORDER_PLACED = "order_placed"
+    ORDER_PAID = "order_paid"
+    ORDER_CANCELLED = "order_cancelled"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
+    anon_id = db.Column(db.String(64), nullable=True, index=True)   # cart session token pre-signup
+    event_type = db.Column(db.String(40), nullable=False, index=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=True, index=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=True, index=True)
+    value_cents = db.Column(db.Integer, nullable=True)              # revenue for paid events
+    meta = db.Column(db.JSON, nullable=True)
+    ip = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    user = db.relationship("User", backref=db.backref(
+        "activity", lazy="dynamic", cascade="all, delete-orphan"))
+    product = db.relationship("Product")
+    order = db.relationship("Order")

@@ -1,0 +1,9 @@
+{# Pre-order guarantee note. Expects `variant` (ProductVariant). #}
+{% if variant and variant.is_preorder %}
+  {% set months = (preorder_days / 30) | round(0, 'common') | int %}
+  <div class="preorder-note">
+    <strong>Pre-order</strong> — this colourway is currently made to order.
+    Guaranteed to ship within <strong>{{ months }} month{{ '' if months == 1 else 's' }}</strong>
+    ({{ preorder_days }} days) of your order, or your money back.
+  </div>
+{% endif %}

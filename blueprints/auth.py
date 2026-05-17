@@ -8,8 +8,9 @@ from flask import (Blueprint, current_app, flash, redirect, render_template,
 from flask_login import current_user, login_required, login_user, logout_user
 
 import google_oauth
+from activity import log_event
 from extensions import db
-from models import PasswordResetToken, User
+from models import ActivityEvent, PasswordResetToken, User
 
 bp = Blueprint("auth", __name__)
 
@@ -25,12 +26,19 @@ def login():
     error = None
     next_url = request.args.get("next") or url_for("account.dashboard")
     if request.method == "POST":
-        email = (request.form.get("email") or "").strip().lower()
+        from sqlalchemy import func
+        ident = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
-        user = User.query.filter_by(email=email).first()
+        user = (User.query
+                .filter((func.lower(User.email) == ident)
+                        | (func.lower(User.username) == ident))
+                .first())
         if user and user.check_password(password):
             login_user(user, remember=bool(request.form.get("remember")))
             flash("Welcome back.", "success")
+            # Admins land in the console unless an explicit next was given.
+            if user.is_admin and not request.args.get("next"):
+                return redirect(url_for("admin.dashboard"))
             return redirect(next_url)
         error = "Email or password is incorrect."
     return render_template("auth/login.html", error=error, next_url=next_url)
@@ -57,6 +65,7 @@ def register():
             u.set_password(password)
             db.session.add(u)
             db.session.commit()
+            log_event(ActivityEvent.REGISTER, user=u)
             login_user(u)
             flash("Welcome to MISS CLOVER.", "success")
             return redirect(url_for("account.dashboard"))
@@ -186,6 +195,7 @@ def google_callback():
         )
         db.session.add(user)
         db.session.commit()
+        log_event(ActivityEvent.REGISTER, user=user, meta={"via": "google"})
         flash("Welcome to MISS CLOVER.", "success")
     else:
         if not user.oauth_provider:

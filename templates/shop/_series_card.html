@@ -5,7 +5,7 @@
   <div class="series-card-img"
        style="background-image: url('{{ url_for('static', filename='img/' ~ _img) }}')"></div>
   <div class="series-card-body" style="background: {{ series.color_hex or '#F5F1EA' }}; color: {{ (series.color_hex or '#F5F1EA') | text_on }};">
-    <h3 class="series-card-name">{{ series.name }}</h3>
+    <h3 class="series-card-name">{{ series.name }} Series</h3>
     {% if series.tile_body or series.description %}
       <p class="series-card-desc">{{ series.tile_body or series.description }}</p>
     {% endif %}

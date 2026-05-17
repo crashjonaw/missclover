@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}Admin — MISS CLOVER{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+</head>
+<body>
+  <div class="adm-shell">
+    <aside class="adm-side">
+      <div class="adm-brand">MISS<span class="dot">·</span>CLOVER</div>
+      <nav class="adm-nav">
+        {% set p = request.path %}
+        <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if p == url_for('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin.users') }}" class="{{ 'active' if p.startswith('/admin/users') }}">Customers</a>
+        <a href="{{ url_for('admin.orders') }}" class="{{ 'active' if p.startswith('/admin/orders') }}">Orders</a>
+        <a href="{{ url_for('admin.inventory') }}" class="{{ 'active' if p.startswith('/admin/inventory') }}">Inventory</a>
+        <a href="{{ url_for('admin.fulfilment') }}" class="{{ 'active' if p.startswith('/admin/fulfilment') }}">To fulfil</a>
+        <a href="{{ url_for('shop.home') }}">← Storefront</a>
+        <a href="{{ url_for('admin.logout') }}">Sign out</a>
+      </nav>
+    </aside>
+    <main class="adm-main">
+      {% with msgs = get_flashed_messages(with_categories=true) %}
+        {% for cat, m in msgs %}<div class="adm-err" style="background:#E8EFE3;color:#3A4A2E;">{{ m }}</div>{% endfor %}
+      {% endwith %}
+      {% block body %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

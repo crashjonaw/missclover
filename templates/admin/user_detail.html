@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ user.full_name }} — Admin{% endblock %}
+{% block body %}
+<p class="back"><a href="{{ url_for('admin.users') }}">← Customers</a></p>
+<h1 class="adm-h1">{{ user.full_name }}</h1>
+<p class="adm-sub">{{ user.email }}
+  {% if user.username %}· @{{ user.username }}{% endif %}
+  {% if user.oauth_provider %}· via {{ user.oauth_provider }}{% endif %}
+  · joined {{ user.created_at.strftime('%d %b %Y') }}</p>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Orders</div><div class="value">{{ orders_count }}</div></div>
+  <div class="kpi"><div class="label">Lifetime spend</div><div class="value">{{ spend_cents | sgd }}</div></div>
+  <div class="kpi"><div class="label">Newsletter</div><div class="value">{{ 'Yes' if user.newsletter_opt_in else 'No' }}</div></div>
+</div>
+
+<div class="card">
+  <h2>Orders</h2>
+  <table>
+    <tr><th>Order</th><th>Date</th><th class="num">Total</th><th>Status</th></tr>
+    {% for o in orders %}
+      <tr>
+        <td>{{ o.order_number }}</td>
+        <td class="muted">{{ o.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td class="num">{{ o.total_cents | sgd }}</td>
+        <td><span class="pill {{ o.status }}">{{ o.status }}</span></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4" class="muted">No orders yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h2>Activity (latest 50)</h2>
+  <table>
+    <tr><th>When</th><th>Event</th><th>Detail</th></tr>
+    {% for a in activity %}
+      <tr>
+        <td class="muted">{{ a.created_at.strftime('%d %b %Y %H:%M') }}</td>
+        <td>{{ a.event_type }}</td>
+        <td class="muted">{% if a.product %}{{ a.product.name }}{% elif a.order %}{{ a.order.order_number }}{% elif a.meta %}{{ a.meta }}{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="3" class="muted">No activity recorded.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

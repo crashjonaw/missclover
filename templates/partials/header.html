@@ -90,6 +90,9 @@
         </li>
       {% endfor %}
       <li><a href="{{ url_for('shop.about') }}">Our story</a></li>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <li><a href="{{ url_for('admin.dashboard') }}" style="color: var(--accent-sage-deep); font-weight: 600;">Admin</a></li>
+      {% endif %}
     </ul>
   </nav>
 </header>

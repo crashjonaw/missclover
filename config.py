@@ -40,6 +40,15 @@ class Config:
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", "hello@missclover.sg")
     MAIL_SUPPRESS_SEND = _bool("MAIL_SUPPRESS_SEND", False)
 
+    # Admin bootstrap (override in .env for production)
+    ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "JYVS2026")
+    ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@missclover.co")
+
+    # Pre-orders: out-of-stock colours ship within this window (guaranteed)
+    PREORDER_FULFILMENT_DAYS = int(os.getenv("PREORDER_FULFILMENT_DAYS", "60"))
+    LOW_STOCK_THRESHOLD = int(os.getenv("LOW_STOCK_THRESHOLD", "3"))
+
     # Shipping (cents, SGD)
     SHIPPING_FLAT_RATE_CENTS = int(os.getenv("SHIPPING_FLAT_RATE_CENTS", "800"))
     FREE_SHIPPING_THRESHOLD_CENTS = int(os.getenv("FREE_SHIPPING_THRESHOLD_CENTS", "20000"))

@@ -29,6 +29,18 @@
     <div class="order-summary-row is-total"><span>Total</span><span>{{ order.total_cents | sgd }}</span></div>
   </div>
 
+  {% if order.items | selectattr('is_preorder') | list %}
+    {% set months = (preorder_days / 30) | round(0, 'common') | int %}
+    <div class="card card--soft" style="text-align: left; margin: 0 auto var(--sp-6); max-width: 480px; border-left: 3px solid var(--accent-sage);">
+      <h4 class="pdp-section-title" style="margin-bottom: var(--sp-2);">Includes a pre-order</h4>
+      <p class="muted" style="font-size: 14px; margin: 0;">
+        One or more colours are made to order. We guarantee dispatch within
+        <strong>{{ months }} month{{ '' if months == 1 else 's' }}</strong>
+        ({{ preorder_days }} days) of today — or a full refund.
+      </p>
+    </div>
+  {% endif %}
+
   {% if tracker_url %}
     <div class="card card--soft" style="text-align: left; margin: 0 auto var(--sp-6); max-width: 480px;">
       <h4 class="pdp-section-title" style="margin-bottom: var(--sp-2);">Track this guest order</h4>
