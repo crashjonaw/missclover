@@ -22,13 +22,14 @@ class Config:
     # Public site URL for absolute links in emails
     SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:5002")
 
-    # HitPay
-    HITPAY_API_KEY = os.getenv("HITPAY_API_KEY", "")
-    HITPAY_SALT = os.getenv("HITPAY_SALT", "")
-    HITPAY_API_BASE = os.getenv("HITPAY_API_BASE", "https://api.sandbox.hit-pay.com/v1")
-    HITPAY_PAYMENT_METHODS = [
-        m.strip() for m in os.getenv("HITPAY_PAYMENT_METHODS", "paynow_online,card,grabpay").split(",") if m.strip()
-    ]
+    # Stripe (cards / PayNow / GrabPay via the Payment Element)
+    # Use sk_test_/pk_test_ keys while building; swap to live keys at go-live.
+    # NEVER hardcode keys here — keep them in .env (gitignored).
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+    STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+    # Signing secret for the webhook endpoint (whsec_...). From the Stripe
+    # Dashboard webhook config, or `stripe listen` output in local testing.
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
     # Mail
     MAIL_SERVER = os.getenv("MAIL_SERVER", "localhost")

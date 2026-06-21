@@ -1,7 +1,7 @@
 """Google OAuth 2.0 (authorization-code flow).
 
 Mirrors the pattern in ref/quantiesunite but uses `requests` (already a
-dependency, used by hitpay.py) instead of shelling out to curl.
+dependency) instead of shelling out to curl.
 
 Credentials live in `google_api_secret.json` at the repo root — the standard
 "Web application" OAuth client file downloaded from Google Cloud Console:

@@ -1,6 +1,7 @@
 """Checkout flow: trifecta start (sign-in / register / continue-as-guest), shipping, payment.
 
-HitPay's create_payment_request is monkeypatched so tests don't hit the network.
+The Stripe gateway is stubbed via the `stripe_stub` fixture so tests never hit
+the network.
 """
 import pytest
 
@@ -135,34 +136,26 @@ def test_register_action_rejects_existing_email(client, products, user):
     assert b"already exists" in r.data
 
 
-# ─── Payment (HitPay mocked) ──────────────────────────────────────────────────
+# ─── Payment (Stripe stubbed) ─────────────────────────────────────────────────
 
 
-def test_payment_creates_order_and_redirects_to_hitpay(client, products, monkeypatch):
-    """POST to /checkout/payment should: create Order + items, call HitPay,
-    store the payment request id, and redirect to the hosted URL."""
-    fake_url = "https://api.sandbox.hit-pay.com/payment-request/test-abc"
-    captured = {}
-
-    def fake_create(*, amount_cents, email, reference, redirect_url, webhook_url, name=None):
-        captured.update(amount_cents=amount_cents, email=email, reference=reference,
-                        redirect_url=redirect_url, webhook_url=webhook_url, name=name)
-        return {"id": "pay_test_abc", "url": fake_url}
-
-    # Patch where it's used (hitpay.create_payment_request imported into checkout view scope)
-    import hitpay as hp
-    monkeypatch.setattr(hp, "create_payment_request", fake_create)
-
-    # Walk: add → guest → shipping → payment POST
+def test_payment_creates_order_and_renders_element(client, products, stripe_stub):
+    """GET /checkout/payment should: create Order + items, create a Stripe
+    PaymentIntent, store its id, and render the Payment Element with the
+    client secret + publishable key."""
+    # Walk: add → guest → shipping → payment GET
     client.post("/cart/add", data={"variant_id": _vid(products, "classic"), "qty": 2})
     client.post("/checkout/start", data={"action": "guest", "email": "g@g.com"})
     client.post("/checkout/shipping", data={
         "recipient_name": "G G", "line1": "L1", "line2": "", "postcode": "123456", "phone": "91234567"
     })
 
-    r = client.post("/checkout/payment")
-    assert r.status_code == 302
-    assert r.headers["Location"] == fake_url
+    r = client.get("/checkout/payment")
+    assert r.status_code == 200
+    body = r.get_data(as_text=True)
+    assert "payment-element" in body
+    assert "pk_test_dummy" in body          # publishable key rendered
+    assert "js.stripe.com/v3" in body       # Stripe.js loaded
 
     # Order persisted
     order = Order.query.first()
@@ -173,25 +166,37 @@ def test_payment_creates_order_and_redirects_to_hitpay(client, products, monkeyp
     assert order.total_cents == 70000
     assert order.guest_email == "g@g.com"
     assert order.guest_lookup_token  # not None / empty
-    assert order.hitpay_payment_request_id == "pay_test_abc"
+    assert order.stripe_payment_intent_id == "pi_test_123"
+    assert order.stripe_status == "requires_payment_method"
 
-    # HitPay was called with sane args
-    assert captured["amount_cents"] == 70000
-    assert captured["email"] == "g@g.com"
-    assert captured["reference"] == order.order_number
-    assert "/checkout/return" in captured["redirect_url"]
-    assert "/checkout/webhook" in captured["webhook_url"]
+    # The client_secret reaches the page
+    assert "pi_test_123_secret_test" in body
+    # PaymentIntent created with the right amount
+    assert stripe_stub["last"].amount == 70000
 
 
-def test_success_page_shows_guest_tracker_for_guest_orders(client, products, monkeypatch):
-    # Drive an order through to success state
-    monkeypatch.setattr("hitpay.create_payment_request",
-                        lambda **kw: {"id": "p1", "url": "http://hitpay.test/p1"})
+def test_payment_reuses_pending_order_on_reload(client, products, stripe_stub):
+    """A second GET /checkout/payment must NOT create a duplicate order."""
     client.post("/cart/add", data={"variant_id": _vid(products, "classic"), "qty": 1})
     client.post("/checkout/start", data={"action": "guest", "email": "g@g.com"})
     client.post("/checkout/shipping", data={
         "recipient_name": "G", "line1": "L", "postcode": "123456", "phone": "91234567"})
-    client.post("/checkout/payment")
+
+    client.get("/checkout/payment")
+    client.get("/checkout/payment")
+    assert Order.query.count() == 1
+
+
+def _drive_to_payment_guest(client, products):
+    client.post("/cart/add", data={"variant_id": _vid(products, "classic"), "qty": 1})
+    client.post("/checkout/start", data={"action": "guest", "email": "g@g.com"})
+    client.post("/checkout/shipping", data={
+        "recipient_name": "G", "line1": "L", "postcode": "123456", "phone": "91234567"})
+    client.get("/checkout/payment")
+
+
+def test_success_page_shows_guest_tracker_for_guest_orders(client, products, stripe_stub):
+    _drive_to_payment_guest(client, products)
 
     order = Order.query.first()
     r = client.get(f"/checkout/success/{order.order_number}")
@@ -203,15 +208,13 @@ def test_success_page_shows_guest_tracker_for_guest_orders(client, products, mon
     assert order.guest_lookup_token in body
 
 
-def test_success_page_for_signed_in_order_no_guest_tracker(client, products, monkeypatch, user):
-    monkeypatch.setattr("hitpay.create_payment_request",
-                        lambda **kw: {"id": "p2", "url": "http://hitpay.test/p2"})
+def test_success_page_for_signed_in_order_no_guest_tracker(client, products, stripe_stub, user):
     # sign in
     client.post("/auth/login", data={"email": user.email, "password": "password123"})
     client.post("/cart/add", data={"variant_id": _vid(products, "classic"), "qty": 1})
     client.post("/checkout/shipping", data={
         "recipient_name": "U", "line1": "L", "postcode": "123456", "phone": "91234567"})
-    client.post("/checkout/payment")
+    client.get("/checkout/payment")
 
     order = Order.query.first()
     r = client.get(f"/checkout/success/{order.order_number}")

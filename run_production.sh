@@ -100,7 +100,7 @@ txt = re.sub(r'^SECRET_KEY=.*$', f'SECRET_KEY={"${SECRET}"}', txt, flags=re.M)
 with open(p, "w") as f: f.write(txt)
 PY
   fi
-  warn "→ Edit .env to fill in HITPAY_API_KEY, HITPAY_SALT, and MAIL_* before checkout works."
+  warn "→ Edit .env to fill in STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET, and MAIL_* before checkout works."
 fi
 set -a
 # shellcheck disable=SC1091

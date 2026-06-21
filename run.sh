@@ -27,7 +27,7 @@ if [ ! -f .env ]; then
   echo "First run — creating .env from .env.example"
   cp .env.example .env
   python -c "import secrets; print('SECRET_KEY=' + secrets.token_hex(32))" >> .env.tmp 2>/dev/null || true
-  echo "→ Edit .env to fill in HITPAY_API_KEY and (optionally) MAIL_* before checkout works."
+  echo "→ Edit .env to fill in STRIPE_SECRET_KEY / STRIPE_PUBLISHABLE_KEY (and STRIPE_WEBHOOK_SECRET) and (optionally) MAIL_* before checkout works."
 fi
 
 # migrations + seed (idempotent)

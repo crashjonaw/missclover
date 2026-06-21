@@ -7,7 +7,7 @@ from flask_login import current_user, login_user
 
 from activity import log_event
 from extensions import db
-from models import ActivityEvent, Address, Order, OrderItem, ProductVariant, User
+from models import ActivityEvent, Address, Order, OrderItem, User
 from blueprints.cart import get_cart, _shipping_total
 
 bp = Blueprint("checkout", __name__)
@@ -124,24 +124,43 @@ def shipping():
                            guest_email=session.get(GUEST_EMAIL_KEY))
 
 
-# ─── Step 3: payment ─────────────────────────────────────────────────────────
+# ─── Step 3: payment (Stripe Payment Element) ────────────────────────────────
 
 
-@bp.route("/payment", methods=["GET", "POST"])
-def payment():
-    if not _is_authorised_for_checkout():
-        return redirect(url_for("checkout.start"))
+def _rebuild_order_items(order, cart) -> None:
+    """Replace an order's line items from the current cart. Lets us keep a
+    reused pending order in sync if the buyer edits the cart and comes back."""
+    for it in list(order.items):
+        db.session.delete(it)
+    db.session.flush()
+    for it in cart.items:
+        v = it.variant
+        db.session.add(OrderItem(
+            order_id=order.id,
+            variant_id=v.id,
+            qty=it.qty,
+            unit_price_cents=it.unit_price_cents_snapshot,
+            is_preorder=v.stock_qty <= 0,
+            name_snapshot=v.product.name,
+            design_snapshot=v.product.design_code,
+        ))
 
-    cart = get_cart(create=False)
-    addr_id = session.get(SHIPPING_ADDR_KEY)
-    if not cart or not cart.items or not addr_id:
-        return redirect(url_for("checkout.shipping"))
 
-    address = Address.query.get_or_404(addr_id)
-    shipping_cents, total_cents = _shipping_total(cart)
+def _ensure_pending_order(cart, address, shipping_cents, total_cents):
+    """Get-or-create the pending Order for this session and its Stripe
+    PaymentIntent. Returns (order, client_secret). Reuses the session's pending
+    order on reload/back-navigation, resyncing totals and the intent amount so
+    a buyer can't pay a stale price."""
+    from stripe_gateway import (create_payment_intent, retrieve_payment_intent,
+                                update_payment_intent_amount)
 
-    if request.method == "POST":
-        # Build the order, then call HitPay
+    oid = session.get(PENDING_ORDER_KEY)
+    order = Order.query.get(oid) if oid else None
+    if order and order.status != "pending":
+        order = None  # already paid/cancelled — start a fresh order
+
+    is_new = order is None
+    if is_new:
         order = Order(
             order_number=Order.generate_number(),
             user_id=current_user.id if current_user.is_authenticated else None,
@@ -156,111 +175,176 @@ def payment():
         db.session.add(order)
         db.session.flush()
 
-        for it in cart.items:
-            v = it.variant
-            db.session.add(OrderItem(
-                order_id=order.id,
-                variant_id=v.id,
-                qty=it.qty,
-                unit_price_cents=it.unit_price_cents_snapshot,
-                is_preorder=v.stock_qty <= 0,
-                name_snapshot=v.product.name,
-                design_snapshot=v.product.design_code,
-            ))
+    # Keep the order in sync with the cart + chosen address.
+    order.shipping_address_id = address.id
+    order.subtotal_cents = cart.subtotal_cents
+    order.shipping_cents = shipping_cents
+    order.total_cents = total_cents
+    _rebuild_order_items(order, cart)
 
-        db.session.commit()
-        session[PENDING_ORDER_KEY] = order.id
+    if is_new or not order.stripe_payment_intent_id:
+        intent = create_payment_intent(
+            amount_cents=total_cents,
+            currency=order.currency,
+            reference=order.order_number,
+            email=order.buyer_email,
+            metadata={"order_id": str(order.id)},
+        )
+        order.stripe_payment_intent_id = intent.id
+    else:
+        intent = retrieve_payment_intent(order.stripe_payment_intent_id)
+        # Resync the amount if the cart changed, but never touch an intent that's
+        # already being paid (PayNow/GrabPay are async).
+        if intent.status not in {"succeeded", "processing"} and intent.amount != total_cents:
+            intent = update_payment_intent_amount(order.stripe_payment_intent_id, total_cents)
+
+    order.stripe_status = intent.status
+    db.session.commit()
+
+    session[PENDING_ORDER_KEY] = order.id
+    if is_new:
         log_event(ActivityEvent.ORDER_PLACED, order=order)
-
-        # Call HitPay
-        from hitpay import create_payment_request, HitPayError
-        site = current_app.config["SITE_URL"].rstrip("/")
-        try:
-            resp = create_payment_request(
-                amount_cents=order.total_cents,
-                email=order.buyer_email,
-                reference=order.order_number,
-                redirect_url=site + url_for("checkout.return_from_hitpay"),
-                webhook_url=site + url_for("checkout.webhook"),
-                name=address.recipient_name,
-            )
-        except HitPayError as e:
-            current_app.logger.error("HitPay error: %s", e)
-            flash("Payment couldn't be initialised. Please check that HitPay is configured.", "error")
-            return redirect(url_for("checkout.payment"))
-
-        order.hitpay_payment_request_id = resp.get("id")
-        db.session.commit()
-        return redirect(resp.get("url"))
-
-    return render_template("checkout/payment.html",
-                           cart=cart,
-                           address=address,
-                           shipping_cents=shipping_cents,
-                           total_cents=total_cents)
+    return order, intent.client_secret
 
 
-# ─── HitPay redirect_url ─────────────────────────────────────────────────────
+@bp.route("/payment", methods=["GET"])
+def payment():
+    if not _is_authorised_for_checkout():
+        return redirect(url_for("checkout.start"))
+
+    cart = get_cart(create=False)
+    addr_id = session.get(SHIPPING_ADDR_KEY)
+    if not cart or not cart.items or not addr_id:
+        return redirect(url_for("checkout.shipping"))
+
+    address = Address.query.get_or_404(addr_id)
+    shipping_cents, total_cents = _shipping_total(cart)
+
+    from stripe_gateway import StripeError
+    try:
+        order, client_secret = _ensure_pending_order(cart, address, shipping_cents, total_cents)
+    except StripeError as e:
+        current_app.logger.error("Stripe error initialising payment: %s", e)
+        flash("Payment couldn't be initialised. Please try again, or contact us if it persists.", "error")
+        return redirect(url_for("checkout.shipping"))
+
+    site = current_app.config["SITE_URL"].rstrip("/")
+    return render_template(
+        "checkout/payment.html",
+        cart=cart,
+        address=address,
+        shipping_cents=shipping_cents,
+        total_cents=total_cents,
+        client_secret=client_secret,
+        stripe_publishable_key=current_app.config["STRIPE_PUBLISHABLE_KEY"],
+        return_url=site + url_for("checkout.return_from_stripe"),
+    )
+
+
+# ─── Stripe return_url ───────────────────────────────────────────────────────
 
 
 @bp.route("/return")
-def return_from_hitpay():
-    """User comes back here after the HitPay hosted page."""
+def return_from_stripe():
+    """Stripe redirects the buyer here after confirmPayment. The webhook is the
+    source of truth for marking an order paid; this page only routes the buyer
+    to the right view (and clears the cart, since here we still have a session)."""
     order_id = session.get(PENDING_ORDER_KEY)
     if not order_id:
         return redirect(url_for("shop.home"))
     order = Order.query.get_or_404(order_id)
-    return redirect(url_for("checkout.success", order_no=order.order_number))
 
+    pi = request.args.get("payment_intent")
+    settled = order.status == "paid"
+    if pi and pi == order.stripe_payment_intent_id and not settled:
+        # Best-effort read so the buyer sees the right page even if the webhook
+        # hasn't landed yet. No money-affecting state changes here.
+        try:
+            from stripe_gateway import retrieve_payment_intent
+            intent = retrieve_payment_intent(pi)
+            order.stripe_status = intent.status
+            db.session.commit()
+            settled = intent.status in {"succeeded", "processing"}
+        except Exception as e:
+            current_app.logger.warning("return: could not read PaymentIntent: %s", e)
 
-# ─── HitPay webhook ──────────────────────────────────────────────────────────
-
-
-@bp.post("/webhook")
-def webhook():
-    """Server-to-server callback from HitPay. Verify signature; mutate state."""
-    from hitpay import verify_webhook
-    form = request.form.to_dict()
-    sent_hmac = form.get("hmac", "")
-
-    if not verify_webhook(form, sent_hmac):
-        current_app.logger.warning("HitPay webhook signature mismatch")
-        return ("invalid signature", 400)
-
-    reference = form.get("reference_number")
-    status = form.get("status")
-    payment_id = form.get("payment_id") or form.get("payment_request_id")
-
-    order = Order.query.filter_by(order_number=reference).first()
-    if not order:
-        return ("order not found", 404)
-
-    order.hitpay_status = status
-    order.hitpay_reference = payment_id
-    if status == "completed" and order.status == "pending":
-        order.status = "paid"
-        order.paid_at = datetime.utcnow()
-        # decrement stock
-        for item in order.items:
-            if item.variant:
-                item.variant.stock_qty = max(0, item.variant.stock_qty - item.qty)
-        # clear the cart
+    if settled:
+        # Empty this buyer's cart now that payment is underway/complete.
         cart = get_cart(create=False)
         if cart:
             for it in list(cart.items):
                 db.session.delete(it)
-        # send confirmation
+            db.session.commit()
+        return redirect(url_for("checkout.success", order_no=order.order_number))
+
+    flash("Your payment wasn't completed. You can try again below.", "error")
+    return redirect(url_for("checkout.payment"))
+
+
+# ─── Stripe webhook ──────────────────────────────────────────────────────────
+
+
+def _order_for_intent(intent) -> "Order | None":
+    order = Order.query.filter_by(stripe_payment_intent_id=intent.get("id")).first()
+    if not order:
+        ref = (intent.get("metadata") or {}).get("reference")
+        if ref:
+            order = Order.query.filter_by(order_number=ref).first()
+    return order
+
+
+def _mark_paid(intent) -> None:
+    order = _order_for_intent(intent)
+    if not order:
+        current_app.logger.warning("Stripe webhook: no order for intent %s", intent.get("id"))
+        return
+    order.stripe_status = intent.get("status")
+    if order.status == "pending":  # idempotent — ignore duplicate deliveries
+        order.status = "paid"
+        order.paid_at = datetime.utcnow()
+        for item in order.items:
+            if item.variant:
+                item.variant.stock_qty = max(0, item.variant.stock_qty - item.qty)
         try:
             from email_service import send_order_confirmation
             send_order_confirmation(order)
         except Exception as e:
             current_app.logger.exception("Failed to send confirmation email: %s", e)
         log_event(ActivityEvent.ORDER_PAID, user=order.user, order=order, commit=False)
-    elif status in {"failed", "expired"} and order.status == "pending":
+    db.session.commit()
+
+
+def _mark_failed(intent) -> None:
+    order = _order_for_intent(intent)
+    if not order:
+        return
+    order.stripe_status = intent.get("status")
+    if order.status == "pending":
         order.status = "cancelled"
         log_event(ActivityEvent.ORDER_CANCELLED, user=order.user, order=order, commit=False)
-
     db.session.commit()
+
+
+@bp.post("/stripe-webhook")
+def stripe_webhook():
+    """Server-to-server callback from Stripe. Verify the signature, then mutate
+    order state. Cart clearing happens on the return page (which has a session)."""
+    from stripe_gateway import verify_webhook, StripeError
+    payload = request.get_data()
+    sig = request.headers.get("Stripe-Signature", "")
+
+    try:
+        event = verify_webhook(payload, sig)
+    except StripeError:
+        return ("invalid signature", 400)
+
+    etype = event["type"]
+    obj = event["data"]["object"]
+    if etype == "payment_intent.succeeded":
+        _mark_paid(obj)
+    elif etype == "payment_intent.payment_failed":
+        _mark_failed(obj)
+    # Other event types are acknowledged but ignored.
     return ("ok", 200)
 
 

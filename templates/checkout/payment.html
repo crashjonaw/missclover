@@ -25,15 +25,22 @@
       <div class="card">
         <h4 class="pdp-section-title" style="margin-bottom: var(--sp-3);">Payment method</h4>
         <p class="muted" style="margin-bottom: var(--sp-4);">
-          Pay securely with HitPay. You can pay by credit/debit card, PayNow, or GrabPay.
+          Pay securely by credit/debit card, PayNow, or GrabPay. Card details are
+          handled directly by Stripe and never touch our servers.
         </p>
-        <form method="post" action="{{ url_for('checkout.payment') }}">
-          <button type="submit" class="btn btn--primary btn--lg btn--full">
-            Pay {{ total_cents | sgd }} with HitPay →
+
+        <form id="payment-form">
+          <div id="payment-element"><!-- Stripe Payment Element mounts here --></div>
+          <div id="payment-message" class="muted" role="alert"
+               style="display: none; margin-top: var(--sp-3); color: #b00020;"></div>
+          <button id="submit-payment" type="submit"
+                  class="btn btn--primary btn--lg btn--full" style="margin-top: var(--sp-4);">
+            <span id="button-text">Pay {{ total_cents | sgd }}</span>
+            <span id="button-spinner" style="display: none;">Processing…</span>
           </button>
         </form>
         <p class="muted" style="font-size: 12px; text-align: center; margin-top: var(--sp-3);">
-          You'll be redirected to HitPay's secure checkout.
+          PayNow and GrabPay may redirect you to complete the payment.
         </p>
       </div>
     </div>
@@ -58,4 +65,54 @@
     </aside>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  (function () {
+    const stripe = Stripe("{{ stripe_publishable_key }}");
+    const clientSecret = "{{ client_secret }}";
+    const returnUrl = "{{ return_url }}";
+
+    const elements = stripe.elements({ clientSecret });
+    const paymentElement = elements.create("payment", { layout: "tabs" });
+    paymentElement.mount("#payment-element");
+
+    const form = document.getElementById("payment-form");
+    const submitBtn = document.getElementById("submit-payment");
+    const buttonText = document.getElementById("button-text");
+    const buttonSpinner = document.getElementById("button-spinner");
+    const messageEl = document.getElementById("payment-message");
+
+    function setLoading(loading) {
+      submitBtn.disabled = loading;
+      buttonText.style.display = loading ? "none" : "inline";
+      buttonSpinner.style.display = loading ? "inline" : "none";
+    }
+
+    function showMessage(text) {
+      messageEl.textContent = text;
+      messageEl.style.display = text ? "block" : "none";
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      setLoading(true);
+      showMessage("");
+
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: { return_url: returnUrl },
+      });
+
+      // We only reach here if there's an immediate error (e.g. card declined,
+      // validation). On success the buyer is redirected to return_url.
+      if (error) {
+        showMessage(error.message || "Something went wrong. Please try again.");
+        setLoading(false);
+      }
+    });
+  })();
+</script>
 {% endblock %}

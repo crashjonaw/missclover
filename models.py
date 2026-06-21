@@ -287,9 +287,9 @@ class Order(db.Model):
     shipping_address_id = db.Column(db.Integer, db.ForeignKey("addresses.id"), nullable=True)
     shipping_address = db.relationship("Address")
 
-    hitpay_payment_request_id = db.Column(db.String(80))
-    hitpay_reference = db.Column(db.String(80))
-    hitpay_status = db.Column(db.String(40))
+    # Stripe payment tracking (PaymentIntent flow)
+    stripe_payment_intent_id = db.Column(db.String(80), index=True)
+    stripe_status = db.Column(db.String(40))
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     paid_at = db.Column(db.DateTime, nullable=True)

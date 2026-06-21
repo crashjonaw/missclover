@@ -29,10 +29,9 @@ class TestConfig(Config):
     WTF_CSRF_ENABLED = False
     MAIL_SUPPRESS_SEND = True
     SITE_URL = "http://testserver"
-    HITPAY_API_KEY = "test-api-key"
-    HITPAY_SALT = "test-salt-for-hmac"
-    HITPAY_API_BASE = "https://api.sandbox.hit-pay.com/v1"
-    HITPAY_PAYMENT_METHODS = ["paynow_online", "card", "grabpay"]
+    STRIPE_SECRET_KEY = "sk_test_dummy"
+    STRIPE_PUBLISHABLE_KEY = "pk_test_dummy"
+    STRIPE_WEBHOOK_SECRET = "whsec_test_dummy"
     SHIPPING_FLAT_RATE_CENTS = 800
     FREE_SHIPPING_THRESHOLD_CENTS = 20000
 
@@ -171,3 +170,49 @@ def signed_in(client, user):
     """A test client already authenticated as `user`."""
     client.post("/auth/login", data={"email": user.email, "password": "password123"})
     return client
+
+
+class FakePaymentIntent:
+    """Stand-in for stripe.PaymentIntent — supports both attribute and .get()
+    access, like the real StripeObject."""
+    def __init__(self, id="pi_test_123", status="requires_payment_method",
+                 amount=0, metadata=None):
+        self.id = id
+        self.status = status
+        self.amount = amount
+        self.client_secret = f"{id}_secret_test"
+        self.metadata = metadata or {}
+
+    def get(self, key, default=None):
+        return getattr(self, key, default)
+
+
+@pytest.fixture()
+def stripe_stub(monkeypatch):
+    """Patch the Stripe gateway so checkout tests never hit the network.
+
+    Returns a dict whose ``last`` key holds the most recently created
+    FakePaymentIntent, so tests can drive/assert on it.
+    """
+    import stripe_gateway
+
+    state = {}
+
+    def fake_create(*, amount_cents, currency, reference, email, metadata=None):
+        pi = FakePaymentIntent(amount=amount_cents,
+                               metadata={"reference": reference, **(metadata or {})})
+        state["last"] = pi
+        return pi
+
+    def fake_retrieve(payment_intent_id):
+        return state.get("last") or FakePaymentIntent(id=payment_intent_id)
+
+    def fake_update(payment_intent_id, amount_cents):
+        pi = state.get("last") or FakePaymentIntent(id=payment_intent_id)
+        pi.amount = amount_cents
+        return pi
+
+    monkeypatch.setattr(stripe_gateway, "create_payment_intent", fake_create)
+    monkeypatch.setattr(stripe_gateway, "retrieve_payment_intent", fake_retrieve)
+    monkeypatch.setattr(stripe_gateway, "update_payment_intent_amount", fake_update)
+    return state
