@@ -483,7 +483,41 @@
   grid-template-columns: 1.5fr 1fr;
   gap: var(--sp-10);
 }
-@media (max-width: 880px) { .cart-grid { grid-template-columns: 1fr; } }
+/* minmax(0,...) lets the column shrink to the viewport instead of being pushed
+   wider by a non-wrapping child (e.g. a button row). */
+@media (max-width: 880px) { .cart-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Checkout step actions (e.g. shipping's Back / Continue). Side by side on
+   desktop; stacked full-width on phones so they never overflow. */
+.checkout-actions { display: flex; gap: var(--sp-3); align-items: center; margin-top: var(--sp-6); flex-wrap: wrap; }
+.checkout-actions-primary { margin-left: auto; }
+@media (max-width: 540px) {
+  .checkout-actions { flex-direction: column-reverse; align-items: stretch; }
+  .checkout-actions .btn { width: 100%; }
+  .checkout-actions-primary { margin-left: 0; }
+}
+
+/* Phones: the 4-column cart table can't fit — reflow each row into a card.
+   Product spans the top; quantity + line total share a row; remove sits below. */
+@media (max-width: 600px) {
+  .cart-table { margin-bottom: var(--sp-6); }
+  .cart-table thead { display: none; }
+  .cart-table, .cart-table tbody { display: block; width: 100%; }
+  .cart-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: var(--sp-4);
+    row-gap: var(--sp-3);
+    align-items: center;
+    padding: var(--sp-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cart-table td { display: block; padding: 0; border: 0; }
+  .cart-table td:nth-child(1) { grid-column: 1 / -1; }              /* product */
+  .cart-table td:nth-child(2) { grid-column: 1; justify-self: start; } /* qty form */
+  .cart-table td:nth-child(3) { grid-column: 2; justify-self: end; text-align: right; } /* line total */
+  .cart-table td:nth-child(4) { grid-column: 1 / -1; justify-self: end; } /* remove */
+}
 .cart-empty {
   text-align: center;
   padding: var(--sp-20) var(--sp-4);

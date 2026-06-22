@@ -36,6 +36,9 @@ backups/
 # Reference projects (uncomment to commit)
 ref/
 
+# Playwright E2E screenshots
+unit_test/playwright/screenshots/
+
 # IDE
 .vscode/
 .idea/

@@ -158,7 +158,9 @@
   font-weight: 600;
   color: var(--ink-muted);
 }
-.phone-input { border-radius: 0 var(--radius) var(--radius) 0; }
+/* Fill the space beside the +65 prefix without forcing the input's 100% width
+   onto the flex row (which pushed it past the viewport on phones). */
+.phone-input { flex: 1 1 auto; min-width: 0; width: auto; border-radius: 0 var(--radius) var(--radius) 0; }
 
 /* Checkbox row */
 .form-check {
