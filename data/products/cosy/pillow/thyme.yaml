@@ -8,7 +8,7 @@ name: Thyme Pillow
 design_code: thyme
 bag_type: shoulderbag
 color_hex: "#7C8A5A"            # muted thyme / herb green
-base_price_cents: 24000
+base_price_cents: 100
 is_featured: true
 display_order: 20               # colour order within the Pillow series
 
@@ -27,7 +27,7 @@ variants:
   - name: Thyme
     sku: MC-PLW-TH
     stock_qty: 20
-    price_cents: 24000
+    price_cents: 100
 
 images:
   - path: products/cosy/pillow/thyme/hero.jpg

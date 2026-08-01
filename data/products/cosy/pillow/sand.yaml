@@ -8,7 +8,7 @@ name: Sand Pillow
 design_code: sand
 bag_type: shoulderbag           # single padded strap, soft hobo silhouette
 color_hex: "#D8C3A5"            # warm sand / oat
-base_price_cents: 24000
+base_price_cents: 100
 is_featured: true
 display_order: 10               # colour order within the Pillow series
 
@@ -28,7 +28,7 @@ variants:
   - name: Sand
     sku: MC-PLW-SD
     stock_qty: 20
-    price_cents: 24000
+    price_cents: 100
 
 images:
   - path: products/cosy/pillow/sand/hero.jpg
