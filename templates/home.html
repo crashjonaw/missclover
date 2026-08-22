@@ -4,13 +4,8 @@
 {% block content %}
 {# ── Hero: full-bleed lifestyle photo, copy blended into the scene ──── #}
 <section class="home-hero">
-  {# Blurred copy of the same shot fills the band behind the sharp one, so the
-     photo can sit smaller than full-bleed without hard letterbox edges. #}
-  <img class="home-hero-fill" src="{{ url_for('static', filename='img/home/hero-lifestyle.jpg') }}"
-       alt="" aria-hidden="true"/>
   <img class="home-hero-photo" src="{{ url_for('static', filename='img/home/hero-lifestyle.jpg') }}"
        alt="Clover Bubble Bag and Clover Pillow Bag styled beside a vase of flowers"/>
-  <div class="home-hero-scrim"></div>
 
   <div class="container home-hero-inner">
     <div class="home-hero-copy">
@@ -44,13 +39,23 @@
             <p class="collection-tile-body" style="color: {{ tile_fg }};">{{ s.tile_body or s.description }}</p>
             <a class="collection-tile-link" style="color: {{ tile_fg }};" href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">Shop now &rarr;</a>
 
-            <div class="collection-tile-row">
-              {% for p in s.active_products %}
-                <a class="collection-tile-thumb" href="{{ url_for('shop.product', slug=p.slug) }}" title="{{ p.name }}">
-                  <img src="{{ url_for('static', filename='img/' ~ p.primary_image_path) }}" alt="{{ p.name }}" loading="lazy"/>
-                </a>
-              {% endfor %}
-            </div>
+            {% if s.hero_image_path %}
+              {# A series with its own lineup shot shows that instead of
+                 per-colour thumbnails. #}
+              <a class="collection-tile-lineup"
+                 href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">
+                <img src="{{ url_for('static', filename='img/' ~ s.hero_image_path) }}"
+                     alt="The {{ s.name }} colourways" loading="lazy"/>
+              </a>
+            {% else %}
+              <div class="collection-tile-row">
+                {% for p in s.active_products %}
+                  <a class="collection-tile-thumb" href="{{ url_for('shop.product', slug=p.slug) }}" title="{{ p.name }}">
+                    <img src="{{ url_for('static', filename='img/' ~ p.primary_image_path) }}" alt="{{ p.name }}" loading="lazy"/>
+                  </a>
+                {% endfor %}
+              </div>
+            {% endif %}
           </div>
         {% endfor %}
       {% endfor %}

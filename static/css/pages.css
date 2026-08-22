@@ -193,68 +193,27 @@
 
 /* ── Home: hero ────────────────────────────────────────────────── */
 
+/* Split layout: copy on a flat cream field, photo occupying the right half
+   with a clean vertical edge between them. The photo box is narrower than the
+   full band, so `cover` scales the shot DOWN (~0.68x) rather than up — the
+   bags read smaller than full-bleed while every pixel stays sharp. */
 .home-hero {
   position: relative;
-  min-height: 760px;
+  min-height: 620px;
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: var(--surface);
+  background: #FBF6F1;
 }
-/* The photo is squarer (5:4) than this band, so `cover` would force a ~1.03x
-   zoom and crop the bags tight. `contain` instead lets the whole frame show at
-   a smaller scale; the blurred fill behind covers the leftover width so there
-   is no visible letterbox. */
-.home-hero-fill {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 68% 50%;
-  filter: blur(38px) saturate(1.05);
-  /* Overscan so the blur samples real pixels instead of smearing the edges. */
-  transform: scale(1.12);
-}
-/* Height-driven with `width: auto` so the element box hugs the photo itself.
-   With `object-fit: contain` the box would stay full-width and the mask below
-   would feather empty letterbox instead of the picture's real edges. */
 .home-hero-photo {
   position: absolute;
-  top: 50%;
-  right: 3%;
-  transform: translateY(-50%);
-  height: 88%;
-  width: auto;
-  /* base.css caps every img at max-width:100%; combined with an explicit
-     height that squashes the aspect ratio, so it has to be lifted here. */
-  max-width: none;
-  /* Two gradients intersected = all four edges dissolve into the blurred fill,
-     so the photo has no rectangular seam. */
-  -webkit-mask-image:
-    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
-    linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
-  mask-composite: intersect;
-}
-.home-hero-scrim {
-  position: absolute;
-  inset: 0;
-  /* Fades the photo's own cream backdrop up to full opacity behind the
-     copy, then lets it dissolve away to nothing by the time the bags
-     start — the text reads as if it's sitting on the fabric itself
-     rather than floating in a box on top of it. */
-  background: linear-gradient(
-    100deg,
-    rgba(253, 250, 246, 0.97) 0%,
-    rgba(253, 250, 246, 0.93) 20%,
-    rgba(253, 250, 246, 0.72) 34%,
-    rgba(253, 250, 246, 0.32) 46%,
-    rgba(253, 250, 246, 0) 60%
-  );
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 52%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
 }
 
 .home-hero-inner {
@@ -262,7 +221,8 @@
   z-index: 1;
   width: 100%;
 }
-.home-hero-copy { max-width: 460px; }
+/* Keep the copy clear of the photo's leading edge at 48% of the viewport. */
+.home-hero-copy { max-width: min(460px, 40vw); }
 .home-hero-copy h1 {
   font-size: clamp(2.25rem, 4.6vw, 3.5rem);
   line-height: 1.08;
@@ -281,32 +241,22 @@
 }
 
 @media (max-width: 880px) {
-  .home-hero { min-height: 720px; align-items: flex-start; padding-top: var(--sp-16); }
-  /* Too narrow to letterbox the 5:4 frame beside anything, so the photo goes
-     back to filling the band; the blurred fill and edge feather are only
-     needed when it sits inset. */
-  .home-hero-fill { display: none; }
-  .home-hero-photo {
-    inset: 0;
-    top: auto;
-    right: auto;
-    transform: none;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    object-fit: cover;
-    object-position: 30% 40%;
-    -webkit-mask-image: none;
-    mask-image: none;
+  /* Too narrow for a side-by-side split, so it stacks: copy on the cream
+     field up top, photo as a full-width band beneath it. */
+  .home-hero {
+    min-height: 0;
+    flex-direction: column;
+    align-items: stretch;
+    /* Photo precedes the copy in the DOM, so stacking puts it on top; let it
+       sit flush under the header rather than floating on a band of cream. */
+    padding: 0 0 var(--sp-12);
   }
-  .home-hero-scrim {
-    background: linear-gradient(
-      180deg,
-      rgba(253, 250, 246, 0.97) 0%,
-      rgba(253, 250, 246, 0.93) 30%,
-      rgba(253, 250, 246, 0.55) 48%,
-      rgba(253, 250, 246, 0) 66%
-    );
+  .home-hero-photo {
+    position: static;
+    width: 100%;
+    height: 320px;
+    margin-bottom: var(--sp-10);
+    object-position: 50% 45%;
   }
   .home-hero-copy { max-width: 100%; text-align: center; margin: 0 auto; }
   .home-hero-copy .lede { margin-left: auto; margin-right: auto; }
@@ -433,6 +383,17 @@
   filter: drop-shadow(0 6px 10px rgba(0,0,0,.10));
 }
 .collection-tile-thumb:hover { transform: translateY(-3px); }
+
+/* Series lineup shot, shown in place of the thumbnail row. */
+.collection-tile-lineup {
+  display: block;
+  margin-top: var(--sp-2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform var(--t);
+}
+.collection-tile-lineup img { width: 100%; height: auto; display: block; }
+.collection-tile-lineup:hover { transform: translateY(-3px); }
 @media (max-width: 480px) {
   .collection-tile-thumb { height: 96px; }
 }

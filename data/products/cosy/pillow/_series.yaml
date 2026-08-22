@@ -9,6 +9,8 @@ is_featured: true
 is_active: true
 
 color_hex: "#D8C3A5"
+# Lineup shot for the Clover Collection tile, in place of per-colour thumbnails.
+hero_image_path: home/clover-pillow-series.jpg
 tile_eyebrow: The Pillow
 tile_headline: Your everyday little companion.
 tile_body: >-

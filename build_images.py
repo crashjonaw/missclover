@@ -56,6 +56,12 @@ SERIES_BAND = (0, 255, 1536, 674)
 # pages.css must match, so the section colour and the photo meet invisibly.
 SERIES_BACKDROP = (245, 237, 231)  # #F5EDE7
 
+# The Pillow lineup, used inside the Clover Collection tile. Unlike the Bubble
+# banner this sits as a discrete rounded image on a coloured card, so it needs
+# no backdrop fade — just the band cropped to the four bags.
+PILLOW_SERIES_MASTER = "Clover Pillow Series.jpg"
+PILLOW_SERIES_BAND = (0, 250, 1448, 1010)
+
 # The Bubble Bag master. All four "round clover *.png" files show the same cream
 # exterior, so the exterior only needs reading from one of them.
 BUBBLE_MASTER = "Round clover baby blue .png"
@@ -217,6 +223,17 @@ def build_series_banner():
     print(f"  wrote {os.path.relpath(dest, ROOT)}")
 
 
+def build_pillow_series_tile():
+    """Crop the Pillow lineup for the Clover Collection tile."""
+    print("Clover Pillow Series tile")
+    band = (Image.open(os.path.join(PHOTOS, PILLOW_SERIES_MASTER))
+            .convert("RGB").crop(PILLOW_SERIES_BAND))
+    os.makedirs(OUT_HOME, exist_ok=True)
+    dest = os.path.join(OUT_HOME, "clover-pillow-series.jpg")
+    band.save(dest, quality=JPEG_QUALITY)
+    print(f"  wrote {os.path.relpath(dest, ROOT)}")
+
+
 def build_pillow_bags():
     print("Clover Pillow Bag (shoulderbag)")
     for code, src in PILLOW_COLOURWAYS.items():
@@ -230,4 +247,5 @@ if __name__ == "__main__":
     build_bubble_bags()
     build_pillow_bags()
     build_series_banner()
+    build_pillow_series_tile()
     print("\nDone. Run `python seed.py` if any image paths changed.")
