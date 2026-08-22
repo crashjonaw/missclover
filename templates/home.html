@@ -6,8 +6,8 @@
 <section class="home-hero">
   <div class="container home-hero-inner">
     <div class="home-hero-copy">
-      <h1>Carry a little <em>luck</em><br/>with you, always.</h1>
-      <p class="lede">Cute in details.<br/>Made for everyday moments.</p>
+      <h1>Little Bags,<br/>Happy Days.</h1>
+      <p class="lede">Cute little companions made for everyday moments.</p>
       <a class="btn btn--blush btn--lg" href="{{ url_for('shop.handbags') }}">Shop Now</a>
     </div>
 
@@ -51,6 +51,7 @@
       </svg>
       Shop by collection
     </p>
+    <h2 class="section-title">The Clover Collection</h2>
 
     <div class="collection-tiles">
       {% for c in nav_collections %}
@@ -58,8 +59,8 @@
           {% set tile_bg = s.color_hex or c.color_hex or '#F5F1EA' %}
           {% set tile_fg = tile_bg | text_on %}
           <div class="collection-tile" style="background: {{ tile_bg }}; color: {{ tile_fg }};">
-            <p class="collection-tile-eyebrow" style="color: {{ tile_fg }};">{{ s.tile_eyebrow or c.name }}</p>
-            <h3 class="collection-tile-name">{{ s.name }}{% if s.active_products %} {{ s.active_products[0].bag_type | bag_type_label }}{% endif %}</h3>
+            <p class="collection-tile-eyebrow" style="color: {{ tile_fg }};">{% if s.active_products %}{{ s.active_products[0].bag_type | bag_type_label }}{% else %}{{ s.tile_eyebrow or c.name }}{% endif %}</p>
+            <h3 class="collection-tile-name">{{ s.name }}</h3>
             <p class="collection-tile-body" style="color: {{ tile_fg }};">{{ s.tile_body or s.description }}</p>
             <a class="collection-tile-link" style="color: {{ tile_fg }};" href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">Shop now &rarr;</a>
 
@@ -129,6 +130,14 @@
       <h4>Made for you</h4>
       <p>Little details that make a big difference.</p>
     </div>
+  </div>
+</section>
+
+{# ── Brand statement ──────────────────────────────────────────────── #}
+<section class="section brand-statement">
+  <div class="container container--narrow center">
+    <h2 class="section-title">Made for the little things.</h2>
+    <p class="brand-statement-body">We believe the things you carry should make you smile. From soft pastel colours to playful floral details, every Clover bag is designed to bring a little sweetness into your everyday.</p>
   </div>
 </section>
 

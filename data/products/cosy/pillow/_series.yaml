@@ -3,18 +3,17 @@
 # Folder name (pillow) must match this slug.
 
 slug: pillow
-name: Pillow
+name: Clover Pillow Bag
 display_order: 10
 is_featured: true
 is_active: true
 
 color_hex: "#D8C3A5"
 tile_eyebrow: The Pillow
-tile_headline: A soft, quilted everyday.
+tile_headline: Your everyday little companion.
 tile_body: >-
-  Padded body with our signature wave-quilted texture, adjustable
-  cushioned strap, gold-tone clover plaque.
+  Your everyday little companion.
 
 description: >-
-  The Pillow is our soft, padded shoulder bag — lightweight cushioned
-  construction with signature wave-quilting.
+  The Clover Pillow Bag is our soft, padded shoulder bag — lightweight
+  cushioned construction with signature wave-quilting.
