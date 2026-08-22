@@ -15,7 +15,7 @@ Two silhouettes, handled differently because the source photography differs:
 * Clover Pillow Bag (shoulderbag) — four separately photographed colourways
   on a white studio background. Copied through, re-encoded only.
 
-* Clover Moon Bag (crossbody) — only ONE exterior was ever photographed (the
+* Clover Bubble Bag (crossbody) — only ONE exterior was ever photographed (the
   cream shell, identical across all four source PNGs; those PNGs differ only
   in their interior lining). Shipping four listings that all show the same
   cream bag made the colourways indistinguishable in any grid, so the front
@@ -39,37 +39,37 @@ OUT = os.path.join(ROOT, "static", "img", "products")
 
 JPEG_QUALITY = 92
 
-# The Moon Bag master. All four "round clover *.png" files show the same cream
+# The Bubble Bag master. All four "round clover *.png" files show the same cream
 # exterior, so the exterior only needs reading from one of them.
-MOON_MASTER = "Round clover baby blue .png"
+BUBBLE_MASTER = "Round clover baby blue .png"
 
-# Crop boxes within the Moon Bag master sheet (which is a multi-panel layout:
+# Crop boxes within the Bubble Bag master sheet (which is a multi-panel layout:
 # front / back / lining swatch on top, interior shots below).
-MOON_FRONT_BOX = (15, 10, 585, 410)
-MOON_BACK_BOX = (615, 10, 1165, 410)
-MOON_INTERIOR_BOX = (10, 495, 555, 900)
+BUBBLE_FRONT_BOX = (15, 10, 585, 410)
+BUBBLE_BACK_BOX = (615, 10, 1165, 410)
+BUBBLE_INTERIOR_BOX = (10, 495, 555, 900)
 
 # The master sheet's panels sit on a light backdrop, but a strip of the studio
 # floor is visible between the crossed straps. It keys out as semi-transparent
 # and would otherwise show up as a grey smear once composited, so it is painted
 # out to the backdrop colour *before* keying.
-MOON_FLOOR_PATCH = {"front": (110, 330, 470, 400), "back": (95, 330, 455, 400)}
-MOON_BACKDROP = (245, 244, 242)
+BUBBLE_FLOOR_PATCH = {"front": (110, 330, 470, 400), "back": (95, 330, 455, 400)}
+BUBBLE_BACKDROP = (245, 244, 242)
 
 # Background-key thresholds: pixels at/above `hi` brightness are fully
 # transparent, at/below `lo` fully opaque, linear in between.
-MOON_KEY = (228, 241)
+BUBBLE_KEY = (228, 241)
 
 # design_code -> (source png for the interior shot, recolour target RGB)
 #
 # The recolour target is the *lining* colour, so the shell matches the inside.
 # Sage is deliberately richer than its raw lining swatch (#AFB19F), which is
 # too desaturated to read as green once applied across a whole bag.
-MOON_COLOURWAYS = {
-    "moonblue": ("Round clover baby blue .png", (183, 199, 214)),
-    "moonlavender": ("round clover pastel lavender.png", (205, 185, 210)),
-    "moonpink": ("round clover pastel pink.png", (215, 170, 169)),
-    "moonsage": ("round clover sage green.png", (150, 172, 128)),
+BUBBLE_COLOURWAYS = {
+    "bubbleblue": ("Round clover baby blue .png", (183, 199, 214)),
+    "bubblelavender": ("round clover pastel lavender.png", (205, 185, 210)),
+    "bubblepink": ("round clover pastel pink.png", (215, 170, 169)),
+    "bubblesage": ("round clover sage green.png", (150, 172, 128)),
 }
 
 # design_code -> source photo. These are shot as-is, no compositing needed.
@@ -154,23 +154,23 @@ def _save_on_white(rgba, path):
     print(f"  wrote {os.path.relpath(path, ROOT)}")
 
 
-def build_moon_bags():
-    print("Clover Moon Bag (crossbody)")
-    master = Image.open(os.path.join(PHOTOS, MOON_MASTER))
+def build_bubble_bags():
+    print("Clover Bubble Bag (crossbody)")
+    master = Image.open(os.path.join(PHOTOS, BUBBLE_MASTER))
 
     cutouts = {}
-    for view, box in (("front", MOON_FRONT_BOX), ("back", MOON_BACK_BOX)):
+    for view, box in (("front", BUBBLE_FRONT_BOX), ("back", BUBBLE_BACK_BOX)):
         panel = master.crop(box).convert("RGB")
-        panel = _paint_out(panel, MOON_FLOOR_PATCH[view], MOON_BACKDROP)
-        cutouts[view] = _trim(_key_out_background(panel, *MOON_KEY))
+        panel = _paint_out(panel, BUBBLE_FLOOR_PATCH[view], BUBBLE_BACKDROP)
+        cutouts[view] = _trim(_key_out_background(panel, *BUBBLE_KEY))
 
-    for code, (interior_src, target) in MOON_COLOURWAYS.items():
+    for code, (interior_src, target) in BUBBLE_COLOURWAYS.items():
         dest = os.path.join(OUT, "signature", "clover", code)
         for view, cut in cutouts.items():
             _save_on_white(_recolour(cut, target), os.path.join(dest, f"{view}.jpg"))
 
         interior = Image.open(os.path.join(PHOTOS, interior_src))
-        interior = interior.crop(MOON_INTERIOR_BOX).convert("RGB")
+        interior = interior.crop(BUBBLE_INTERIOR_BOX).convert("RGB")
         os.makedirs(dest, exist_ok=True)
         interior.save(os.path.join(dest, "interior.jpg"), quality=JPEG_QUALITY)
         print(f"  wrote {os.path.relpath(os.path.join(dest, 'interior.jpg'), ROOT)}")
@@ -186,6 +186,6 @@ def build_pillow_bags():
 
 
 if __name__ == "__main__":
-    build_moon_bags()
+    build_bubble_bags()
     build_pillow_bags()
     print("\nDone. Run `python seed.py` if any image paths changed.")

@@ -1,4 +1,4 @@
-# MISS CLOVER — Sage Green Moon Bag
+# MISS CLOVER — Sage Green Bubble Bag
 # Signature collection › Clover series › Sage Green colourway.
 # Edit then run `python seed.py`. Collection/series are derived from the
 # folder path (signature/clover/); see ../../README.md.
@@ -8,9 +8,9 @@
 # so this reads as a genuinely distinct colourway in grids/cards, same
 # as the Pillow shoulder bag colourways.
 
-slug: sage-green-moon-bag
-name: Sage Green Moon Bag
-design_code: moonsage
+slug: sage-green-bubble-bag
+name: Sage Green Bubble Bag
+design_code: bubblesage
 bag_type: crossbody
 color_hex: "#96AC80"
 base_price_cents: 35000
@@ -32,17 +32,17 @@ tile_body: >-
 
 variants:
   - name: Sage Green
-    sku: MC-MOON-SG
+    sku: MC-BUB-SG
     stock_qty: 20
     price_cents: 35000
 
 images:
-  - path: products/signature/clover/moonsage/front.jpg
-    alt: Sage Green Moon Bag — front view
+  - path: products/signature/clover/bubblesage/front.jpg
+    alt: Sage Green Bubble Bag — front view
     sort_order: 1
-  - path: products/signature/clover/moonsage/interior.jpg
-    alt: Sage Green Moon Bag — interior, sage green lining
+  - path: products/signature/clover/bubblesage/interior.jpg
+    alt: Sage Green Bubble Bag — interior, sage green lining
     sort_order: 2
-  - path: products/signature/clover/moonsage/back.jpg
-    alt: Sage Green Moon Bag — back view
+  - path: products/signature/clover/bubblesage/back.jpg
+    alt: Sage Green Bubble Bag — back view
     sort_order: 3

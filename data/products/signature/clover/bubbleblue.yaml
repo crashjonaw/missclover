@@ -1,4 +1,4 @@
-# MISS CLOVER — Pastel Blue Moon Bag
+# MISS CLOVER — Pastel Blue Bubble Bag
 # Signature collection › Clover series › Pastel Blue colourway.
 # Edit then run `python seed.py`. Collection/series are derived from the
 # folder path (signature/clover/); see ../../README.md.
@@ -8,9 +8,9 @@
 # so this reads as a genuinely distinct colourway in grids/cards, same
 # as the Pillow shoulder bag colourways.
 
-slug: pastel-blue-moon-bag
-name: Pastel Blue Moon Bag
-design_code: moonblue
+slug: pastel-blue-bubble-bag
+name: Pastel Blue Bubble Bag
+design_code: bubbleblue
 bag_type: crossbody
 color_hex: "#B7C7D6"
 base_price_cents: 35000
@@ -32,17 +32,17 @@ tile_body: >-
 
 variants:
   - name: Pastel Blue
-    sku: MC-MOON-BL
+    sku: MC-BUB-BL
     stock_qty: 20
     price_cents: 35000
 
 images:
-  - path: products/signature/clover/moonblue/front.jpg
-    alt: Pastel Blue Moon Bag — front view
+  - path: products/signature/clover/bubbleblue/front.jpg
+    alt: Pastel Blue Bubble Bag — front view
     sort_order: 1
-  - path: products/signature/clover/moonblue/interior.jpg
-    alt: Pastel Blue Moon Bag — interior, pastel blue lining
+  - path: products/signature/clover/bubbleblue/interior.jpg
+    alt: Pastel Blue Bubble Bag — interior, pastel blue lining
     sort_order: 2
-  - path: products/signature/clover/moonblue/back.jpg
-    alt: Pastel Blue Moon Bag — back view
+  - path: products/signature/clover/bubbleblue/back.jpg
+    alt: Pastel Blue Bubble Bag — back view
     sort_order: 3

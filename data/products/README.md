@@ -18,12 +18,15 @@ Current catalog:
 ```
 signature/                  Signature collection
   _collection.yaml
-  clover/                   Clover series   (bag_type: crossbody)
+  clover/                   Clover Bubble Bag series   (bag_type: crossbody)
     _series.yaml
-    round.yaml              → Round Clover Bag (cream shell, 4 lining photos)
+    bubbleblue.yaml         → Pastel Blue Bubble Bag
+    bubblelavender.yaml     → Pastel Lavender Bubble Bag
+    bubblepink.yaml         → Dusty Blush Pink Bubble Bag
+    bubblesage.yaml         → Sage Green Bubble Bag
 cosy/                       Cosy collection
   _collection.yaml
-  pillow/                   Pillow series   (bag_type: shoulderbag)
+  pillow/                   Clover Pillow Bag series   (bag_type: shoulderbag)
     _series.yaml
     babyblue.yaml           → Baby Blue Pillow
     black.yaml              → Black Pillow
@@ -52,7 +55,7 @@ mix bag types.
 
 `static/img/products/<collection>/<series>/<colour>/<view>.jpg` (any number of
 views per colour). Each product YAML's `images[].path` is relative to
-`static/img/` — e.g. `products/signature/clover/moonblue/front.jpg`. The first
+`static/img/` — e.g. `products/signature/clover/bubbleblue/front.jpg`. The first
 image is the hero used on cards, tiles and grids.
 
 **`static/img/products/` is build output.** It is generated from the master
@@ -62,7 +65,7 @@ there and rebuild, rather than editing the served files. See
 
 ## Add a new colour (to an existing series)
 
-1. `cp data/products/signature/clover/moonblue.yaml data/products/signature/clover/moonsage.yaml`
+1. `cp data/products/signature/clover/bubbleblue.yaml data/products/signature/clover/bubblesage.yaml`
 2. Edit `slug`, `name`, `design_code` (globally unique), `color_hex`, copy, SKU.
 3. Add the master shot to `photos/`, wire it up in `build_images.py`, then run
    `python build_images.py`. Point `images[].path` at the generated files.

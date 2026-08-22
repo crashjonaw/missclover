@@ -17,15 +17,15 @@ python build_images.py
 | `Black Clover Handbag.jpg` | Black Pillow |
 | `Dusty pink Clover Handbag.jpg` | Dusty Pink Pillow |
 | `Mint Green Clover Handbag.jpg` | Mint Green Pillow |
-| `Round clover baby blue .png` | Pastel Blue Moon Bag — **and the shared exterior for all four Moon Bags** |
-| `round clover pastel lavender.png` | Pastel Lavender Moon Bag (interior only) |
-| `round clover pastel pink.png` | Dusty Blush Pink Moon Bag (interior only) |
-| `round clover sage green.png` | Sage Green Moon Bag (interior only) |
+| `Round clover baby blue .png` | Pastel Blue Bubble Bag — **and the shared exterior for all four Bubble Bags** |
+| `round clover pastel lavender.png` | Pastel Lavender Bubble Bag (interior only) |
+| `round clover pastel pink.png` | Dusty Blush Pink Bubble Bag (interior only) |
+| `round clover sage green.png` | Sage Green Bubble Bag (interior only) |
 | `Website reference.jpg` | Design reference for layout/presentation. Not built into the site. |
 
-## The Moon Bag exterior is synthetic
+## The Bubble Bag exterior is synthetic
 
-Worth knowing before you reshoot: only one Moon Bag exterior was ever
+Worth knowing before you reshoot: only one Bubble Bag exterior was ever
 photographed. All four `round clover *.png` sheets show the **same cream
 shell** — they differ only in the interior lining panels. Four listings all
 showing an identical cream bag were indistinguishable in the product grid, so
@@ -33,7 +33,7 @@ showing an identical cream bag were indistinguishable in the product grid, so
 saturation from the lining colour, original per-pixel brightness kept, so the
 real shading and highlights survive).
 
-If you shoot the Moon Bag in actual colours later, drop the new files in and
+If you shoot the Bubble Bag in actual colours later, drop the new files in and
 replace the recolour step in `build_images.py` with a straight crop — the
 synthetic colouring exists only to cover the gap in the photography.
 

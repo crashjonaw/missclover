@@ -1,4 +1,4 @@
-# MISS CLOVER — Pastel Lavender Moon Bag
+# MISS CLOVER — Pastel Lavender Bubble Bag
 # Signature collection › Clover series › Pastel Lavender colourway.
 # Edit then run `python seed.py`. Collection/series are derived from the
 # folder path (signature/clover/); see ../../README.md.
@@ -8,9 +8,9 @@
 # so this reads as a genuinely distinct colourway in grids/cards, same
 # as the Pillow shoulder bag colourways.
 
-slug: pastel-lavender-moon-bag
-name: Pastel Lavender Moon Bag
-design_code: moonlavender
+slug: pastel-lavender-bubble-bag
+name: Pastel Lavender Bubble Bag
+design_code: bubblelavender
 bag_type: crossbody
 color_hex: "#CDB9D2"
 base_price_cents: 35000
@@ -32,17 +32,17 @@ tile_body: >-
 
 variants:
   - name: Pastel Lavender
-    sku: MC-MOON-LV
+    sku: MC-BUB-LV
     stock_qty: 20
     price_cents: 35000
 
 images:
-  - path: products/signature/clover/moonlavender/front.jpg
-    alt: Pastel Lavender Moon Bag — front view
+  - path: products/signature/clover/bubblelavender/front.jpg
+    alt: Pastel Lavender Bubble Bag — front view
     sort_order: 1
-  - path: products/signature/clover/moonlavender/interior.jpg
-    alt: Pastel Lavender Moon Bag — interior, pastel lavender lining
+  - path: products/signature/clover/bubblelavender/interior.jpg
+    alt: Pastel Lavender Bubble Bag — interior, pastel lavender lining
     sort_order: 2
-  - path: products/signature/clover/moonlavender/back.jpg
-    alt: Pastel Lavender Moon Bag — back view
+  - path: products/signature/clover/bubblelavender/back.jpg
+    alt: Pastel Lavender Bubble Bag — back view
     sort_order: 3
