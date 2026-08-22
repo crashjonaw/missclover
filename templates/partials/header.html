@@ -1,98 +1,90 @@
 <header class="site-header">
-  <div class="header-promo">
-    Free shipping in Singapore on orders over S${{ ((config.FREE_SHIPPING_THRESHOLD_CENTS or 20000) / 100) | int }} —
-    <a href="{{ url_for('shop.handbags') }}">Shop new arrivals</a>
-  </div>
-
-  <div class="container">
-    <div class="header-logo-row">
-      <div class="header-utility is-left">
-        <a href="{{ url_for('shop.about') }}">About</a>
-        <a href="#contact" class="label-hide-mobile">Contact</a>
-      </div>
-
-      <a class="site-logo" href="{{ url_for('shop.home') }}" aria-label="MISS CLOVER home">
-        <span class="site-logo-wordmark">MISS&nbsp;CLOVER</span>
-      </a>
-
-      <div class="header-utility is-right">
-        <a class="icon-link" href="{{ url_for('shop.home') }}" aria-label="Home">
-          <svg class="utility-icon" width="20" height="20" viewBox="0 0 24 24"
-               fill="none" stroke="currentColor" stroke-width="1.5"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 12 L12 3 L21 12"/>
-            <path d="M5 10 V21 H10 V14 H14 V21 H19 V10"/>
-          </svg>
-          <span class="icon-link-label">Home</span>
-        </a>
-        {% if current_user.is_authenticated %}
-          <a class="icon-link" href="{{ url_for('account.dashboard') }}" aria-label="My account">
-            <svg class="utility-icon" width="20" height="20" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="8" r="4"/>
-              <path d="M6 21a6 6 0 0 1 12 0"/>
-            </svg>
-            <span class="icon-link-label">Account</span>
-          </a>
-          <a href="{{ url_for('auth.logout') }}" class="label-hide-mobile">Sign out</a>
-        {% else %}
-          <a class="icon-link" href="{{ url_for('auth.login') }}" aria-label="Sign in">
-            <svg class="utility-icon" width="20" height="20" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="8" r="4"/>
-              <path d="M6 21a6 6 0 0 1 12 0"/>
-            </svg>
-            <span class="icon-link-label">Sign in</span>
-          </a>
-        {% endif %}
-        <a href="{{ url_for('cart.view') }}" class="icon-link cart-link" aria-label="Shopping bag {% if cart_qty %}({{ cart_qty }} items){% endif %}">
-          <span class="cart-icon-wrap">
-            <svg class="utility-icon" width="20" height="20" viewBox="0 0 24 24"
-                 fill="none" stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6 7h12l-1 13H7L6 7z"/>
-              <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
-            </svg>
-            {% if cart_qty %}<span class="cart-count">{{ cart_qty }}</span>{% endif %}
-          </span>
-          <span class="icon-link-label">Bag</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <nav class="header-nav" aria-label="Primary">
-    <ul class="header-nav-list container">
-      <li><a href="{{ url_for('shop.handbags') }}">Handbags</a></li>
-      {% for c in nav_collections %}
-        <li class="header-nav-item{% if c.active_series %} has-megamenu{% endif %}">
-          <a href="{{ url_for('shop.collection', collection_slug=c.slug) }}"
-             {% if c.active_series %}aria-haspopup="true"{% endif %}>{{ c.name }}</a>
-          {% if c.active_series %}
-          <div class="megamenu">
-            <div class="megamenu-inner container">
-              {% for s in c.active_series %}
-                <div class="megamenu-col">
-                  <a class="megamenu-heading"
-                     href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">{{ s.name }}</a>
-                  <ul>
+  <div class="container header-logo-row">
+    <nav class="header-utility is-left" aria-label="Primary">
+      <div class="header-nav-item has-megamenu" aria-haspopup="true">
+        <a href="{{ url_for('shop.handbags') }}">Shop</a>
+        <div class="megamenu">
+          <div class="megamenu-inner container">
+            {% for c in nav_collections %}
+              <div class="megamenu-col">
+                <a class="megamenu-heading"
+                   href="{{ url_for('shop.collection', collection_slug=c.slug) }}">{{ c.name }}</a>
+                <ul>
+                  {% for s in c.active_series %}
                     {% for p in s.active_products %}
                       <li><a href="{{ url_for('shop.product', slug=p.slug) }}">{{ p.name }}</a></li>
                     {% endfor %}
-                  </ul>
-                </div>
-              {% endfor %}
-            </div>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endfor %}
           </div>
-          {% endif %}
-        </li>
-      {% endfor %}
-      <li><a href="{{ url_for('shop.about') }}">Our story</a></li>
-      {% if current_user.is_authenticated and current_user.is_admin %}
-        <li><a href="{{ url_for('admin.dashboard') }}" style="color: var(--accent-sage-deep); font-weight: 600;">Admin</a></li>
+        </div>
+      </div>
+      <a href="{{ url_for('shop.handbags', sort='featured') }}" class="label-hide-mobile">New Arrivals</a>
+      <a href="{{ url_for('shop.handbags', sort='popularity') }}" class="label-hide-mobile">Best Sellers</a>
+    </nav>
+
+    <a class="site-logo" href="{{ url_for('shop.home') }}" aria-label="MISS CLOVER home">
+      <svg class="site-logo-mark" width="22" height="22" viewBox="0 0 32 32" fill="none"
+           stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="7"/>
+        <circle cx="20" cy="12" r="7"/>
+        <circle cx="12" cy="20" r="7"/>
+        <circle cx="20" cy="20" r="7"/>
+        <line x1="16" y1="20" x2="16" y2="29"/>
+      </svg>
+      <span class="site-logo-wordmark">MISS&nbsp;CLOVER</span>
+      <span class="site-logo-tagline">little details, everyday joy</span>
+    </a>
+
+    <div class="header-utility is-right">
+      <a class="icon-link" href="{{ url_for('shop.handbags') }}" aria-label="Search">
+        <svg class="utility-icon" width="19" height="19" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span class="icon-link-label">Search</span>
+      </a>
+      {% if current_user.is_authenticated %}
+        <a class="icon-link" href="{{ url_for('account.dashboard') }}" aria-label="My account">
+          <svg class="utility-icon" width="19" height="19" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M6 21a6 6 0 0 1 12 0"/>
+          </svg>
+          <span class="icon-link-label">Account</span>
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="label-hide-mobile">Sign out</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.dashboard') }}" class="label-hide-mobile" style="color: var(--accent-sage-deep); font-weight: 600;">Admin</a>
+        {% endif %}
+      {% else %}
+        <a class="icon-link" href="{{ url_for('auth.login') }}" aria-label="Sign in">
+          <svg class="utility-icon" width="19" height="19" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M6 21a6 6 0 0 1 12 0"/>
+          </svg>
+          <span class="icon-link-label">Account</span>
+        </a>
       {% endif %}
-    </ul>
-  </nav>
+      <a href="{{ url_for('cart.view') }}" class="icon-link cart-link" aria-label="Shopping bag {% if cart_qty %}({{ cart_qty }} items){% endif %}">
+        <span class="cart-icon-wrap">
+          <svg class="utility-icon" width="19" height="19" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 7h12l-1 13H7L6 7z"/>
+            <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
+          </svg>
+          {% if cart_qty %}<span class="cart-count">{{ cart_qty }}</span>{% endif %}
+        </span>
+        <span class="icon-link-label">Cart ({{ cart_qty or 0 }})</span>
+      </a>
+    </div>
+  </div>
 </header>

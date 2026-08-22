@@ -2,52 +2,235 @@
 {% block title %}MISS CLOVER — Singapore handbags{% endblock %}
 
 {% block content %}
+{# ── Hero: split copy + rotating product visual ──────────────────── #}
 <section class="home-hero">
-  <span class="eyebrow">A new singapore label</span>
-  <h1>Quietly considered<br/>handbags.</h1>
-  <p class="lede">MISS CLOVER is a small Singapore handbag house. Handfinished, leather-lined, made for the everyday.</p>
-  <a class="btn btn--primary btn--lg" href="{{ url_for('shop.handbags') }}">Shop the collection</a>
+  <div class="container home-hero-inner">
+    <div class="home-hero-copy">
+      <h1>Carry a little <em>luck</em><br/>with you, always.</h1>
+      <p class="lede">Cute in details.<br/>Made for everyday moments.</p>
+      <a class="btn btn--blush btn--lg" href="{{ url_for('shop.handbags') }}">Shop Now</a>
+    </div>
+
+    <div class="home-hero-visual">
+      {% for c in nav_collections %}
+        {% set series0 = c.active_series[0] if c.active_series else None %}
+        {% set rep = series0.active_products[0] if series0 and series0.active_products else None %}
+        {% set rep2 = series0.active_products[1] if series0 and series0.active_products|length > 1 else None %}
+        <div class="hero-slide{% if loop.first %} is-active{% endif %}">
+          {% if rep %}
+            <img src="{{ url_for('static', filename='img/' ~ rep.primary_image_path) }}" alt="{{ rep.name }}"/>
+          {% endif %}
+          {% if rep2 %}
+            <img src="{{ url_for('static', filename='img/' ~ rep2.primary_image_path) }}" alt="{{ rep2.name }}"/>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if nav_collections|length > 1 %}
+  <div class="hero-dots" data-hero-dots>
+    {% for c in nav_collections %}
+      <button class="hero-dot{% if loop.first %} is-active{% endif %}" data-slide="{{ loop.index0 }}" aria-label="Show {{ c.name }}"></button>
+    {% endfor %}
+  </div>
+  {% endif %}
 </section>
 
+{# ── Shop by collection ───────────────────────────────────────────── #}
 {% if nav_collections %}
-<section class="home-split">
-  {% for c in nav_collections %}
-    {% set tile_bg = c.color_hex or '#F5F1EA' %}
-    {% set tile_fg = tile_bg | text_on %}
-    {% set rep = c.active_series[0].active_products[0]
-                 if c.active_series and c.active_series[0].active_products else None %}
-    {% set tile_img = c.hero_image_path or (rep.primary_image_path if rep else 'products/placeholder.jpg') %}
-    <a class="home-split-tile"
-       href="{{ url_for('shop.collection', collection_slug=c.slug) }}">
-      <div class="home-split-tile-img-wrap">
-        <div class="home-split-tile-img"
-             style="background-image: url('{{ url_for('static', filename='img/' ~ tile_img) }}')"></div>
-      </div>
-      <div class="home-split-tile-content"
-           style="background: {{ tile_bg }}; color: {{ tile_fg }};">
-        <h2 class="home-split-tile-headline">{{ c.name }} Collection</h2>
-        <p class="home-split-tile-body">{{ c.tile_body or c.description }}</p>
-        <span class="btn btn--sm home-split-tile-cta"
-              style="background: {{ tile_fg }}; color: {{ tile_bg }}; border-color: {{ tile_fg }};">
-          Discover →
-        </span>
-      </div>
-    </a>
-  {% endfor %}
-</section>
-{% endif %}
-
 <section class="section">
   <div class="container">
-    <p class="section-eyebrow">Now showing</p>
-    <h2 class="section-title">Made for the everyday.</h2>
-    <p class="muted center" style="max-width: 560px; margin: 0 auto var(--sp-12);">A small, considered range — structured leather totes and soft quilted shoulder bags. Hand-finished in Singapore, in a handful of colourways.</p>
+    <p class="section-eyebrow-icon">
+      <svg width="16" height="16" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="7"/><circle cx="20" cy="12" r="7"/><circle cx="12" cy="20" r="7"/><circle cx="20" cy="20" r="7"/><line x1="16" y1="20" x2="16" y2="29"/>
+      </svg>
+      Shop by collection
+    </p>
 
-    <div class="products-grid">
-      {% for p in products %}
-        {% include "shop/_card.html" %}
+    <div class="collection-tiles">
+      {% for c in nav_collections %}
+        {% for s in c.active_series %}
+          <div class="collection-tile">
+            <p class="collection-tile-eyebrow">{{ s.tile_eyebrow or c.name }}</p>
+            <h3 class="collection-tile-name">{{ s.name }}{% if s.active_products %} {{ s.active_products[0].bag_type | bag_type_label }}{% endif %}</h3>
+            <p class="collection-tile-body">{{ s.tile_body or s.description }}</p>
+            <a class="collection-tile-link" href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">Shop now &rarr;</a>
+
+            <div class="collection-tile-row">
+              {% for p in s.active_products %}
+                <a class="collection-tile-thumb" href="{{ url_for('shop.product', slug=p.slug) }}"
+                   style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}');"
+                   title="{{ p.name }}" aria-label="{{ p.name }}"></a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
       {% endfor %}
     </div>
   </div>
 </section>
+{% endif %}
+
+{# ── Featured products carousel ───────────────────────────────────── #}
+{% if products %}
+<section class="section section--soft">
+  <div class="container">
+    <p class="section-eyebrow">Featured products</p>
+    <h2 class="section-title">Made for the everyday.</h2>
+
+    <div class="carousel">
+      <button class="carousel-arrow" type="button" data-carousel-prev aria-label="Previous products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+
+      <div class="carousel-track" data-carousel-track>
+        {% for p in products %}
+          <div class="carousel-item{% if loop.first %} carousel-item--new{% endif %}">
+            {% include "shop/_card.html" %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button class="carousel-arrow" type="button" data-carousel-next aria-label="Next products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ── Icon feature row ──────────────────────────────────────────────── #}
+<section class="section icon-feature-row">
+  <div class="container icon-feature-grid">
+    <div class="icon-feature">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-4 4-4 9 0 13M12 3c4 4 4 9 0 13M4 15c3 3 13 3 16 0"/></svg>
+      <h4>Lightweight</h4>
+      <p>Easy to carry, all day long.</p>
+    </div>
+    <div class="icon-feature">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 13H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <h4>Thoughtful design</h4>
+      <p>Practical compartments for your essentials.</p>
+    </div>
+    <div class="icon-feature">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="6"/><path d="M12 10v3l2 2"/><path d="M9 3h6"/></svg>
+      <h4>Adjustable strap</h4>
+      <p>Wear it your way, short or long.</p>
+    </div>
+    <div class="icon-feature">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-8.5C.7 8 2.4 4.5 6 4.5c2 0 3.3 1 4 2.3.7-1.3 2-2.3 4-2.3 3.6 0 5.3 3.5 3.5 7C19 15.65 12 20 12 20z"/></svg>
+      <h4>Made for you</h4>
+      <p>Little details that make a big difference.</p>
+    </div>
+  </div>
+</section>
+
+{# ── Details that matter ──────────────────────────────────────────── #}
+{% set shoulder_products = products | selectattr('bag_type', 'equalto', 'shoulderbag') | list %}
+{% if shoulder_products|length >= 2 %}
+  {% set img_a = url_for('static', filename='img/' ~ shoulder_products[0].primary_image_path) %}
+  {% set img_b = url_for('static', filename='img/' ~ shoulder_products[1].primary_image_path) %}
+  {% set details = [
+    {'img': img_a, 'pos': '52% 58%', 'zoom': '320%', 'caption': 'Gold-tone clover plaque for a subtle shine'},
+    {'img': img_b, 'pos': '20% 18%', 'zoom': '250%', 'caption': 'Adjustable, cushioned strap'},
+    {'img': img_a, 'pos': '50% 88%', 'zoom': '280%', 'caption': 'Signature wave-quilted texture'},
+    {'img': img_b, 'pos': '52% 58%', 'zoom': '320%', 'caption': 'Gold-tone clover plaque, deeper register'},
+    {'img': img_a, 'pos': '20% 18%', 'zoom': '250%', 'caption': 'Soft, puffy strap for extra comfort'},
+    {'img': img_b, 'pos': '50% 88%', 'zoom': '280%', 'caption': 'Wave-quilted, in a quieter green'},
+  ] %}
+<section class="section section--soft">
+  <div class="container">
+    <p class="section-eyebrow">Details that matter</p>
+    <div class="details-grid">
+      {% for d in details %}
+        <figure class="details-tile">
+          <div class="details-tile-img" style="background-image: url('{{ d.img }}'); background-position: {{ d.pos }}; background-size: {{ d.zoom }};"></div>
+          <figcaption>{{ d.caption }}</figcaption>
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ── Dual lifestyle banner ────────────────────────────────────────── #}
+{% set tote_products = products | selectattr('bag_type', 'equalto', 'tote') | list %}
+<section class="dual-banner">
+  {% if tote_products %}
+    <div class="dual-banner-panel dual-banner-panel--tote" style="background-image: url('{{ url_for('static', filename='img/' ~ tote_products[0].primary_image_path) }}');">
+      <div class="dual-banner-content">
+        <h2>Little bags<br/>for little joys.</h2>
+        <a class="btn btn--on-photo" href="{{ url_for('shop.handbags', bag_type='tote') }}">Explore now</a>
+      </div>
+    </div>
+  {% endif %}
+  {% if shoulder_products %}
+    <div class="dual-banner-panel dual-banner-panel--shoulder" style="background-image: url('{{ url_for('static', filename='img/' ~ shoulder_products[0].primary_image_path) }}');">
+      <div class="dual-banner-content">
+        <h2>Your everyday,<br/>made prettier.</h2>
+        <a class="btn btn--blush" href="{{ url_for('shop.handbags') }}">Shop the collection</a>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+{# ── As seen on Instagram ─────────────────────────────────────────── #}
+{% if products %}
+<section class="section instagram-section">
+  <div class="container">
+    <p class="section-eyebrow">As seen on Instagram</p>
+    <h2 class="section-title">@missclover.co</h2>
+    <div class="instagram-grid">
+      {% for p in (products + products) [:6] %}
+        <a class="instagram-tile" href="{{ url_for('shop.product', slug=p.slug) }}" style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}');" aria-label="{{ p.name }}"></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var slides = document.querySelectorAll(".hero-slide");
+    var dots = document.querySelectorAll(".hero-dot");
+    if (slides.length > 1) {
+      var current = 0;
+      function show(i) {
+        slides[current].classList.remove("is-active");
+        dots[current] && dots[current].classList.remove("is-active");
+        current = i;
+        slides[current].classList.add("is-active");
+        dots[current] && dots[current].classList.add("is-active");
+      }
+      dots.forEach(function (dot) {
+        dot.addEventListener("click", function () {
+          show(parseInt(dot.dataset.slide, 10));
+        });
+      });
+      setInterval(function () {
+        show((current + 1) % slides.length);
+      }, 5000);
+    }
+
+    var track = document.querySelector("[data-carousel-track]");
+    var prev = document.querySelector("[data-carousel-prev]");
+    var next = document.querySelector("[data-carousel-next]");
+    if (track && prev && next) {
+      var scrollByAmount = function () {
+        var item = track.querySelector(".carousel-item");
+        var itemWidth = item ? item.getBoundingClientRect().width : 240;
+        return (itemWidth + 24) * 2;
+      };
+      prev.addEventListener("click", function () {
+        track.scrollBy({ left: -scrollByAmount(), behavior: "smooth" });
+      });
+      next.addEventListener("click", function () {
+        track.scrollBy({ left: scrollByAmount(), behavior: "smooth" });
+      });
+    }
+  })();
+</script>
 {% endblock %}

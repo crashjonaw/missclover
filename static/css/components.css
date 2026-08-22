@@ -61,9 +61,62 @@
 }
 .btn--sage-outline:hover { background: var(--accent-sage); color: #fff; }
 
+.btn--blush {
+  background: var(--accent-blush);
+  color: #fff;
+  border-color: var(--accent-blush);
+  border-radius: var(--radius-pill);
+}
+.btn--blush:hover {
+  background: var(--accent-blush-deep);
+  border-color: var(--accent-blush-deep);
+  color: #fff;
+}
+
+.btn--blush-outline {
+  background: transparent;
+  color: var(--accent-blush-deep);
+  border-color: var(--accent-blush);
+  border-radius: var(--radius-pill);
+}
+.btn--blush-outline:hover { background: var(--accent-blush); color: #fff; }
+
+/* For CTAs sitting directly on a photo/overlay — always legible regardless
+   of the image underneath. */
+.btn--on-photo {
+  background: rgba(255,255,255,0.95);
+  color: var(--ink);
+  border-color: rgba(255,255,255,0.95);
+  border-radius: var(--radius-pill);
+}
+.btn--on-photo:hover { background: #fff; border-color: #fff; }
+
 .btn--lg { padding: 16px 32px; font-size: 14px; }
 .btn--sm { padding: 8px 16px; font-size: 12px; }
 .btn--full { width: 100%; }
+
+/* ── Carousel arrow buttons ────────────────────────────────────── */
+
+.carousel-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  flex-shrink: 0;
+  transition: background var(--t), color var(--t), border-color var(--t);
+}
+.carousel-arrow:hover {
+  background: var(--accent-blush);
+  border-color: var(--accent-blush);
+  color: #fff;
+}
+.carousel-arrow[disabled] { opacity: 0.35; cursor: not-allowed; }
+.carousel-arrow[disabled]:hover { background: var(--surface); color: var(--ink); border-color: var(--rule); }
 
 /* ── Cards ─────────────────────────────────────────────────────── */
 

@@ -18,6 +18,11 @@
   --accent-sage-deep: #5C6B53;
   --accent-sage-soft: #EFF2EA;
 
+  /* Brand accent — dusty blush (hero CTA, headline highlight, home page) */
+  --accent-blush:      #CE8F94;
+  --accent-blush-deep: #B96F76;
+  --accent-blush-soft: #F7EBEA;
+
   /* Product colourways (NOT the UI accent) */
   --maroon:           #6E1A2D;
   --maroon-soft:      #F4ECEE;
