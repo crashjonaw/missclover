@@ -1,0 +1,50 @@
+# MISS CLOVER — Pastel Blue Moon Bag
+# Signature collection › Clover series › Pastel Blue colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (signature/clover/); see ../../README.md.
+#
+# Exterior is the same cream shell across all four Moon Bag colourways —
+# the colourway is the interior lining, so the interior shot is image #1
+# (primary/hero) rather than the shared front view, so cards/thumbnails
+# actually look different from one colourway to the next.
+# color_hex is set to the lining colour (not the shell) since that's the
+# actual differentiator shoppers are choosing between.
+
+slug: pastel-blue-moon-bag
+name: Pastel Blue Moon Bag
+design_code: moonblue
+bag_type: crossbody
+color_hex: "#B7C7D6"
+base_price_cents: 35000
+is_featured: true
+display_order: 10
+
+description: >-
+  Round, playful, and made to brighten your day. Our signature round
+  crossbody in soft cream vegan leather, finished with gold-tone clover
+  hardware and an adjustable strap. Opens to a pastel blue lined
+  interior with a zip pocket and a slouchy rubber pocket for your phone
+  or cards.
+
+tile_eyebrow: Pastel Blue
+tile_headline: A little pop of sky inside.
+tile_body: >-
+  Cream shell outside, pastel blue lining inside — gold hardware,
+  adjustable strap.
+
+variants:
+  - name: Pastel Blue
+    sku: MC-MOON-BL
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  - path: products/signature/clover/round/interior-pastel-blue.jpg
+    alt: Pastel Blue Moon Bag — interior, pastel blue lining
+    sort_order: 1
+  - path: products/signature/clover/round/front.jpg
+    alt: Pastel Blue Moon Bag — front view
+    sort_order: 2
+  - path: products/signature/clover/round/back.jpg
+    alt: Pastel Blue Moon Bag — back view
+    sort_order: 3

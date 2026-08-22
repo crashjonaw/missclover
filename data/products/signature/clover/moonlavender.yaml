@@ -1,0 +1,48 @@
+# MISS CLOVER — Pastel Lavender Moon Bag
+# Signature collection › Clover series › Pastel Lavender colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (signature/clover/); see ../../README.md.
+#
+# Exterior is the same cream shell across all four Moon Bag colourways —
+# the colourway is the interior lining, so the interior shot is image #1
+# (primary/hero) rather than the shared front view, so cards/thumbnails
+# actually look different from one colourway to the next.
+
+slug: pastel-lavender-moon-bag
+name: Pastel Lavender Moon Bag
+design_code: moonlavender
+bag_type: crossbody
+color_hex: "#CDB9D2"
+base_price_cents: 35000
+is_featured: true
+display_order: 20
+
+description: >-
+  Round, playful, and made to brighten your day. Our signature round
+  crossbody in soft cream vegan leather, finished with gold-tone clover
+  hardware and an adjustable strap. Opens to a pastel lavender lined
+  interior with a zip pocket and a slouchy rubber pocket for your phone
+  or cards.
+
+tile_eyebrow: Pastel Lavender
+tile_headline: A soft, dreamy surprise inside.
+tile_body: >-
+  Cream shell outside, pastel lavender lining inside — gold hardware,
+  adjustable strap.
+
+variants:
+  - name: Pastel Lavender
+    sku: MC-MOON-LV
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  - path: products/signature/clover/round/interior-pastel-lavender.jpg
+    alt: Pastel Lavender Moon Bag — interior, pastel lavender lining
+    sort_order: 1
+  - path: products/signature/clover/round/front.jpg
+    alt: Pastel Lavender Moon Bag — front view
+    sort_order: 2
+  - path: products/signature/clover/round/back.jpg
+    alt: Pastel Lavender Moon Bag — back view
+    sort_order: 3
