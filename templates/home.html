@@ -2,7 +2,7 @@
 {% block title %}MISS CLOVER — Singapore handbags{% endblock %}
 
 {% block content %}
-{# ── Hero: split copy + rotating product visual ──────────────────── #}
+{# ── Hero: split copy + curated product photo ──────────────────────── #}
 <section class="home-hero">
   <div class="container home-hero-inner">
     <div class="home-hero-copy">
@@ -12,33 +12,10 @@
     </div>
 
     <div class="home-hero-visual">
-      {% for c in nav_collections %}
-        {% set series0 = c.active_series[0] if c.active_series else None %}
-        {% set rep = series0.active_products[0] if series0 and series0.active_products else None %}
-        {% set rep2 = series0.active_products[1] if series0 and series0.active_products|length > 1 else None %}
-        {# Only one product in this series (e.g. one shell, several linings) —
-           fall back to its second gallery photo so the slide isn't sparse. #}
-        {% set rep2_path = rep2.primary_image_path if rep2 else (rep.images[1].path if rep and rep.images|length > 1 else None) %}
-        {% set rep2_alt = rep2.name if rep2 else (rep.name ~ ' — alternate view' if rep else '') %}
-        <div class="hero-slide{% if loop.first %} is-active{% endif %}">
-          {% if rep %}
-            <img src="{{ url_for('static', filename='img/' ~ rep.primary_image_path) }}" alt="{{ rep.name }}"/>
-          {% endif %}
-          {% if rep2_path %}
-            <img src="{{ url_for('static', filename='img/' ~ rep2_path) }}" alt="{{ rep2_alt }}"/>
-          {% endif %}
-        </div>
-      {% endfor %}
+      <img src="{{ url_for('static', filename='img/home/hero-pillow-moon.jpg') }}"
+           alt="Clover Pillow Bag in dusty pink and the cream Clover Moon Bag"/>
     </div>
   </div>
-
-  {% if nav_collections|length > 1 %}
-  <div class="hero-dots" data-hero-dots>
-    {% for c in nav_collections %}
-      <button class="hero-dot{% if loop.first %} is-active{% endif %}" data-slide="{{ loop.index0 }}" aria-label="Show {{ c.name }}"></button>
-    {% endfor %}
-  </div>
-  {% endif %}
 </section>
 
 {# ── Shop by collection ───────────────────────────────────────────── #}
@@ -160,27 +137,6 @@
 {% block scripts %}
 <script>
   (function () {
-    var slides = document.querySelectorAll(".hero-slide");
-    var dots = document.querySelectorAll(".hero-dot");
-    if (slides.length > 1) {
-      var current = 0;
-      function show(i) {
-        slides[current].classList.remove("is-active");
-        dots[current] && dots[current].classList.remove("is-active");
-        current = i;
-        slides[current].classList.add("is-active");
-        dots[current] && dots[current].classList.add("is-active");
-      }
-      dots.forEach(function (dot) {
-        dot.addEventListener("click", function () {
-          show(parseInt(dot.dataset.slide, 10));
-        });
-      });
-      setInterval(function () {
-        show((current + 1) % slides.length);
-      }, 5000);
-    }
-
     var track = document.querySelector("[data-carousel-track]");
     var prev = document.querySelector("[data-carousel-prev]");
     var next = document.querySelector("[data-carousel-next]");
