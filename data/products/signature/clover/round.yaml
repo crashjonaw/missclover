@@ -1,0 +1,55 @@
+# MISS CLOVER — Round Clover Bag
+# Signature collection › Clover series.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (signature/clover/); see ../../README.md.
+#
+# One cream shell — the "colourway" choice here is the interior lining,
+# shown via the photo gallery below rather than as separate purchasable
+# products (the exterior is identical across linings).
+
+slug: round-clover-bag
+name: Round Clover Bag
+design_code: cream
+bag_type: crossbody               # round body, adjustable crossbody strap
+color_hex: "#F0E6D2"               # cream shell
+base_price_cents: 35000
+is_featured: true
+display_order: 10
+
+description: >-
+  Our signature round crossbody in soft cream vegan leather, finished
+  with gold-tone clover hardware and an adjustable strap. Opens to a
+  colour-lined interior with a zip pocket and a slouchy rubber pocket
+  for your phone or cards.
+
+tile_eyebrow: Cream
+tile_headline: One cream shell, four inside colours.
+tile_body: >-
+  A round crossbody in soft cream, gold hardware, adjustable strap —
+  pick the lining colour that feels like you.
+
+variants:
+  - name: Cream
+    sku: MC-RND-CR
+    stock_qty: 20
+    price_cents: 35000
+
+images:
+  - path: products/signature/clover/round/front.jpg
+    alt: Round Clover Bag — front view
+    sort_order: 1
+  - path: products/signature/clover/round/back.jpg
+    alt: Round Clover Bag — back view
+    sort_order: 2
+  - path: products/signature/clover/round/interior-pastel-blue.jpg
+    alt: Round Clover Bag — interior, pastel blue lining
+    sort_order: 3
+  - path: products/signature/clover/round/interior-pastel-lavender.jpg
+    alt: Round Clover Bag — interior, pastel lavender lining
+    sort_order: 4
+  - path: products/signature/clover/round/interior-dusty-blush-pink.jpg
+    alt: Round Clover Bag — interior, dusty blush pink lining
+    sort_order: 5
+  - path: products/signature/clover/round/interior-sage-green.jpg
+    alt: Round Clover Bag — interior, sage green lining
+    sort_order: 6

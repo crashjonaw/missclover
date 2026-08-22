@@ -1,0 +1,35 @@
+# MISS CLOVER — Mint Green Pillow
+# Cosy collection › Pillow series › Mint Green colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: mint-green-pillow
+name: Mint Green Pillow
+design_code: mintgreen
+bag_type: shoulderbag
+color_hex: "#B6C3B9"
+base_price_cents: 100
+is_featured: true
+display_order: 40
+
+description: >-
+  Soft, padded shoulder bag in mint green. Signature wavy quilting,
+  adjustable padded strap, gold-tone clover hardware. Same easy
+  silhouette as the rest of the Pillow line, in a fresher register.
+
+tile_eyebrow: Mint Green
+tile_headline: A quieter green.
+tile_body: >-
+  Padded mint green body finished with our signature wave-quilting
+  and a gold-tone clover plaque. Sits just as easily on the shoulder.
+
+variants:
+  - name: Mint Green
+    sku: MC-PLW-MG
+    stock_qty: 20
+    price_cents: 100
+
+images:
+  - path: products/cosy/pillow/mintgreen/hero.jpg
+    alt: Mint Green Pillow — front view
+    sort_order: 1

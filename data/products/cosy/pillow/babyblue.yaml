@@ -1,0 +1,35 @@
+# MISS CLOVER — Baby Blue Pillow
+# Cosy collection › Pillow series › Baby Blue colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: baby-blue-pillow
+name: Baby Blue Pillow
+design_code: babyblue
+bag_type: shoulderbag
+color_hex: "#A8C1E5"
+base_price_cents: 100
+is_featured: true
+display_order: 10
+
+description: >-
+  Soft, padded shoulder bag in baby blue. Signature wavy quilting,
+  adjustable padded strap, gold-tone clover hardware. An everyday
+  carry that's quiet, not loud.
+
+tile_eyebrow: Baby Blue
+tile_headline: A softer everyday.
+tile_body: >-
+  Padded baby blue body with our signature wave-quilted texture.
+  Adjustable cushioned strap, gold-tone clover plaque.
+
+variants:
+  - name: Baby Blue
+    sku: MC-PLW-BB
+    stock_qty: 20
+    price_cents: 100
+
+images:
+  - path: products/cosy/pillow/babyblue/hero.jpg
+    alt: Baby Blue Pillow — front view
+    sort_order: 1

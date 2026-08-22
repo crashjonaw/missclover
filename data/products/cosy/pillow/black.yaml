@@ -1,0 +1,35 @@
+# MISS CLOVER — Black Pillow
+# Cosy collection › Pillow series › Black colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: black-pillow
+name: Black Pillow
+design_code: black
+bag_type: shoulderbag
+color_hex: "#363636"
+base_price_cents: 100
+is_featured: true
+display_order: 20
+
+description: >-
+  Soft, padded shoulder bag in black. Signature wavy quilting,
+  adjustable padded strap, gold-tone clover hardware. Same easy
+  silhouette as the rest of the Pillow line, in a deeper register.
+
+tile_eyebrow: Black
+tile_headline: Quietly bold.
+tile_body: >-
+  Padded black body finished with our signature wave-quilting and a
+  gold-tone clover plaque. Sits just as easily on the shoulder.
+
+variants:
+  - name: Black
+    sku: MC-PLW-BLK
+    stock_qty: 20
+    price_cents: 100
+
+images:
+  - path: products/cosy/pillow/black/hero.jpg
+    alt: Black Pillow — front view
+    sort_order: 1

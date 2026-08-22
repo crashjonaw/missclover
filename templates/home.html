@@ -16,12 +16,16 @@
         {% set series0 = c.active_series[0] if c.active_series else None %}
         {% set rep = series0.active_products[0] if series0 and series0.active_products else None %}
         {% set rep2 = series0.active_products[1] if series0 and series0.active_products|length > 1 else None %}
+        {# Only one product in this series (e.g. one shell, several linings) —
+           fall back to its second gallery photo so the slide isn't sparse. #}
+        {% set rep2_path = rep2.primary_image_path if rep2 else (rep.images[1].path if rep and rep.images|length > 1 else None) %}
+        {% set rep2_alt = rep2.name if rep2 else (rep.name ~ ' — alternate view' if rep else '') %}
         <div class="hero-slide{% if loop.first %} is-active{% endif %}">
           {% if rep %}
             <img src="{{ url_for('static', filename='img/' ~ rep.primary_image_path) }}" alt="{{ rep.name }}"/>
           {% endif %}
-          {% if rep2 %}
-            <img src="{{ url_for('static', filename='img/' ~ rep2.primary_image_path) }}" alt="{{ rep2.name }}"/>
+          {% if rep2_path %}
+            <img src="{{ url_for('static', filename='img/' ~ rep2_path) }}" alt="{{ rep2_alt }}"/>
           {% endif %}
         </div>
       {% endfor %}
@@ -51,11 +55,13 @@
     <div class="collection-tiles">
       {% for c in nav_collections %}
         {% for s in c.active_series %}
-          <div class="collection-tile">
-            <p class="collection-tile-eyebrow">{{ s.tile_eyebrow or c.name }}</p>
+          {% set tile_bg = s.color_hex or c.color_hex or '#F5F1EA' %}
+          {% set tile_fg = tile_bg | text_on %}
+          <div class="collection-tile" style="background: {{ tile_bg }}; color: {{ tile_fg }};">
+            <p class="collection-tile-eyebrow" style="color: {{ tile_fg }};">{{ s.tile_eyebrow or c.name }}</p>
             <h3 class="collection-tile-name">{{ s.name }}{% if s.active_products %} {{ s.active_products[0].bag_type | bag_type_label }}{% endif %}</h3>
-            <p class="collection-tile-body">{{ s.tile_body or s.description }}</p>
-            <a class="collection-tile-link" href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">Shop now &rarr;</a>
+            <p class="collection-tile-body" style="color: {{ tile_fg }};">{{ s.tile_body or s.description }}</p>
+            <a class="collection-tile-link" style="color: {{ tile_fg }};" href="{{ url_for('shop.series', collection_slug=c.slug, series_slug=s.slug) }}">Shop now &rarr;</a>
 
             <div class="collection-tile-row">
               {% for p in s.active_products %}
@@ -155,18 +161,23 @@
 {% endif %}
 
 {# ── Dual lifestyle banner ────────────────────────────────────────── #}
-{% set tote_products = products | selectattr('bag_type', 'equalto', 'tote') | list %}
+{% set banner_a = nav_collections[0].active_series[0].active_products[0]
+                  if nav_collections|length > 0 and nav_collections[0].active_series and nav_collections[0].active_series[0].active_products
+                  else None %}
+{% set banner_b = nav_collections[1].active_series[0].active_products[0]
+                  if nav_collections|length > 1 and nav_collections[1].active_series and nav_collections[1].active_series[0].active_products
+                  else None %}
 <section class="dual-banner">
-  {% if tote_products %}
-    <div class="dual-banner-panel dual-banner-panel--tote" style="background-image: url('{{ url_for('static', filename='img/' ~ tote_products[0].primary_image_path) }}');">
+  {% if banner_a %}
+    <div class="dual-banner-panel dual-banner-panel--tote" style="background-image: url('{{ url_for('static', filename='img/' ~ banner_a.primary_image_path) }}');">
       <div class="dual-banner-content">
         <h2>Little bags<br/>for little joys.</h2>
-        <a class="btn btn--on-photo" href="{{ url_for('shop.handbags', bag_type='tote') }}">Explore now</a>
+        <a class="btn btn--on-photo" href="{{ url_for('shop.product', slug=banner_a.slug) }}">Explore now</a>
       </div>
     </div>
   {% endif %}
-  {% if shoulder_products %}
-    <div class="dual-banner-panel dual-banner-panel--shoulder" style="background-image: url('{{ url_for('static', filename='img/' ~ shoulder_products[0].primary_image_path) }}');">
+  {% if banner_b %}
+    <div class="dual-banner-panel dual-banner-panel--shoulder" style="background-image: url('{{ url_for('static', filename='img/' ~ banner_b.primary_image_path) }}');">
       <div class="dual-banner-content">
         <h2>Your everyday,<br/>made prettier.</h2>
         <a class="btn btn--blush" href="{{ url_for('shop.handbags') }}">Shop the collection</a>

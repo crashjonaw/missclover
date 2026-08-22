@@ -93,9 +93,17 @@
       <div class="pdp-section">
         <p class="pdp-section-title">Details</p>
         <ul class="muted" style="font-size: 14px; padding-left: 18px; list-style: disc;">
-          <li>8″H × 11″L · 10″ handle drop</li>
-          <li>Suede-lined interior with lipstick holder, key fob, inner zip pocket</li>
-          <li>Gold hardware, structured silhouette</li>
+          {% if product.bag_type == 'shoulderbag' %}
+            <li>Soft, padded wave-quilted silhouette</li>
+            <li>Adjustable, cushioned strap</li>
+          {% elif product.bag_type == 'crossbody' %}
+            <li>Round silhouette with adjustable crossbody strap</li>
+            <li>Colour-lined interior with a zip pocket and rubber pocket</li>
+          {% else %}
+            <li>Structured silhouette with double handles</li>
+            <li>Lined interior with an inner zip pocket</li>
+          {% endif %}
+          <li>Gold-tone clover hardware</li>
           <li>Hand-finished in small batches</li>
         </ul>
       </div>

@@ -1,0 +1,35 @@
+# MISS CLOVER — Dusty Pink Pillow
+# Cosy collection › Pillow series › Dusty Pink colourway.
+# Edit then run `python seed.py`. Collection/series are derived from the
+# folder path (cosy/pillow/); see ../../README.md.
+
+slug: dusty-pink-pillow
+name: Dusty Pink Pillow
+design_code: dustypink
+bag_type: shoulderbag
+color_hex: "#CBA0A0"
+base_price_cents: 100
+is_featured: true
+display_order: 30
+
+description: >-
+  Soft, padded shoulder bag in dusty pink. Signature wavy quilting,
+  adjustable padded strap, gold-tone clover hardware. An everyday
+  carry that's quiet, not loud.
+
+tile_eyebrow: Dusty Pink
+tile_headline: A gentler blush.
+tile_body: >-
+  Padded dusty pink body with our signature wave-quilted texture.
+  Adjustable cushioned strap, gold-tone clover plaque.
+
+variants:
+  - name: Dusty Pink
+    sku: MC-PLW-DP
+    stock_qty: 20
+    price_cents: 100
+
+images:
+  - path: products/cosy/pillow/dustypink/hero.jpg
+    alt: Dusty Pink Pillow — front view
+    sort_order: 1

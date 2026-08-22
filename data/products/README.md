@@ -18,16 +18,17 @@ Current catalog:
 ```
 signature/                  Signature collection
   _collection.yaml
-  clover/                   Clover series   (bag_type: tote)
+  clover/                   Clover series   (bag_type: crossbody)
     _series.yaml
-    classic.yaml            → Classic Clover Tote
-    maroon.yaml             → Maroon Clover Tote
+    round.yaml              → Round Clover Bag (cream shell, 4 lining photos)
 cosy/                       Cosy collection
   _collection.yaml
   pillow/                   Pillow series   (bag_type: shoulderbag)
     _series.yaml
-    sand.yaml               → Sand Pillow
-    thyme.yaml              → Thyme Pillow
+    babyblue.yaml           → Baby Blue Pillow
+    black.yaml              → Black Pillow
+    dustypink.yaml          → Dusty Pink Pillow
+    mintgreen.yaml          → Mint Green Pillow
 ```
 
 `seed.py` recursively globs `data/products/<collection>/<series>/*.yaml`,
