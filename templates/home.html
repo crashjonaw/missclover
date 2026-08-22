@@ -107,32 +107,6 @@
 </section>
 {% endif %}
 
-{# ── Icon feature row ──────────────────────────────────────────────── #}
-<section class="section icon-feature-row">
-  <div class="container icon-feature-grid">
-    <div class="icon-feature">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-4 4-4 9 0 13M12 3c4 4 4 9 0 13M4 15c3 3 13 3 16 0"/></svg>
-      <h4>Lightweight</h4>
-      <p>Easy to carry, all day long.</p>
-    </div>
-    <div class="icon-feature">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 13H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-      <h4>Thoughtful design</h4>
-      <p>Practical compartments for your essentials.</p>
-    </div>
-    <div class="icon-feature">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="6"/><path d="M12 10v3l2 2"/><path d="M9 3h6"/></svg>
-      <h4>Adjustable strap</h4>
-      <p>Wear it your way, short or long.</p>
-    </div>
-    <div class="icon-feature">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-8.5C.7 8 2.4 4.5 6 4.5c2 0 3.3 1 4 2.3.7-1.3 2-2.3 4-2.3 3.6 0 5.3 3.5 3.5 7C19 15.65 12 20 12 20z"/></svg>
-      <h4>Made for you</h4>
-      <p>Little details that make a big difference.</p>
-    </div>
-  </div>
-</section>
-
 {# ── Brand statement ──────────────────────────────────────────────── #}
 <section class="section brand-statement">
   <div class="container container--narrow center">
@@ -140,34 +114,6 @@
     <p class="brand-statement-body">We believe the things you carry should make you smile. From soft pastel colours to playful floral details, every Clover bag is designed to bring a little sweetness into your everyday.</p>
   </div>
 </section>
-
-{# ── Details that matter ──────────────────────────────────────────── #}
-{% set shoulder_products = products | selectattr('bag_type', 'equalto', 'shoulderbag') | list %}
-{% if shoulder_products|length >= 2 %}
-  {% set img_a = url_for('static', filename='img/' ~ shoulder_products[0].primary_image_path) %}
-  {% set img_b = url_for('static', filename='img/' ~ shoulder_products[1].primary_image_path) %}
-  {% set details = [
-    {'img': img_a, 'pos': '52% 58%', 'zoom': '320%', 'caption': 'Gold-tone clover plaque for a subtle shine'},
-    {'img': img_b, 'pos': '20% 18%', 'zoom': '250%', 'caption': 'Adjustable, cushioned strap'},
-    {'img': img_a, 'pos': '50% 88%', 'zoom': '280%', 'caption': 'Signature wave-quilted texture'},
-    {'img': img_b, 'pos': '52% 58%', 'zoom': '320%', 'caption': 'Gold-tone clover plaque, deeper register'},
-    {'img': img_a, 'pos': '20% 18%', 'zoom': '250%', 'caption': 'Soft, puffy strap for extra comfort'},
-    {'img': img_b, 'pos': '50% 88%', 'zoom': '280%', 'caption': 'Wave-quilted, in a quieter green'},
-  ] %}
-<section class="section section--soft">
-  <div class="container">
-    <p class="section-eyebrow">Details that matter</p>
-    <div class="details-grid">
-      {% for d in details %}
-        <figure class="details-tile">
-          <div class="details-tile-img" style="background-image: url('{{ d.img }}'); background-position: {{ d.pos }}; background-size: {{ d.zoom }};"></div>
-          <figcaption>{{ d.caption }}</figcaption>
-        </figure>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
 
 {# ── Dual lifestyle banner ────────────────────────────────────────── #}
 {% set banner_a = nav_collections[0].active_series[0].active_products[0]
