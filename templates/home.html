@@ -43,9 +43,9 @@
 
             <div class="collection-tile-row">
               {% for p in s.active_products %}
-                <a class="collection-tile-thumb" href="{{ url_for('shop.product', slug=p.slug) }}"
-                   style="background-image: url('{{ url_for('static', filename='img/' ~ p.primary_image_path) }}');"
-                   title="{{ p.name }}" aria-label="{{ p.name }}"></a>
+                <a class="collection-tile-thumb" href="{{ url_for('shop.product', slug=p.slug) }}" title="{{ p.name }}">
+                  <img src="{{ url_for('static', filename='img/' ~ p.primary_image_path) }}" alt="{{ p.name }}" loading="lazy"/>
+                </a>
               {% endfor %}
             </div>
           </div>
