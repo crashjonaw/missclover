@@ -4,6 +4,10 @@
 {% block content %}
 {# ── Hero: full-bleed lifestyle photo, copy blended into the scene ──── #}
 <section class="home-hero">
+  {# Blurred copy of the same shot fills the band behind the sharp one, so the
+     photo can sit smaller than full-bleed without hard letterbox edges. #}
+  <img class="home-hero-fill" src="{{ url_for('static', filename='img/home/hero-lifestyle.jpg') }}"
+       alt="" aria-hidden="true"/>
   <img class="home-hero-photo" src="{{ url_for('static', filename='img/home/hero-lifestyle.jpg') }}"
        alt="Clover Bubble Bag and Clover Pillow Bag styled beside a vase of flowers"/>
   <div class="home-hero-scrim"></div>

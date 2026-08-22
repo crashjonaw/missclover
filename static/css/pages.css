@@ -201,13 +201,44 @@
   overflow: hidden;
   background: var(--surface);
 }
-.home-hero-photo {
+/* The photo is squarer (5:4) than this band, so `cover` would force a ~1.03x
+   zoom and crop the bags tight. `contain` instead lets the whole frame show at
+   a smaller scale; the blurred fill behind covers the leftover width so there
+   is no visible letterbox. */
+.home-hero-fill {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 68% 50%;
+  filter: blur(38px) saturate(1.05);
+  /* Overscan so the blur samples real pixels instead of smearing the edges. */
+  transform: scale(1.12);
+}
+/* Height-driven with `width: auto` so the element box hugs the photo itself.
+   With `object-fit: contain` the box would stay full-width and the mask below
+   would feather empty letterbox instead of the picture's real edges. */
+.home-hero-photo {
+  position: absolute;
+  top: 50%;
+  right: 3%;
+  transform: translateY(-50%);
+  height: 88%;
+  width: auto;
+  /* base.css caps every img at max-width:100%; combined with an explicit
+     height that squashes the aspect ratio, so it has to be lifted here. */
+  max-width: none;
+  /* Two gradients intersected = all four edges dissolve into the blurred fill,
+     so the photo has no rectangular seam. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+  mask-composite: intersect;
 }
 .home-hero-scrim {
   position: absolute;
@@ -251,7 +282,23 @@
 
 @media (max-width: 880px) {
   .home-hero { min-height: 720px; align-items: flex-start; padding-top: var(--sp-16); }
-  .home-hero-photo { object-position: 30% 40%; }
+  /* Too narrow to letterbox the 5:4 frame beside anything, so the photo goes
+     back to filling the band; the blurred fill and edge feather are only
+     needed when it sits inset. */
+  .home-hero-fill { display: none; }
+  .home-hero-photo {
+    inset: 0;
+    top: auto;
+    right: auto;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: 30% 40%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .home-hero-scrim {
     background: linear-gradient(
       180deg,
