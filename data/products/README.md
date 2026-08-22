@@ -44,20 +44,28 @@ metadata). Every product must sit exactly two folders deep.
 | **`design_code`** | product YAML | bare colour key (e.g. `classic`). Unique **globally**. Drives `OrderItem` snapshots, image-path fallback, legacy `/collections/<design_code>` 301-redirects |
 | **`bag_type`** | product YAML | the physical silhouette taxonomy (`tote`, `shoulderbag`, `crossbody`, `satchel`, `backpack`). Visible badge on card + PDP, plus the "Sort by bag type" + sidebar "Bag type" filter |
 
-`bag_type` is **independent** of Series. The Clover series is `bag_type: tote`;
-the Pillow series is `bag_type: shoulderbag` — but a series could mix bag types.
+`bag_type` is **independent** of Series. The Clover series is `bag_type:
+crossbody`; the Pillow series is `bag_type: shoulderbag` — but a series could
+mix bag types.
 
 ## Images
 
-`static/img/products/<collection>/<series>/<colour>/hero.jpg` (any number of
+`static/img/products/<collection>/<series>/<colour>/<view>.jpg` (any number of
 views per colour). Each product YAML's `images[].path` is relative to
-`static/img/` — e.g. `products/signature/clover/classic/hero.jpg`.
+`static/img/` — e.g. `products/signature/clover/moonblue/front.jpg`. The first
+image is the hero used on cards, tiles and grids.
+
+**`static/img/products/` is build output.** It is generated from the master
+photography in `photos/` by `build_images.py` — add or replace source shots
+there and rebuild, rather than editing the served files. See
+[`photos/README.md`](../../photos/README.md).
 
 ## Add a new colour (to an existing series)
 
-1. `cp data/products/signature/clover/classic.yaml data/products/signature/clover/sage.yaml`
+1. `cp data/products/signature/clover/moonblue.yaml data/products/signature/clover/moonsage.yaml`
 2. Edit `slug`, `name`, `design_code` (globally unique), `color_hex`, copy, SKU.
-3. Drop image(s) into `static/img/products/signature/clover/sage/` and update `images[].path`.
+3. Add the master shot to `photos/`, wire it up in `build_images.py`, then run
+   `python build_images.py`. Point `images[].path` at the generated files.
 4. `python seed.py`
 
 ## Add a new series (to an existing collection)

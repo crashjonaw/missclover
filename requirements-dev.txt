@@ -1,6 +1,10 @@
 -r requirements.txt
 pytest==8.3.3
 pytest-cov==5.0.0
+# Used by build_images.py to derive static/img/products/ from photos/.
+# Not needed to run the app — only to regenerate product imagery.
+pillow==12.3.0
+numpy==2.5.2
 # Opt-in mobile E2E tests (unit_test/playwright). Run `playwright install chromium`
 # once, then RUN_PLAYWRIGHT=1 pytest unit_test/playwright
 playwright==1.60.0
