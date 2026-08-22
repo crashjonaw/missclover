@@ -3,10 +3,10 @@
 # Edit then run `python seed.py`. Collection/series are derived from the
 # folder path (signature/clover/); see ../../README.md.
 #
-# Exterior is the same cream shell across all four Moon Bag colourways —
-# the colourway is the interior lining, so the interior shot is image #1
-# (primary/hero) rather than the shared front view, so cards/thumbnails
-# actually look different from one colourway to the next.
+# The exterior shell is colour-matched to the lining (recoloured from
+# the base cream photography, preserving the original shading/highlights)
+# so this reads as a genuinely distinct colourway in grids/cards, same
+# as the Pillow shoulder bag colourways.
 
 slug: pastel-lavender-moon-bag
 name: Pastel Lavender Moon Bag
@@ -19,16 +19,16 @@ display_order: 20
 
 description: >-
   Round, playful, and made to brighten your day. Our signature round
-  crossbody in soft cream vegan leather, finished with gold-tone clover
-  hardware and an adjustable strap. Opens to a pastel lavender lined
-  interior with a zip pocket and a slouchy rubber pocket for your phone
-  or cards.
+  crossbody in soft pastel lavender vegan leather, finished with
+  gold-tone clover hardware and an adjustable strap. Opens to a pastel
+  lavender lined interior with a zip pocket and a slouchy rubber pocket
+  for your phone or cards.
 
 tile_eyebrow: Pastel Lavender
-tile_headline: A soft, dreamy surprise inside.
+tile_headline: A soft, dreamy surprise.
 tile_body: >-
-  Cream shell outside, pastel lavender lining inside — gold hardware,
-  adjustable strap.
+  Soft pastel lavender shell, gold hardware, adjustable strap, and a
+  matching lined interior.
 
 variants:
   - name: Pastel Lavender
@@ -37,12 +37,12 @@ variants:
     price_cents: 35000
 
 images:
-  - path: products/signature/clover/round/interior-pastel-lavender.jpg
-    alt: Pastel Lavender Moon Bag — interior, pastel lavender lining
-    sort_order: 1
-  - path: products/signature/clover/round/front.jpg
+  - path: products/signature/clover/moonlavender/front.jpg
     alt: Pastel Lavender Moon Bag — front view
+    sort_order: 1
+  - path: products/signature/clover/moonlavender/interior.jpg
+    alt: Pastel Lavender Moon Bag — interior, pastel lavender lining
     sort_order: 2
-  - path: products/signature/clover/round/back.jpg
+  - path: products/signature/clover/moonlavender/back.jpg
     alt: Pastel Lavender Moon Bag — back view
     sort_order: 3
