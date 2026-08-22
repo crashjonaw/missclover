@@ -31,13 +31,30 @@ import colorsys
 import os
 
 import numpy as np
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PHOTOS = os.path.join(ROOT, "photos")
 OUT = os.path.join(ROOT, "static", "img", "products")
+OUT_HOME = os.path.join(ROOT, "static", "img", "home")
 
 JPEG_QUALITY = 92
+
+# ── Clover Bubble Series banner ────────────────────────────────────────────
+#
+# The master is a marketing sheet: a baked-in title, then the four-bag lineup
+# with colourway labels, then a strip of interior shots. Only the lineup band
+# is used — the site supplies its own heading as real text, so the baked-in
+# title is cropped away rather than shipped as an image of words.
+# Bottom edge stops at 674: the colourway labels end at y≈635 and the interior
+# detail strips begin at y≈677, so this keeps the labels with clearance while
+# leaving the strips out.
+SERIES_MASTER = "Clover Bubble Series.jpg"
+SERIES_BAND = (0, 255, 1536, 674)
+
+# The flat backdrop tone at the top of that band. `--bubble-banner-bg` in
+# pages.css must match, so the section colour and the photo meet invisibly.
+SERIES_BACKDROP = (245, 237, 231)  # #F5EDE7
 
 # The Bubble Bag master. All four "round clover *.png" files show the same cream
 # exterior, so the exterior only needs reading from one of them.
@@ -176,6 +193,30 @@ def build_bubble_bags():
         print(f"  wrote {os.path.relpath(os.path.join(dest, 'interior.jpg'), ROOT)}")
 
 
+def build_series_banner():
+    """Crop the Bubble Series lineup out of the marketing sheet.
+
+    The top rows are faded to the backdrop colour so the photo has no visible
+    upper edge: dropped onto a section painted the same colour, it reads as one
+    continuous surface running up behind the heading, rather than a picture
+    pasted into the page.
+    """
+    print("Clover Bubble Series banner")
+    band = Image.open(os.path.join(PHOTOS, SERIES_MASTER)).convert("RGB").crop(SERIES_BAND)
+
+    fade_h = 90
+    flat = Image.new("RGB", (band.width, fade_h), SERIES_BACKDROP)
+    # linear_gradient runs black->white top-to-bottom; inverted it is opaque at
+    # the very top (all backdrop) easing to transparent (all photo) by fade_h.
+    ramp = ImageOps.invert(Image.linear_gradient("L")).resize((1, fade_h)).resize((band.width, fade_h))
+    band.paste(flat, (0, 0), ramp)
+
+    os.makedirs(OUT_HOME, exist_ok=True)
+    dest = os.path.join(OUT_HOME, "clover-bubble-series.jpg")
+    band.save(dest, quality=JPEG_QUALITY)
+    print(f"  wrote {os.path.relpath(dest, ROOT)}")
+
+
 def build_pillow_bags():
     print("Clover Pillow Bag (shoulderbag)")
     for code, src in PILLOW_COLOURWAYS.items():
@@ -188,4 +229,5 @@ def build_pillow_bags():
 if __name__ == "__main__":
     build_bubble_bags()
     build_pillow_bags()
+    build_series_banner()
     print("\nDone. Run `python seed.py` if any image paths changed.")

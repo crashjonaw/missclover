@@ -55,6 +55,36 @@
 </section>
 {% endif %}
 
+{# ── Clover Bubble Series feature ──────────────────────────────────────
+   The banner's own backdrop is faded to --bubble-banner-bg at its top edge
+   (see build_images.py), and the section is painted that same colour, so the
+   photo runs up behind the heading as one continuous surface. #}
+{% set bubble_series = namespace(value=None, collection=None) %}
+{% for c in nav_collections %}
+  {% for s in c.active_series %}
+    {% if s.slug == 'clover' and bubble_series.value is none %}
+      {% set bubble_series.value = s %}
+      {% set bubble_series.collection = c %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% if bubble_series.value %}
+<section class="bubble-banner">
+  <div class="container bubble-banner-copy">
+    <h2>{{ bubble_series.value.name }}</h2>
+    <p>Everyday style, in your favourite pastel.</p>
+    <a class="collection-tile-link"
+       href="{{ url_for('shop.series', collection_slug=bubble_series.collection.slug, series_slug=bubble_series.value.slug) }}">Shop the series &rarr;</a>
+  </div>
+  <div class="bubble-banner-media">
+    <img class="bubble-banner-photo"
+         src="{{ url_for('static', filename='img/home/clover-bubble-series.jpg') }}"
+         alt="The four {{ bubble_series.value.name }} colourways — sage green, pastel lavender, dusty blush pink and pastel blue"
+         loading="lazy"/>
+  </div>
+</section>
+{% endif %}
+
 {# ── Featured products carousel ───────────────────────────────────── #}
 {% if products %}
 <section class="section section--soft">

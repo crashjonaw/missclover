@@ -21,21 +21,27 @@ python build_images.py
 | `round clover pastel lavender.png` | Pastel Lavender Bubble Bag (interior only) |
 | `round clover pastel pink.png` | Dusty Blush Pink Bubble Bag (interior only) |
 | `round clover sage green.png` | Sage Green Bubble Bag (interior only) |
+| `Clover Bubble Series.jpg` | The homepage Clover Bubble Series banner |
 | `Website reference.jpg` | Design reference for layout/presentation. Not built into the site. |
 
-## The Bubble Bag exterior is synthetic
+## ⚠️ The Bubble Bag exteriors on product cards are synthetic
 
-Worth knowing before you reshoot: only one Bubble Bag exterior was ever
-photographed. All four `round clover *.png` sheets show the **same cream
-shell** — they differ only in the interior lining panels. Four listings all
-showing an identical cream bag were indistinguishable in the product grid, so
-`build_images.py` recolours the front/back views per colourway (hue and
-saturation from the lining colour, original per-pixel brightness kept, so the
-real shading and highlights survive).
+The real bag has a **cream shell** in every colourway — the colour is the
+interior lining. All four `round clover *.png` sheets show the same cream
+exterior, and `Clover Bubble Series.jpg` confirms it: four cream bags,
+distinguished only by their labels.
 
-If you shoot the Bubble Bag in actual colours later, drop the new files in and
-replace the recolour step in `build_images.py` with a straight crop — the
-synthetic colouring exists only to cover the gap in the photography.
+Product cards do **not** show it that way. Four identical cream thumbnails were
+indistinguishable in the grid, so `build_images.py` recolours each colourway's
+front/back views to its lining colour (hue and saturation swapped in, original
+per-pixel brightness kept, so the real shading and highlights survive).
+
+**This means the shop currently shows exterior colours the product doesn't
+have**, while the series banner on the same page shows the true cream. Worth
+resolving before launch — either reshoot the bags in real colours, or drop the
+recolour step so the cards show cream and let the swatch/lining photos carry
+the colourway. To do the latter, replace the `_recolour(...)` call in
+`build_bubble_bags()` with a straight save of the cut-out.
 
 The interior shots are genuine per-colourway photographs and are cropped
 straight through.

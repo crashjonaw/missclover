@@ -265,6 +265,51 @@
   .home-hero-copy .lede { margin-left: auto; margin-right: auto; }
 }
 
+/* ── Home: Clover Bubble Series feature ───────────────────────────────
+   --bubble-banner-bg must stay in sync with SERIES_BACKDROP in
+   build_images.py, which fades the banner's top edge to that same tone.
+   If the two drift apart a seam appears where the photo meets the section. */
+
+.bubble-banner {
+  --bubble-banner-bg: #F5EDE7;
+  background: var(--bubble-banner-bg);
+  padding-top: var(--sp-16);
+  text-align: center;
+}
+.bubble-banner-copy h2 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--sp-3);
+}
+.bubble-banner-copy p {
+  color: var(--ink-muted);
+  font-size: 16px;
+  margin-bottom: var(--sp-4);
+}
+.bubble-banner-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Negative pull closes the gap the heading block would otherwise leave, so
+     the photo's faded top overlaps the section colour instead of butting it. */
+  margin-top: calc(var(--sp-6) * -1);
+}
+@media (max-width: 720px) {
+  .bubble-banner { padding-top: var(--sp-12); }
+  .bubble-banner-photo { margin-top: calc(var(--sp-3) * -1); }
+  /* Four bags side by side collapse to unreadable thumbnails on a phone (the
+     colourway labels are baked into the photo, so they can't reflow). Hold the
+     photo at a legible width and let it scroll inside its own track instead —
+     the page body itself must never scroll sideways. */
+  .bubble-banner-media {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .bubble-banner-media::-webkit-scrollbar { display: none; }
+  .bubble-banner-photo { min-width: 760px; }
+}
+
 /* ── Home: shop by collection ─────────────────────────────────────── */
 
 .section-eyebrow-icon {
